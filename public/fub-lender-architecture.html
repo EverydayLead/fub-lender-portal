@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Mobile Architecture Document</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --fub-blue: #002D72;
+    --fub-blue-light: #003d99;
+    --fub-blue-dark: #001a45;
+    --fub-gold: #C8A951;
+    --fub-gold-light: #e0c97a;
+    --fub-warm-bg: #FAF9F5;
+    --fub-warm-bg-alt: #F3F1EB;
+    --fub-text: #1a1a1a;
+    --fub-text-light: #555;
+    --fub-border: #e0ddd5;
+    --fub-success: #2D8B46;
+    --fub-warning: #D4860A;
+    --fub-danger: #B8302C;
+    --fub-info: #1976D2;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--fub-warm-bg);
+    color: var(--fub-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    background: linear-gradient(135deg, var(--fub-blue) 0%, var(--fub-blue-dark) 100%);
+    color: white;
+    padding: 48px 40px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(200,169,81,.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .doc-header .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--fub-gold);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .doc-header h1 {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+  }
+  .doc-header .subtitle {
+    font-size: 18px;
+    font-weight: 300;
+    opacity: .85;
+    margin-bottom: 24px;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 32px;
+    font-size: 13px;
+    opacity: .7;
+    flex-wrap: wrap;
+  }
+  .doc-meta span { white-space: nowrap; }
+
+  /* ── TAB NAV ── */
+  .tab-bar {
+    background: white;
+    border-bottom: 1px solid var(--fub-border);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-btn {
+    padding: 16px 24px;
+    font-family: 'Lato', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .3px;
+    color: var(--fub-text-light);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .tab-btn:hover { color: var(--fub-blue); background: rgba(0,45,114,.03); }
+  .tab-btn.active {
+    color: var(--fub-blue);
+    border-bottom-color: var(--fub-gold);
+  }
+
+  /* ── CONTENT ── */
+  .content-wrap { max-width: 1200px; margin: 0 auto; padding: 40px; }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .section { margin-bottom: 48px; }
+  .section h2 {
+    font-size: 24px;
+    font-weight: 900;
+    color: var(--fub-blue);
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+  .section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--fub-blue);
+    margin-bottom: 6px;
+    margin-top: 28px;
+  }
+  .section-lead {
+    font-size: 15px;
+    color: var(--fub-text-light);
+    margin-bottom: 28px;
+    max-width: 780px;
+  }
+  .section p { margin-bottom: 14px; max-width: 780px; }
+
+  /* ── CARDS ── */
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    border: 1px solid var(--fub-border);
+    padding: 28px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--fub-blue);
+    margin-bottom: 12px;
+  }
+  .card p, .card li { font-size: 14px; line-height: 1.65; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  /* ── DECISION MATRIX TABLE ── */
+  .matrix-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--fub-border);
+  }
+  .matrix-table thead { background: var(--fub-blue); color: white; }
+  .matrix-table th {
+    padding: 14px 18px;
+    text-align: left;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+  .matrix-table td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--fub-border);
+    vertical-align: top;
+  }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-table tr:nth-child(even) { background: var(--fub-warm-bg); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .3px;
+  }
+  .badge-yes { background: #e6f4ea; color: var(--fub-success); }
+  .badge-no { background: #fce8e8; color: var(--fub-danger); }
+  .badge-partial { background: #fff3e0; color: var(--fub-warning); }
+  .badge-rec { background: var(--fub-gold); color: white; }
+
+  /* ── LAYER DIAGRAM ── */
+  .layer-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 700px;
+    margin: 28px auto;
+  }
+  .layer-row {
+    display: flex;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .layer-label {
+    width: 160px;
+    min-width: 160px;
+    padding: 18px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: white;
+    display: flex;
+    align-items: center;
+  }
+  .layer-content {
+    flex: 1;
+    background: white;
+    padding: 16px 20px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .tech-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    background: var(--fub-warm-bg-alt);
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--fub-text);
+    border: 1px solid var(--fub-border);
+  }
+  .tech-chip .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── SVG DIAGRAMS ── */
+  .diagram-wrap {
+    background: white;
+    border: 1px solid var(--fub-border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin: 24px 0;
+    box-shadow: var(--shadow-sm);
+    overflow-x: auto;
+  }
+  .diagram-wrap svg { display: block; margin: 0 auto; }
+  .diagram-caption {
+    text-align: center;
+    font-size: 12px;
+    color: var(--fub-text-light);
+    margin-top: 16px;
+    letter-spacing: .3px;
+  }
+
+  /* ── API TABLE ── */
+  .api-endpoint {
+    background: white;
+    border: 1px solid var(--fub-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .api-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .api-header:hover { background: var(--fub-warm-bg); }
+  .api-method {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    min-width: 52px;
+    text-align: center;
+    color: white;
+  }
+  .method-get { background: var(--fub-success); }
+  .method-post { background: var(--fub-info); }
+  .method-put { background: var(--fub-warning); }
+  .method-delete { background: var(--fub-danger); }
+  .api-path { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; font-weight: 600; color: var(--fub-text); }
+  .api-desc { font-size: 13px; color: var(--fub-text-light); margin-left: auto; }
+  .api-detail {
+    display: none;
+    padding: 0 18px 18px;
+    font-size: 13px;
+    border-top: 1px solid var(--fub-border);
+  }
+  .api-detail.open { display: block; padding-top: 14px; }
+
+  /* ── NAV MAP ── */
+  .nav-tree {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .nav-tab-col {
+    background: white;
+    border: 1px solid var(--fub-border);
+    border-radius: var(--radius);
+    width: 200px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .nav-tab-header {
+    background: var(--fub-blue);
+    color: white;
+    padding: 12px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: .5px;
+  }
+  .nav-screen {
+    padding: 10px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid var(--fub-border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-screen:last-child { border-bottom: none; }
+  .nav-screen .icon { font-size: 11px; color: var(--fub-text-light); }
+  .nav-modal {
+    background: var(--fub-warm-bg-alt);
+    margin: 16px auto 24px;
+    max-width: 600px;
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px dashed var(--fub-gold);
+  }
+  .nav-modal h4 { font-size: 13px; color: var(--fub-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+
+  /* ── DECISIONS LOG ── */
+  .decision-card {
+    background: white;
+    border-left: 4px solid var(--fub-gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .decision-card .d-num {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--fub-gold);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .decision-card h4 { font-size: 16px; font-weight: 700; color: var(--fub-blue); margin-bottom: 8px; }
+  .decision-card p { font-size: 14px; color: var(--fub-text-light); margin-bottom: 8px; }
+  .decision-card .stakeholders { font-size: 12px; color: var(--fub-text-light); font-style: italic; }
+
+  /* ── AUTHORITY TABLE ── */
+  .auth-matrix {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: white;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--fub-border);
+  }
+  .auth-matrix thead { background: var(--fub-blue-dark); color: white; }
+  .auth-matrix th { padding: 12px 16px; text-align: left; font-weight: 700; font-size: 11px; letter-spacing: .5px; text-transform: uppercase; }
+  .auth-matrix td { padding: 12px 16px; border-bottom: 1px solid var(--fub-border); }
+  .auth-matrix tr:last-child td { border-bottom: none; }
+  .auth-matrix tr:nth-child(even) { background: var(--fub-warm-bg); }
+
+  /* ── LISTS ── */
+  .content-list { list-style: none; padding: 0; }
+  .content-list li {
+    padding: 8px 0 8px 20px;
+    position: relative;
+    font-size: 14px;
+  }
+  .content-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 16px;
+    width: 6px;
+    height: 6px;
+    background: var(--fub-gold);
+    border-radius: 50%;
+  }
+
+  .numbered-list { counter-reset: step; list-style: none; padding: 0; }
+  .numbered-list li {
+    counter-increment: step;
+    padding: 8px 0 8px 36px;
+    position: relative;
+    font-size: 14px;
+  }
+  .numbered-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 24px;
+    height: 24px;
+    background: var(--fub-blue);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── CODE BLOCKS ── */
+  .code-block {
+    background: #1e1e2e;
+    color: #cdd6f4;
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-x: auto;
+    margin: 16px 0;
+  }
+  .code-block .key { color: #89b4fa; }
+  .code-block .str { color: #a6e3a1; }
+  .code-block .comment { color: #6c7086; font-style: italic; }
+  .code-block .num { color: #fab387; }
+
+  /* ── OFFLINE SYNC FLOW ── */
+  .sync-flow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 24px 0;
+  }
+  .sync-node {
+    background: white;
+    border: 2px solid var(--fub-blue);
+    border-radius: var(--radius-sm);
+    padding: 12px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--fub-blue);
+    text-align: center;
+    min-width: 120px;
+  }
+  .sync-node.highlight {
+    background: var(--fub-blue);
+    color: white;
+  }
+  .sync-arrow {
+    color: var(--fub-gold);
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  /* ── PRINT ── */
+  @media print {
+    .tab-bar { display: none; }
+    .tab-panel { display: block !important; page-break-before: always; }
+    .tab-panel:first-of-type { page-break-before: avoid; }
+    .doc-header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  }
+
+  @media (max-width: 768px) {
+    .doc-header { padding: 32px 20px 24px; }
+    .doc-header h1 { font-size: 26px; }
+    .content-wrap { padding: 24px 16px; }
+    .tab-bar { padding: 0 16px; }
+    .tab-btn { padding: 14px 16px; font-size: 12px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .nav-tree { flex-direction: column; align-items: center; }
+    .layer-label { width: 110px; min-width: 110px; font-size: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════ HEADER ════════════════════════════ -->
+<header class="doc-header">
+  <div class="label">Prompt 2 — Lender Build Playbook</div>
+  <h1>Mobile Architecture Document</h1>
+  <div class="subtitle">FUB Lender — Credit-Memo-First Lending App</div>
+  <div class="doc-meta">
+    <span>Prepared for: Henry Marquez (Dev Lead) &amp; Ryan Suchala (CBO)</span>
+    <span>Author: Justin Sanderson, CTO</span>
+    <span>Date: May 10, 2026</span>
+    <span>Status: DRAFT — Pending Stakeholder Sign-off</span>
+  </div>
+</header>
+
+<!-- ════════════════════════════ TAB BAR ════════════════════════════ -->
+<nav class="tab-bar" id="tabBar">
+  <button class="tab-btn active" data-tab="stack">Tech Stack</button>
+  <button class="tab-btn" data-tab="layers">App Layers</button>
+  <button class="tab-btn" data-tab="offline">Offline</button>
+  <button class="tab-btn" data-tab="nav">Navigation</button>
+  <button class="tab-btn" data-tab="api">API Contracts</button>
+  <button class="tab-btn" data-tab="authority">Authority</button>
+  <button class="tab-btn" data-tab="security">Security</button>
+  <button class="tab-btn" data-tab="integration">Integration</button>
+  <button class="tab-btn" data-tab="decisions">Decisions Log</button>
+</nav>
+
+<main class="content-wrap">
+
+<!-- ═══════════════════ 1. TECH STACK DECISION MATRIX ═══════════════════ -->
+<div class="tab-panel active" id="panel-stack">
+  <div class="section">
+    <h2>Tech Stack Decision Matrix</h2>
+    <p class="section-lead">Evaluating React Native build approaches for a banking-grade mobile app that must work offline across rural Oklahoma and Texas.</p>
+
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th style="width:28%">Criteria</th>
+          <th style="width:24%">Expo Managed</th>
+          <th style="width:24%">Expo + Custom Dev Client</th>
+          <th style="width:24%">Bare React Native</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>MDM / Intune Compatibility</strong></td>
+          <td><span class="badge badge-partial">Limited</span> — no native module access for MDM hooks</td>
+          <td><span class="badge badge-yes">Full</span> — custom native modules allowed</td>
+          <td><span class="badge badge-yes">Full</span> — complete native control</td>
+        </tr>
+        <tr>
+          <td><strong>Biometric Auth (FaceID / TouchID)</strong></td>
+          <td><span class="badge badge-yes">Yes</span> — via expo-local-authentication</td>
+          <td><span class="badge badge-yes">Yes</span> — plus custom native fallbacks</td>
+          <td><span class="badge badge-yes">Yes</span> — full native libraries</td>
+        </tr>
+        <tr>
+          <td><strong>Offline SQLite (WatermelonDB)</strong></td>
+          <td><span class="badge badge-no">No</span> — requires native compilation</td>
+          <td><span class="badge badge-yes">Yes</span> — native modules supported</td>
+          <td><span class="badge badge-yes">Yes</span> — native modules supported</td>
+        </tr>
+        <tr>
+          <td><strong>OTA Updates (Skip App Store)</strong></td>
+          <td><span class="badge badge-yes">Yes</span> — EAS Update built-in</td>
+          <td><span class="badge badge-yes">Yes</span> — EAS Update for JS bundles</td>
+          <td><span class="badge badge-partial">Manual</span> — CodePush or custom</td>
+        </tr>
+        <tr>
+          <td><strong>Certificate Pinning</strong></td>
+          <td><span class="badge badge-no">No</span> — no native module support</td>
+          <td><span class="badge badge-yes">Yes</span> — via native config plugin</td>
+          <td><span class="badge badge-yes">Yes</span> — full native control</td>
+        </tr>
+        <tr>
+          <td><strong>Jailbreak / Root Detection</strong></td>
+          <td><span class="badge badge-no">No</span> — no native access</td>
+          <td><span class="badge badge-yes">Yes</span> — custom native module</td>
+          <td><span class="badge badge-yes">Yes</span> — native integration</td>
+        </tr>
+        <tr>
+          <td><strong>Build Infrastructure</strong></td>
+          <td><span class="badge badge-yes">EAS Build</span> — zero local setup</td>
+          <td><span class="badge badge-yes">EAS Build</span> — cloud builds with native modules</td>
+          <td><span class="badge badge-no">Manual</span> — Xcode + Gradle locally or custom CI</td>
+        </tr>
+        <tr>
+          <td><strong>Developer Velocity</strong></td>
+          <td>Fastest — no native config</td>
+          <td>Fast — Expo tooling + native when needed</td>
+          <td>Slowest — manual linking, config management</td>
+        </tr>
+        <tr>
+          <td><strong>Team Ramp-Up (Henry + future devs)</strong></td>
+          <td>Low friction</td>
+          <td>Low-medium friction</td>
+          <td>High friction — requires iOS + Android expertise</td>
+        </tr>
+        <tr>
+          <td><strong>Long-Term Maintainability</strong></td>
+          <td>High — Expo manages upgrades</td>
+          <td>High — Expo manages most upgrades, native modules isolated</td>
+          <td>Medium — full responsibility for RN upgrades</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card" style="margin-top: 28px; border-left: 4px solid var(--fub-gold);">
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+        <span class="badge badge-rec">RECOMMENDATION</span>
+        <h4 style="margin: 0;">Expo with Custom Dev Client</h4>
+      </div>
+      <p>This approach gives us the developer-experience advantages of Expo (EAS Build, OTA updates, managed upgrades) while unlocking the native modules we need for banking-grade security: WatermelonDB for offline storage, certificate pinning, jailbreak detection, and MDM/Intune integration.</p>
+      <p style="margin-top: 12px;">The custom dev client means we compile our own development build (instead of using the Expo Go app), which lets us include native modules. In production, EAS Build handles iOS and Android compilation in the cloud — no local Xcode or Gradle setup required for Henry or future developers.</p>
+      <p style="margin-top: 12px; font-size: 13px; color: var(--fub-text-light);">OTA updates via EAS allow us to push JavaScript-layer changes (UI, business logic, bug fixes) directly to devices without going through App Store review — critical for iterating on credit memo NLP accuracy and workflow adjustments post-launch.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 2. APP ARCHITECTURE LAYERS ═══════════════════ -->
+<div class="tab-panel" id="panel-layers">
+  <div class="section">
+    <h2>App Architecture Layers</h2>
+    <p class="section-lead">Five distinct layers, each with a single responsibility. The architecture is designed so any layer can be replaced without rewriting the others.</p>
+
+    <div class="layer-stack">
+      <div class="layer-row">
+        <div class="layer-label" style="background: #003d99;">Presentation</div>
+        <div class="layer-content">
+          <span class="tech-chip"><span class="dot" style="background:#61DAFB"></span>React Native</span>
+          <span class="tech-chip"><span class="dot" style="background:#6B52AE"></span>React Navigation 7</span>
+          <span class="tech-chip"><span class="dot" style="background:#C8A951"></span>FUB Design System</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label" style="background: #00408a;">State</div>
+        <div class="layer-content">
+          <span class="tech-chip"><span class="dot" style="background:#433D3C"></span>Zustand</span>
+          <span class="tech-chip"><span class="dot" style="background:#FF4154"></span>TanStack Query v5</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label" style="background: #004d9e;">Data</div>
+        <div class="layer-content">
+          <span class="tech-chip"><span class="dot" style="background:#0099E5"></span>WatermelonDB</span>
+          <span class="tech-chip"><span class="dot" style="background:#003B57"></span>SQLite (on-device)</span>
+          <span class="tech-chip"><span class="dot" style="background:#00897B"></span>Sync Engine</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label" style="background: #1565C0;">Network</div>
+        <div class="layer-content">
+          <span class="tech-chip"><span class="dot" style="background:#5A29E4"></span>Axios</span>
+          <span class="tech-chip"><span class="dot" style="background:#EF6C00"></span>Retry Middleware</span>
+          <span class="tech-chip"><span class="dot" style="background:#AD1457"></span>Request Queue</span>
+        </div>
+      </div>
+      <div class="layer-row">
+        <div class="layer-label" style="background: #0D47A1;">Auth &amp; Security</div>
+        <div class="layer-content">
+          <span class="tech-chip"><span class="dot" style="background:#007DC1"></span>Okta OIDC PKCE</span>
+          <span class="tech-chip"><span class="dot" style="background:#F9A825"></span>JWT (Access + Refresh)</span>
+          <span class="tech-chip"><span class="dot" style="background:#2E7D32"></span>RBAC Engine</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-grid" style="margin-top: 36px;">
+      <div class="card">
+        <h4>Presentation Layer</h4>
+        <p>React Native with Expo's custom dev client. Navigation uses React Navigation 7 with a bottom tab navigator (5 tabs) and stack navigators nested under each tab. All UI components come from a shared FUB Design System library that enforces brand colors, Lato typography, and the 50px pill-shaped CTA pattern.</p>
+        <p style="margin-top:10px;">Screen composition follows a "container/presenter" pattern: container components handle data fetching and state, presenter components are pure UI. This makes screens testable in isolation.</p>
+      </div>
+      <div class="card">
+        <h4>State Management: Zustand</h4>
+        <p>Zustand was chosen over Redux for three reasons: minimal boilerplate (critical with a small team), built-in support for persistence middleware (pairs naturally with offline storage), and excellent TypeScript inference without extra configuration.</p>
+        <p style="margin-top:10px;">Global stores: <strong>AuthStore</strong> (user session, role, permissions), <strong>SyncStore</strong> (connectivity status, queue depth, last sync), <strong>UIStore</strong> (modals, toasts, navigation state).</p>
+      </div>
+      <div class="card">
+        <h4>Server State: TanStack Query</h4>
+        <p>TanStack Query manages all server-state caching, refetching, and optimistic updates. Combined with WatermelonDB, it creates a two-tier cache: TanStack handles in-memory server state for fast renders, while WatermelonDB provides persistent offline storage that survives app restarts.</p>
+        <p style="margin-top:10px;">Stale-while-revalidate strategy: show cached data immediately, refresh in background. Query keys follow a convention: <code>['deals', dealId, 'memo']</code>.</p>
+      </div>
+      <div class="card">
+        <h4>Network Layer: Axios + Queue</h4>
+        <p>All API calls go through a centralized Axios instance with three middleware layers:</p>
+        <ol class="numbered-list" style="margin-top:10px;">
+          <li><strong>Auth interceptor</strong> — attaches JWT, auto-refreshes expired tokens via Okta</li>
+          <li><strong>Retry middleware</strong> — exponential backoff (3 attempts, 1s/2s/4s) for 5xx and network errors</li>
+          <li><strong>Offline queue</strong> — when device is offline, mutations are serialized to a persistent queue and replayed on reconnection in order</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h4>Auth Flow: Okta OIDC with PKCE</h4>
+        <p>Authentication uses the Authorization Code flow with PKCE (Proof Key for Code Exchange), which is the recommended pattern for mobile apps per OAuth 2.1. No client secret is stored on-device.</p>
+        <p style="margin-top:10px;">The flow: App opens Okta login in a system browser (ASWebAuthenticationSession on iOS, Chrome Custom Tab on Android) → user authenticates with FUB SSO credentials → Okta redirects back with auth code → app exchanges code for JWT tokens → access token (15 min) + refresh token (24 hr) stored in secure enclave.</p>
+      </div>
+      <div class="card">
+        <h4>Role-Based Access Control</h4>
+        <p>Four roles, enforced server-side and reflected in the UI:</p>
+        <ul class="content-list" style="margin-top:10px;">
+          <li><strong>Banker</strong> — Create deals, write memos, submit for approval, view own pipeline</li>
+          <li><strong>Approver</strong> — All Banker permissions + approve/decline within authority limit</li>
+          <li><strong>Loan Admin</strong> — All permissions + book/close deals, manage document checklist</li>
+          <li><strong>Read-Only</strong> — View pipeline and deal details, no mutations. For auditors and executives</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 3. OFFLINE ARCHITECTURE ═══════════════════ -->
+<div class="tab-panel" id="panel-offline">
+  <div class="section">
+    <h2>Offline-First Architecture</h2>
+    <p class="section-lead">Many FUB community banks are in rural Oklahoma and Texas where cellular coverage is inconsistent. A banker at a cattle ranch in Pauls Valley can't lose their work because they lost signal. This is the most critical architectural decision in the entire app.</p>
+
+    <div class="card" style="border-left: 4px solid var(--fub-success);">
+      <h4>The Jackie Parsons Test</h4>
+      <p>Our canonical scenario: Banker drives to Jackie's ranch outside Pauls Valley, OK. Opens the app on the drive while still in town (has signal). Arrives at the ranch — no signal. Opens a new deal, writes a credit memo for Jackie's $110K cattle operating line (50 head Black Angus, 7-year customer, perfect payment history). Takes photos of financial documents. Saves everything. Drives back to town — app syncs automatically. The deal shows up in the approver's queue within 30 seconds of reconnection.</p>
+      <p style="margin-top: 10px;">If this scenario doesn't work flawlessly, we haven't built the right thing.</p>
+    </div>
+
+    <h3>Data Layer: WatermelonDB</h3>
+    <p>WatermelonDB sits on top of SQLite and provides a reactive, observable database optimized for React Native. It was chosen over raw SQLite, Realm, or MMKV because it was purpose-built for offline-first apps with sync, has lazy record loading (critical for large pipelines), and uses an observable pattern that pairs naturally with React's rendering model.</p>
+
+    <h3>Sync Architecture</h3>
+    <div class="sync-flow">
+      <div class="sync-node highlight">Local Write</div>
+      <span class="sync-arrow">→</span>
+      <div class="sync-node">Sync Queue</div>
+      <span class="sync-arrow">→</span>
+      <div class="sync-node">Connectivity Check</div>
+      <span class="sync-arrow">→</span>
+      <div class="sync-node">Push to Server</div>
+      <span class="sync-arrow">→</span>
+      <div class="sync-node">Pull Server Changes</div>
+      <span class="sync-arrow">→</span>
+      <div class="sync-node highlight">Merge &amp; Resolve</div>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4>Conflict Resolution: Last-Write-Wins + Merge Log</h4>
+        <p>When the same record has been modified both locally and on the server, we use a <strong>last-write-wins</strong> strategy at the field level (not the record level). This means if Banker A updates the loan amount while offline, and Banker B updates the collateral description on the server, both changes are preserved.</p>
+        <p style="margin-top:10px;">Every conflict produces a merge log entry visible in the deal's activity feed, so nothing happens silently. If a true collision occurs (same field, different values), the most recent timestamp wins and the overwritten value is logged for review.</p>
+      </div>
+      <div class="card">
+        <h4>Encryption at Rest</h4>
+        <p>The local SQLite database is encrypted using SQLCipher. Encryption keys are stored in the platform's secure enclave — iOS Keychain (with <code>kSecAttrAccessibleAfterFirstUnlock</code>) and Android Keystore. The key never exists in user-accessible storage or application memory beyond the decryption operation.</p>
+        <p style="margin-top:10px;">If the device is jailbroken/rooted, the app refuses to decrypt the local database and requires re-authentication over network.</p>
+      </div>
+      <div class="card">
+        <h4>Sync Priority Order</h4>
+        <p>When the device reconnects, queued operations sync in this order to maximize business-critical throughput:</p>
+        <ol class="numbered-list" style="margin-top:10px;">
+          <li><strong>Approval actions</strong> — highest priority, a delayed approval blocks the whole deal pipeline</li>
+          <li><strong>Deal mutations</strong> — new deals, memo updates, status changes</li>
+          <li><strong>Document uploads</strong> — largest payloads, streamed with resumable upload support</li>
+          <li><strong>Read-state sync</strong> — pipeline refreshes, notification acknowledgments</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h4>Offline Window: 72 Hours</h4>
+        <p>The app supports up to 72 hours of offline operation. After 72 hours without a successful sync, the app enters a "stale data" warning state — the banker can still view and edit, but a prominent banner warns that data may be out of date.</p>
+        <p style="margin-top:10px;">At 7 days without sync, the app requires re-authentication before allowing new mutations (but existing queued changes are preserved and will sync once authenticated). This protects against lost/stolen devices operating indefinitely with cached data.</p>
+      </div>
+    </div>
+
+    <h3>What Works Offline</h3>
+    <table class="matrix-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Offline Capability</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>View pipeline</td><td><span class="badge badge-yes">Full</span></td><td>Cached at last sync</td></tr>
+        <tr><td>Create new deal</td><td><span class="badge badge-yes">Full</span></td><td>Queued for sync, assigned local UUID</td></tr>
+        <tr><td>Write/edit credit memo</td><td><span class="badge badge-yes">Full</span></td><td>NLP extraction deferred until online</td></tr>
+        <tr><td>Capture documents (camera)</td><td><span class="badge badge-yes">Full</span></td><td>Stored locally, uploaded on reconnect</td></tr>
+        <tr><td>Approve/decline deals</td><td><span class="badge badge-yes">Full</span></td><td>Queued, synced with highest priority</td></tr>
+        <tr><td>Core banking lookup (Jack Henry)</td><td><span class="badge badge-partial">Cached</span></td><td>Last-fetched borrower data available; fresh lookup requires connectivity</td></tr>
+        <tr><td>DocuSign e-signatures</td><td><span class="badge badge-no">Online Only</span></td><td>Requires DocuSign API — banker can queue the request</td></tr>
+        <tr><td>NLP memo extraction</td><td><span class="badge badge-no">Online Only</span></td><td>Server-side ML — memo text saved locally, extraction runs on sync</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ 4. NAVIGATION MAP ═══════════════════ -->
+<div class="tab-panel" id="panel-nav">
+  <div class="section">
+    <h2>Navigation Map</h2>
+    <p class="section-lead">Bottom tab navigator with 5 tabs, each containing a stack navigator. Three modal screens overlay any context.</p>
+
+    <div class="nav-tree">
+      <div class="nav-tab-col">
+        <div class="nav-tab-header">Pipeline</div>
+        <div class="nav-screen"><span class="icon">◉</span> Pipeline List (root)</div>
+        <div class="nav-screen"><span class="icon">→</span> Deal Detail</div>
+        <div class="nav-screen"><span class="icon">→</span> Credit Memo View</div>
+        <div class="nav-screen"><span class="icon">→</span> Activity Log</div>
+        <div class="nav-screen"><span class="icon">→</span> Document List</div>
+        <div class="nav-screen"><span class="icon">→</span> Document Viewer</div>
+      </div>
+      <div class="nav-tab-col">
+        <div class="nav-tab-header">New Deal</div>
+        <div class="nav-screen"><span class="icon">◉</span> Borrower Search</div>
+        <div class="nav-screen"><span class="icon">→</span> Borrower Select / Create</div>
+        <div class="nav-screen"><span class="icon">→</span> Deal Setup (lane auto-detect)</div>
+        <div class="nav-screen"><span class="icon">→</span> Credit Memo Editor</div>
+        <div class="nav-screen"><span class="icon">→</span> Review &amp; Submit</div>
+      </div>
+      <div class="nav-tab-col">
+        <div class="nav-tab-header">Approvals</div>
+        <div class="nav-screen"><span class="icon">◉</span> Approver Queue</div>
+        <div class="nav-screen"><span class="icon">→</span> Deal Review</div>
+        <div class="nav-screen"><span class="icon">→</span> Memo &amp; Conditions</div>
+        <div class="nav-screen"><span class="icon">→</span> Approval Action</div>
+        <div class="nav-screen"><span class="icon">→</span> Approval History</div>
+      </div>
+      <div class="nav-tab-col">
+        <div class="nav-tab-header">Portfolio</div>
+        <div class="nav-screen"><span class="icon">◉</span> Portfolio Overview</div>
+        <div class="nav-screen"><span class="icon">→</span> Loan Detail</div>
+        <div class="nav-screen"><span class="icon">→</span> Payment History</div>
+        <div class="nav-screen"><span class="icon">→</span> Renewal / Modification</div>
+        <div class="nav-screen"><span class="icon">→</span> Covenant Tracking</div>
+      </div>
+      <div class="nav-tab-col">
+        <div class="nav-tab-header">Settings</div>
+        <div class="nav-screen"><span class="icon">◉</span> Profile &amp; Preferences</div>
+        <div class="nav-screen"><span class="icon">→</span> Notification Settings</div>
+        <div class="nav-screen"><span class="icon">→</span> Sync Status &amp; Debug</div>
+        <div class="nav-screen"><span class="icon">→</span> Authority Limits</div>
+        <div class="nav-screen"><span class="icon">→</span> About / Legal</div>
+      </div>
+    </div>
+
+    <div class="nav-modal">
+      <h4>Modal Screens (overlay from any context)</h4>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <span class="tech-chip"><span class="dot" style="background:var(--fub-info)"></span>Document Camera</span>
+        <span class="tech-chip"><span class="dot" style="background:var(--fub-warning)"></span>Signature Capture</span>
+        <span class="tech-chip"><span class="dot" style="background:var(--fub-success)"></span>Deal Share / Export</span>
+        <span class="tech-chip"><span class="dot" style="background:var(--fub-danger)"></span>Quick Borrower Lookup</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 24px;">
+      <h4>Deep Linking</h4>
+      <p>The app supports deep links for push notification routing. When an approver taps a "New deal pending approval" notification, the app navigates directly to <code>fublender://approvals/:dealId</code>. URL scheme: <code>fublender://</code> for development, <code>https://lender.fub.com</code> for universal links in production.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 5. API CONTRACTS ═══════════════════ -->
+<div class="tab-panel" id="panel-api">
+  <div class="section">
+    <h2>API Contract Summary</h2>
+    <p class="section-lead">All endpoints go through the MuleSoft API gateway. Base URL: <code>https://api.fub.com/lender/v1</code>. Authentication: Bearer JWT from Okta. Rate limiting: 100 req/min per user.</p>
+
+    <h3>Deals</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-get">GET</span>
+        <span class="api-path">/api/deals</span>
+        <span class="api-desc">List deals with filters</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Query params:</strong> <code>?lane=fast|standard|complex</code> <code>&status=draft|submitted|approved|booked</code> <code>&banker_id=</code> <code>&search=</code> <code>&page=&limit=</code></p>
+        <p style="margin-top:8px"><strong>Response:</strong> Paginated array of deal summaries (id, borrower name, amount, lane, status, last_updated, days_in_status).</p>
+        <p style="margin-top:8px"><strong>Scope:</strong> Bankers see own deals. Approvers see deals in their queue + own. Loan Admin sees all. Read-Only sees all.</p>
+      </div>
+    </div>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-post">POST</span>
+        <span class="api-path">/api/deals</span>
+        <span class="api-desc">Create new deal</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> <code>{ borrower_id, loan_type, requested_amount, purpose, lane (auto-detected or manual override) }</code></p>
+        <p style="margin-top:8px"><strong>Lane auto-detection:</strong> If <code>requested_amount &lt; 250000</code> and <code>loan_type</code> is not SBA/participation → Fast Lane. Otherwise Standard or Complex based on entity count and loan type.</p>
+        <p style="margin-top:8px"><strong>Returns:</strong> Full deal object with generated <code>deal_id</code> and initial status <code>draft</code>.</p>
+      </div>
+    </div>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-get">GET</span>
+        <span class="api-path">/api/deals/:id</span>
+        <span class="api-desc">Full deal detail</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Returns:</strong> Complete deal object including borrower info, memo summary, document list, approval chain, status history, conditions, and linked entities.</p>
+      </div>
+    </div>
+
+    <h3>Credit Memo</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-get">GET</span>
+        <span class="api-path">/api/deals/:id/memo</span>
+        <span class="api-desc">Get credit memo</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Returns:</strong> Memo narrative text, NLP-extracted structured fields (if processed), extraction confidence scores, last editor, version history.</p>
+      </div>
+    </div>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-put">PUT</span>
+        <span class="api-path">/api/deals/:id/memo</span>
+        <span class="api-desc">Update memo + trigger NLP</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> <code>{ narrative_text, manual_overrides? }</code></p>
+        <p style="margin-top:8px"><strong>Behavior:</strong> Saves the raw narrative text. Triggers async NLP extraction pipeline. The extraction runs server-side and populates structured fields (loan amount, purpose, collateral, financial ratios, risk factors). Banker can manually override any extracted field.</p>
+        <p style="margin-top:8px"><strong>NLP fields extracted:</strong> requested_amount, loan_purpose, collateral_description, collateral_value, borrower_years_with_bank, payment_history_summary, financial_highlights, risk_factors, mitigants, recommendation.</p>
+      </div>
+    </div>
+
+    <h3>Approvals</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-post">POST</span>
+        <span class="api-path">/api/deals/:id/approve</span>
+        <span class="api-desc">Approval action</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> <code>{ action: "approve" | "decline" | "return_for_info" | "escalate", conditions?, comments?, authority_code }</code></p>
+        <p style="margin-top:8px"><strong>Server validation:</strong> Checks that the approver has sufficient authority for the deal amount. Validates dual control (cannot approve own deal). Logs action with timestamp, device fingerprint, and approximate location. If amount exceeds approver's limit, auto-escalates to next authority level.</p>
+        <p style="margin-top:8px"><strong>Returns:</strong> Updated deal with new status, next approver (if escalated), and complete approval chain.</p>
+      </div>
+    </div>
+
+    <h3>Documents</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-post">POST</span>
+        <span class="api-path">/api/deals/:id/documents</span>
+        <span class="api-desc">Upload document</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> Multipart form — file binary + metadata <code>{ document_type, description, source: "camera" | "upload" | "email" }</code></p>
+        <p style="margin-top:8px"><strong>Server-side:</strong> File stored in OpenText UView. OCR runs asynchronously. Auto-classification attempts to categorize (financial statement, tax return, insurance certificate, etc.). Results returned via webhook or polling.</p>
+        <p style="margin-top:8px"><strong>Resumable uploads:</strong> Uses <code>tus</code> protocol for large files. Upload can resume after connectivity loss.</p>
+      </div>
+    </div>
+
+    <h3>Core Banking Integration</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-get">GET</span>
+        <span class="api-path">/api/core/borrower/:id</span>
+        <span class="api-desc">Jack Henry borrower lookup</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Route:</strong> App → MuleSoft → JHA Jxchange → SilverLake (on-premise)</p>
+        <p style="margin-top:8px"><strong>Returns:</strong> Borrower demographics, existing loan portfolio, deposit relationships, payment history, risk rating, officer assignment, TIN/SSN (masked, last 4 only in app).</p>
+        <p style="margin-top:8px"><strong>Caching:</strong> Borrower data cached locally for 24 hours for offline access. Fresh lookup always attempted when online.</p>
+        <p style="margin-top:8px"><strong>Latency note:</strong> SilverLake on-premise queries can take 2-5 seconds via Jxchange. The app shows a skeleton loader and pre-populates from cache while the fresh lookup completes.</p>
+      </div>
+    </div>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-get">GET</span>
+        <span class="api-path">/api/core/borrower/search</span>
+        <span class="api-desc">Search borrowers in core</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Query params:</strong> <code>?q=</code> (name, TIN last 4, account number) <code>&limit=20</code></p>
+        <p style="margin-top:8px"><strong>Returns:</strong> Array of borrower summaries for selection. Cached results available offline for previously-searched borrowers.</p>
+      </div>
+    </div>
+
+    <h3>Authentication</h3>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-post">POST</span>
+        <span class="api-path">/api/auth/token</span>
+        <span class="api-desc">Exchange auth code for JWT</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> <code>{ grant_type: "authorization_code", code, code_verifier, redirect_uri }</code></p>
+        <p style="margin-top:8px"><strong>Returns:</strong> <code>{ access_token (15 min), refresh_token (24 hr), id_token, user_profile { role, authority_level, community_bank, full_name } }</code></p>
+      </div>
+    </div>
+    <div class="api-endpoint">
+      <div class="api-header" onclick="this.nextElementSibling.classList.toggle('open')">
+        <span class="api-method method-post">POST</span>
+        <span class="api-path">/api/auth/refresh</span>
+        <span class="api-desc">Refresh expired access token</span>
+      </div>
+      <div class="api-detail">
+        <p><strong>Body:</strong> <code>{ grant_type: "refresh_token", refresh_token }</code></p>
+        <p style="margin-top:8px"><strong>Returns:</strong> New access_token + refresh_token pair. Old refresh token is invalidated (rotation).</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 6. AUTHORITY ENFORCEMENT ═══════════════════ -->
+<div class="tab-panel" id="panel-authority">
+  <div class="section">
+    <h2>Authority Enforcement</h2>
+    <p class="section-lead">Lending authority is enforced server-side. The app never makes an authority decision — it only renders what the server allows. If the server says "over your limit," the app shows the escalation path. Period.</p>
+
+    <div class="card" style="border-left: 4px solid var(--fub-danger); margin-bottom: 28px;">
+      <h4>Iron Rule: No Client-Side Authority Logic</h4>
+      <p>The React Native app contains zero authority validation code. It does not know authority limits. It does not calculate whether an approver can approve. All authority checks happen on the server behind the <code>/api/deals/:id/approve</code> endpoint. The app simply sends the approval action and handles the server's response — which is either "approved" or "escalated to [next approver]" or "insufficient authority."</p>
+      <p style="margin-top:10px;">This is non-negotiable. Authority logic in client code is a regulatory audit failure waiting to happen.</p>
+    </div>
+
+    <h3>Authority Matrix (Server-Side Reference)</h3>
+    <table class="auth-matrix">
+      <thead>
+        <tr>
+          <th>Role / Level</th>
+          <th>Individual Limit</th>
+          <th>Unsecured Limit</th>
+          <th>Escalation Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Relationship Banker</strong></td>
+          <td>$0 (cannot approve)</td>
+          <td>$0</td>
+          <td>Community Bank President</td>
+        </tr>
+        <tr>
+          <td><strong>Community Bank President</strong></td>
+          <td>$500,000</td>
+          <td>$100,000</td>
+          <td>Regional President</td>
+        </tr>
+        <tr>
+          <td><strong>Regional President</strong></td>
+          <td>$2,000,000</td>
+          <td>$500,000</td>
+          <td>Chief Banking Officer</td>
+        </tr>
+        <tr>
+          <td><strong>Chief Banking Officer</strong></td>
+          <td>$5,000,000</td>
+          <td>$1,000,000</td>
+          <td>Loan Committee</td>
+        </tr>
+        <tr>
+          <td><strong>Loan Committee</strong></td>
+          <td>$15,000,000</td>
+          <td>$5,000,000</td>
+          <td>Board of Directors</td>
+        </tr>
+        <tr>
+          <td><strong>Board of Directors</strong></td>
+          <td>Legal lending limit</td>
+          <td>Legal lending limit</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="font-size: 12px; color: var(--fub-text-light); margin-top: 8px; font-style: italic;">* These are illustrative limits. Actual limits will be configured in the authority management system and are subject to FUB policy. The point is the app never contains these numbers — they live in the server's authority configuration.</p>
+
+    <h3>Enforcement Rules</h3>
+    <div class="card-grid" style="margin-top: 16px;">
+      <div class="card">
+        <h4>Dual Control</h4>
+        <p>No person can approve a deal they originated. The server rejects any approval where <code>approver_id === originating_banker_id</code>. This is checked at the API level, not in the app UI. The app hides the "Approve" button for your own deals as a UX convenience, but the server is the enforcement mechanism.</p>
+      </div>
+      <div class="card">
+        <h4>Auto-Escalation</h4>
+        <p>When a deal's total exposure exceeds the approver's individual limit, the server automatically routes to the next authority level. The approver can still add conditions and comments, but their action is recorded as "recommended for approval" rather than "approved." The deal moves up the chain until it reaches someone with sufficient authority.</p>
+      </div>
+      <div class="card">
+        <h4>Audit Trail</h4>
+        <p>Every approval action is logged immutably with: timestamp (server clock, not device clock), approver identity (from JWT, not self-reported), device fingerprint (device ID + OS version), approximate location (if permissions granted), action taken, conditions attached, and the deal snapshot at time of approval.</p>
+      </div>
+      <div class="card">
+        <h4>Concentration Limits</h4>
+        <p>The server also checks aggregate exposure: total loans to a single borrower, industry concentration, and geographic concentration. These checks run at approval time and can trigger additional routing to Credit Risk even if the individual deal is within the approver's limit.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 7. SECURITY ARCHITECTURE ═══════════════════ -->
+<div class="tab-panel" id="panel-security">
+  <div class="section">
+    <h2>Security Architecture</h2>
+    <p class="section-lead">Banking-grade security for a mobile app carrying borrower PII, financial data, and lending decisions. Defense in depth — every layer assumes the layer above it has been compromised.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4>Certificate Pinning</h4>
+        <p>All API calls to <code>api.fub.com</code> use certificate pinning via a custom Expo config plugin. The app ships with a pinned certificate hash and rejects any TLS connection that doesn't match. This prevents MITM attacks even on compromised Wi-Fi networks (common at conference venues and hotels where bankers travel).</p>
+        <p style="margin-top:10px;">Pin rotation strategy: the app pins to the intermediate CA certificate (not the leaf), and includes one backup pin. OTA updates can push new pins without an app store release.</p>
+      </div>
+      <div class="card">
+        <h4>Biometric + PIN Access</h4>
+        <p>App launch requires biometric authentication (FaceID on iPhone, fingerprint on Android) or a 6-digit PIN fallback. Biometric is tied to the device's secure enclave — we use <code>expo-local-authentication</code> with <code>requireConfirmation: true</code>.</p>
+        <p style="margin-top:10px;">After 5 failed PIN attempts, the app locks and requires full Okta re-authentication. Biometric enrollment is mandatory at first login; PIN is a secondary fallback for cases where biometric hardware fails.</p>
+      </div>
+      <div class="card">
+        <h4>Session Management</h4>
+        <p>Access tokens expire after 15 minutes. Refresh tokens last 24 hours with rotation (each use generates a new refresh token and invalidates the old one). After 15 minutes of inactivity (no screen touches), the app requires biometric re-authentication but preserves the session — the user doesn't lose unsaved work.</p>
+        <p style="margin-top:10px;">Background timeout: if the app is backgrounded for more than 5 minutes, it requires biometric on return. Screen capture is disabled on iOS (<code>UIScreen.main.isCaptured</code> check) and Android (<code>FLAG_SECURE</code>).</p>
+      </div>
+      <div class="card">
+        <h4>Jailbreak / Root Detection</h4>
+        <p>On launch, the app checks for jailbreak (iOS) or root (Android) indicators using a native module. Checks include: presence of Cydia/Sileo, su binary detection, writable system partitions, Magisk markers, and Frida detection. If detected, the app refuses to launch and displays a message directing the user to contact IT.</p>
+        <p style="margin-top:10px;">These checks run as native code (not JavaScript) to resist runtime patching. The server also validates a device attestation token (Apple DeviceCheck / Google Play Integrity) at each login.</p>
+      </div>
+      <div class="card">
+        <h4>Data Protection</h4>
+        <p>No sensitive data in logs: all logging uses a sanitizer that strips PII fields (SSN, TIN, account numbers, names) before writing to crash reporting (Sentry). Log level in production: <code>warn</code> only — no debug or info logs ship.</p>
+        <p style="margin-top:10px;">Clipboard protection: sensitive fields (SSN, account numbers) are marked non-copyable in the UI. The app clears the clipboard if it detects the app entering background with sensitive data copied.</p>
+      </div>
+      <div class="card">
+        <h4>MDM / Intune Enrollment</h4>
+        <p>The app is distributed via Microsoft Intune (MAM without enrollment for BYOD, full MDM for bank-owned devices). Intune App Protection Policies enforce: minimum OS version, encryption requirement, and prevent data transfer to unmanaged apps.</p>
+        <p style="margin-top:10px;">The app checks for Intune management status at launch. On unmanaged devices, the app operates in a restricted mode where document downloads are disabled and all data is encrypted with app-level keys that Intune can remotely wipe.</p>
+      </div>
+    </div>
+
+    <h3>Security Checklist for Development</h3>
+    <table class="matrix-table" style="margin-top:16px;">
+      <thead>
+        <tr>
+          <th>Control</th>
+          <th>Implementation</th>
+          <th>Verification</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>TLS 1.3 minimum</td><td>Server config + cert pinning config plugin</td><td>SSL Labs scan, runtime check</td></tr>
+        <tr><td>No hardcoded secrets</td><td>All secrets via Expo SecureStore + EAS Secrets</td><td>Secret scanner in CI (truffleHog)</td></tr>
+        <tr><td>Input validation</td><td>Zod schemas on all API requests and responses</td><td>Unit tests for schema validation</td></tr>
+        <tr><td>Dependency scanning</td><td>Snyk in CI pipeline, weekly audit</td><td>Automated PR checks</td></tr>
+        <tr><td>Penetration testing</td><td>Annual third-party pen test (OWASP Mobile Top 10)</td><td>Remediation tracking in Linear</td></tr>
+        <tr><td>Remote wipe</td><td>Intune selective wipe + server-side token revocation</td><td>Quarterly DR test</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════ 8. INTEGRATION ARCHITECTURE ═══════════════════ -->
+<div class="tab-panel" id="panel-integration">
+  <div class="section">
+    <h2>Integration Architecture</h2>
+    <p class="section-lead">The app is a thin client. All integrations go through the MuleSoft API gateway — the app never talks directly to downstream systems.</p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" style="max-width: 900px; width: 100%;">
+        <!-- Background -->
+        <defs>
+          <filter id="shadow" x="-4%" y="-4%" width="108%" height="108%">
+            <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+          </filter>
+          <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#002D72"/>
+          </marker>
+          <marker id="arrowhead-gold" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#C8A951"/>
+          </marker>
+        </defs>
+
+        <!-- Mobile App -->
+        <rect x="350" y="20" width="200" height="70" rx="12" fill="#002D72" filter="url(#shadow)"/>
+        <text x="450" y="50" text-anchor="middle" fill="white" font-family="Lato" font-size="14" font-weight="700">FUB Lender App</text>
+        <text x="450" y="68" text-anchor="middle" fill="#C8A951" font-family="Lato" font-size="11">React Native (Expo)</text>
+
+        <!-- Okta - top right -->
+        <rect x="680" y="20" width="160" height="70" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="760" y="50" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="13" font-weight="700">Okta SSO</text>
+        <text x="760" y="66" text-anchor="middle" fill="#888" font-family="Lato" font-size="10">OIDC + PKCE</text>
+        <line x1="550" y1="55" x2="680" y2="55" stroke="#002D72" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="615" y="48" text-anchor="middle" fill="#888" font-family="Lato" font-size="9">Auth</text>
+
+        <!-- Azure AKS / API Layer -->
+        <rect x="250" y="150" width="400" height="80" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="450" y="180" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="14" font-weight="700">Azure AKS — API Services</text>
+        <text x="450" y="198" text-anchor="middle" fill="#888" font-family="Lato" font-size="11">Deal Service · Memo Service · Auth Service · NLP Engine</text>
+        <line x1="450" y1="90" x2="450" y2="150" stroke="#002D72" stroke-width="2" marker-end="url(#arrowhead)"/>
+        <text x="462" y="125" fill="#888" font-family="Lato" font-size="9">HTTPS + JWT</text>
+
+        <!-- MuleSoft Gateway -->
+        <rect x="300" y="290" width="300" height="70" rx="12" fill="#C8A951" filter="url(#shadow)"/>
+        <text x="450" y="318" text-anchor="middle" fill="white" font-family="Lato" font-size="14" font-weight="700">MuleSoft API Gateway</text>
+        <text x="450" y="336" text-anchor="middle" fill="white" font-family="Lato" font-size="11" opacity="0.85">Integration Orchestration Layer</text>
+        <line x1="450" y1="230" x2="450" y2="290" stroke="#C8A951" stroke-width="2" marker-end="url(#arrowhead-gold)"/>
+
+        <!-- Downstream Systems -->
+        <!-- Jack Henry -->
+        <rect x="40" y="420" width="170" height="80" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="125" y="448" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="12" font-weight="700">Jack Henry</text>
+        <text x="125" y="464" text-anchor="middle" fill="#888" font-family="Lato" font-size="10">SilverLake Core</text>
+        <text x="125" y="478" text-anchor="middle" fill="#888" font-family="Lato" font-size="9">(on-premise via Jxchange)</text>
+        <line x1="350" y1="360" x2="125" y2="420" stroke="#002D72" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
+
+        <!-- nCino -->
+        <rect x="240" y="420" width="170" height="80" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="325" y="448" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="12" font-weight="700">nCino</text>
+        <text x="325" y="464" text-anchor="middle" fill="#888" font-family="Lato" font-size="10">on Salesforce</text>
+        <text x="325" y="478" text-anchor="middle" fill="#B8302C" font-family="Lato" font-size="9" font-weight="700">READ-ONLY SYNC</text>
+        <line x1="410" y1="360" x2="325" y2="420" stroke="#002D72" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
+
+        <!-- OpenText -->
+        <rect x="440" y="420" width="170" height="80" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="525" y="448" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="12" font-weight="700">OpenText UView</text>
+        <text x="525" y="464" text-anchor="middle" fill="#888" font-family="Lato" font-size="10">Document Mgmt</text>
+        <text x="525" y="478" text-anchor="middle" fill="#888" font-family="Lato" font-size="9">OCR + Classification</text>
+        <line x1="490" y1="360" x2="525" y2="420" stroke="#002D72" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
+
+        <!-- DocuSign -->
+        <rect x="640" y="420" width="170" height="80" rx="12" fill="white" stroke="#002D72" stroke-width="2" filter="url(#shadow)"/>
+        <text x="725" y="448" text-anchor="middle" fill="#002D72" font-family="Lato" font-size="12" font-weight="700">DocuSign</text>
+        <text x="725" y="464" text-anchor="middle" fill="#888" font-family="Lato" font-size="10">E-Signatures</text>
+        <text x="725" y="478" text-anchor="middle" fill="#888" font-family="Lato" font-size="9">Envelope API</text>
+        <line x1="550" y1="360" x2="725" y2="420" stroke="#002D72" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
+
+        <!-- nCino note -->
+        <rect x="140" y="540" width="370" height="50" rx="8" fill="#FFF3E0" stroke="#D4860A" stroke-width="1"/>
+        <text x="325" y="562" text-anchor="middle" fill="#D4860A" font-family="Lato" font-size="11" font-weight="700">nCino Coexistence: Deals originated in FUB Lender are synced</text>
+        <text x="325" y="576" text-anchor="middle" fill="#D4860A" font-family="Lato" font-size="11">to nCino as read-only records for regulatory reporting continuity.</text>
+
+        <!-- Legend -->
+        <rect x="600" y="540" width="240" height="60" rx="8" fill="white" stroke="#e0ddd5" stroke-width="1"/>
+        <line x1="620" y1="558" x2="660" y2="558" stroke="#002D72" stroke-width="2"/>
+        <text x="670" y="562" fill="#555" font-family="Lato" font-size="10">Direct connection</text>
+        <line x1="620" y1="578" x2="660" y2="578" stroke="#002D72" stroke-width="1.5" stroke-dasharray="6,3"/>
+        <text x="670" y="582" fill="#555" font-family="Lato" font-size="10">Via MuleSoft gateway</text>
+      </svg>
+      <div class="diagram-caption">Integration Architecture — All downstream system access is mediated through MuleSoft</div>
+    </div>
+
+    <div class="card-grid" style="margin-top: 28px;">
+      <div class="card">
+        <h4>Jack Henry SilverLake (via Jxchange)</h4>
+        <p>SilverLake is on-premise. The JHA Jxchange cloud API layer provides RESTful access to core banking data. Latency is 2-5 seconds per call due to the on-prem bridge. MuleSoft handles connection pooling, retry logic, and response caching (5-minute TTL for borrower demographics, no caching for balance/transaction data).</p>
+        <p style="margin-top:10px;"><strong>Key operations:</strong> Borrower lookup, loan booking (post-approval), payment history pull, risk rating retrieval, deposit relationship summary.</p>
+      </div>
+      <div class="card">
+        <h4>nCino / Salesforce (Read-Only Coexistence)</h4>
+        <p>nCino remains the system of record for regulatory reporting and existing loan portfolio management. FUB Lender writes deal data to nCino via the Salesforce API after deals are approved, creating mirror records. Bankers never need to touch nCino for new originations — the sync is invisible to them.</p>
+        <p style="margin-top:10px;"><strong>Sync timing:</strong> Near-real-time (within 5 minutes of approval). If sync fails, the deal is flagged in a reconciliation queue for Loan Admin review.</p>
+      </div>
+      <div class="card">
+        <h4>OpenText UView</h4>
+        <p>All deal documents are stored in OpenText, which is FUB's enterprise document management system. The app uploads documents via MuleSoft, and OpenText handles versioning, retention policies, and regulatory holds. OCR and auto-classification run as OpenText workflows.</p>
+      </div>
+      <div class="card">
+        <h4>DocuSign</h4>
+        <p>E-signatures for loan documents, commitment letters, and compliance disclosures. The app creates DocuSign envelopes via API, with signing order determined by the deal type (borrower signs first for consumer, bank officer signs first for commercial commitments). Status webhooks update the deal's document checklist in real-time.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ 9. DECISIONS LOG ═══════════════════ -->
+<div class="tab-panel" id="panel-decisions">
+  <div class="section">
+    <h2>Decisions Log</h2>
+    <p class="section-lead">Five decisions that need stakeholder alignment before Henry writes the first line of code. Each has a recommendation, but these require explicit sign-off from Justin, Ryan, and (where noted) IT Security.</p>
+
+    <div class="decision-card">
+      <div class="d-num">Decision 1</div>
+      <h4>Expo Custom Dev Client vs. Bare React Native</h4>
+      <p><strong>Recommendation:</strong> Expo with custom dev client. This gives us EAS Build (cloud compilation, no local Xcode/Gradle), OTA updates for rapid iteration, and managed RN upgrades — while still supporting the native modules we need (WatermelonDB, cert pinning, jailbreak detection). The tradeoff is a slight abstraction layer over native code, but this is well worth it given our team size (Henry as primary developer).</p>
+      <p><strong>What changes if rejected:</strong> Bare RN means Henry needs Xcode and Android Studio locally, manual RN version upgrades (painful), and we lose OTA updates unless we set up CodePush. Development velocity drops approximately 30%.</p>
+      <div class="stakeholders">Sign-off needed: Justin Sanderson, Henry Marquez</div>
+    </div>
+
+    <div class="decision-card">
+      <div class="d-num">Decision 2</div>
+      <h4>WatermelonDB for Offline Storage vs. Alternatives</h4>
+      <p><strong>Recommendation:</strong> WatermelonDB over Realm, raw SQLite, or MMKV. WatermelonDB was purpose-built for offline-first React Native apps with sync capabilities. It uses lazy record loading (critical when a banker's pipeline has 200+ deals), has a built-in sync protocol, and its observable pattern works naturally with React's rendering model. Realm was considered but adds a heavier dependency and has had React Native compatibility issues with new architectures.</p>
+      <p><strong>What changes if rejected:</strong> Raw SQLite means writing our own sync engine from scratch (3-4 weeks of additional development). Realm is viable but introduces a MongoDB dependency and has licensing considerations for commercial use.</p>
+      <div class="stakeholders">Sign-off needed: Henry Marquez, Justin Sanderson</div>
+    </div>
+
+    <div class="decision-card">
+      <div class="d-num">Decision 3</div>
+      <h4>72-Hour Offline Window</h4>
+      <p><strong>Recommendation:</strong> Allow 72 hours of offline operation before requiring re-authentication. This covers the worst-case rural scenario: banker visits a remote ranch on Friday afternoon, loses signal, doesn't return to town until Monday morning. The 72-hour window means no data loss. After 72 hours, the app warns about stale data but doesn't block usage. After 7 days, it requires online re-auth.</p>
+      <p><strong>What changes if rejected:</strong> A shorter window (e.g., 24 hours) reduces stale data risk but means bankers in very rural areas could lose access during multi-day stretches. A longer window (e.g., 7 days) increases the risk of conflicting edits on deals being worked by multiple parties. IT Security may have a position on maximum offline duration for devices carrying borrower PII.</p>
+      <div class="stakeholders">Sign-off needed: Ryan Suchala, IT Security, Justin Sanderson</div>
+    </div>
+
+    <div class="decision-card">
+      <div class="d-num">Decision 4</div>
+      <h4>nCino Coexistence Strategy: Read-Only Mirror</h4>
+      <p><strong>Recommendation:</strong> Write approved deals to nCino as read-only mirror records via Salesforce API. This maintains regulatory reporting continuity and lets Credit Risk and Loan Review teams continue using nCino's portfolio analytics while bankers originate in the new app. nCino becomes a downstream consumer, not an input system.</p>
+      <p><strong>What changes if rejected:</strong> If we don't sync to nCino, the regulatory reporting team loses visibility until we build equivalent reporting in the new system (6+ months). If we make it bidirectional, we introduce complexity that undermines the purpose of building a new app. The recommendation is one-way sync: FUB Lender → nCino, never the reverse.</p>
+      <div class="stakeholders">Sign-off needed: Ryan Suchala, Chief Risk Officer, Compliance, Justin Sanderson</div>
+    </div>
+
+    <div class="decision-card">
+      <div class="d-num">Decision 5</div>
+      <h4>MDM Strategy: Intune MAM (BYOD) + Full MDM (Bank Devices)</h4>
+      <p><strong>Recommendation:</strong> Dual-mode deployment. Bank-owned devices get full MDM enrollment via Intune, giving IT complete control (remote wipe, policy enforcement, app restrictions). Banker-owned (BYOD) devices use Intune Mobile Application Management (MAM) without device enrollment — the app is containerized with its own encryption, but the bank doesn't control the entire device. This respects banker privacy on personal devices while protecting bank data.</p>
+      <p><strong>What changes if rejected:</strong> Requiring full MDM for all devices (including BYOD) will face resistance from bankers who don't want IT managing their personal phones. Going MAM-only for all devices reduces IT's ability to remotely manage bank-owned hardware. The hybrid approach is industry standard for community banks.</p>
+      <div class="stakeholders">Sign-off needed: IT Security, CIO, Ryan Suchala, Justin Sanderson</div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ════════════════════════════ TAB LOGIC ════════════════════════════ -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const tabBar = document.getElementById('tabBar');
+  const buttons = tabBar.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  tabBar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.tab-btn');
+    if (!btn) return;
+
+    buttons.forEach(b => b.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    const panelId = 'panel-' + btn.dataset.tab;
+    document.getElementById(panelId).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // API endpoint expand/collapse
+  document.querySelectorAll('.api-header').forEach(header => {
+    header.style.cursor = 'pointer';
+  });
+});
+</script>
+
+</body>
+</html>

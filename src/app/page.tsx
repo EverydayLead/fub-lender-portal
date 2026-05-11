@@ -1,238 +1,197 @@
-const prompts = [
-  { num: "1", title: "Blueprint & Strategy", desc: "Process flow with 6 phases, 30 business requirements, dual customer/banker lanes", status: "complete" },
-  { num: "1b", title: "Banker Experience Mockup", desc: "5-screen interactive mobile mockup with Jackie Parsons deal", status: "complete" },
-  { num: "2", title: "Mobile Architecture", desc: "Expo custom dev client, WatermelonDB offline-first, Okta OIDC, 5 open decisions", status: "complete" },
-  { num: "3", title: "Full Mobile UX", desc: "19 screens with all states (empty/loading/error/populated), accessibility, gestures", status: "complete" },
-  { num: "5", title: "Backend Schema & Security", desc: "PostgreSQL 9 tables, API contracts, authority enforcement, 10-threat STRIDE model, 6 n8n workflows", status: "complete" },
-  { num: "6", title: "Design System", desc: "Color palette, Lato typography, 15 component specs, dark mode, phone frame demo", status: "complete" },
-  { num: "7", title: "Starter Codebase", desc: "File tree, package.json, theme tokens, WatermelonDB schema, 3 components, demo mode", status: "complete" },
+const deliverables = [
+  {
+    title: "Process Flow",
+    file: "/fub-lender-process-flow.html",
+    description: "6-phase lending workflow with dual customer/banker swim lanes and 30 MoSCoW business requirements.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <path d="M9 6h11M9 12h11M9 18h11M5 6h.01M5 12h.01M5 18h.01" />
+      </svg>
+    ),
+    accent: "bg-[#002D72]",
+  },
+  {
+    title: "Banker Mockup",
+    file: "/fub-lender-banker-mockup.html",
+    description: "Interactive 5-screen mobile prototype in a phone frame — tap through the core banker experience.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <rect x="7" y="2" width="10" height="20" rx="2" />
+        <path d="M11 18h2" />
+      </svg>
+    ),
+    accent: "bg-[#DA291C]",
+  },
+  {
+    title: "Architecture",
+    file: "/fub-lender-architecture.html",
+    description: "9-tab technical document covering tech stack, offline-first design, API contracts, security controls, and integration diagram.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <rect x="2" y="3" width="20" height="14" rx="2" />
+        <path d="M8 21h8M12 17v4" />
+      </svg>
+    ),
+    accent: "bg-[#002D72]",
+  },
+  {
+    title: "Full UX Screens",
+    file: "/fub-lender-full-ux.html",
+    description: "19 screens across 4 categories with clickable state toggles, spec panels, and accessibility reference.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <rect x="3" y="3" width="7" height="7" rx="1" />
+        <rect x="14" y="3" width="7" height="7" rx="1" />
+        <rect x="3" y="14" width="7" height="7" rx="1" />
+        <rect x="14" y="14" width="7" height="7" rx="1" />
+      </svg>
+    ),
+    accent: "bg-[#DA291C]",
+  },
+  {
+    title: "Backend & Schema",
+    file: "/fub-lender-backend-schema.html",
+    description: "PostgreSQL DDL, RESTful API contracts, authority enforcement, STRIDE threat model, n8n workflows, nCino coexistence.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <ellipse cx="12" cy="5" rx="9" ry="3" />
+        <path d="M21 12c0 1.66-4.03 3-9 3s-9-1.34-9-3" />
+        <path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5" />
+      </svg>
+    ),
+    accent: "bg-[#002D72]",
+  },
+  {
+    title: "Design System",
+    file: "/fub-lender-design-system.html",
+    description: "Full color palette, typography scale, 15 component specs with live previews, and dark mode support.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <circle cx="12" cy="12" r="3" />
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" />
+      </svg>
+    ),
+    accent: "bg-[#C4972A]",
+  },
+  {
+    title: "Starter Codebase",
+    file: "/fub-lender-starter-codebase.html",
+    description: "11 tabbed sections: quick start, file tree, package.json, theme tokens, WatermelonDB schema, components, and demo mode.",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
+        <polyline points="16 18 22 12 16 6" />
+        <polyline points="8 6 2 12 8 18" />
+        <line x1="14" y1="4" x2="10" y2="20" />
+      </svg>
+    ),
+    accent: "bg-[#002D72]",
+  },
 ];
 
-const artifacts = [
-  {
-    title: "Process Flow & Business Requirements",
-    desc: "6-phase dual-lane flow with 30 MoSCoW-prioritized business requirements and ops detail",
-    prompt: "1",
-    lines: 1292,
-    status: "done",
-  },
-  {
-    title: "Banker Experience Mockup",
-    desc: "Interactive 5-screen mobile prototype: Pipeline → New Deal → Credit Memo → Deal Detail → Approver Queue",
-    prompt: "1b",
-    lines: 390,
-    status: "done",
-  },  {
-    title: "Mobile Architecture Spec",
-    desc: "Expo custom dev client, WatermelonDB offline-first sync, Okta OIDC auth, 5 open architecture decisions documented",
-    prompt: "2",
-    lines: 1840,
-    status: "done",
-  },
-  {
-    title: "Full Mobile UX Screens",
-    desc: "19 screens covering all states (empty, loading, error, populated) with accessibility annotations and gesture maps",
-    prompt: "3",
-    lines: 2650,
-    status: "done",
-  },
-  {
-    title: "Backend Schema & Security Model",
-    desc: "PostgreSQL 9-table schema, full API contracts, authority enforcement matrix, 10-threat STRIDE model, 6 n8n automation workflows",
-    prompt: "5",
-    lines: 3100,
-    status: "done",
-  },
-  {
-    title: "Design System & Component Library",
-    desc: "FUB color palette, Lato typography scale, 15 component specs with variants, dark mode tokens, phone frame demo",
-    prompt: "6",
-    lines: 1950,
-    status: "done",
-  },
-  {
-    title: "Starter Codebase & Scaffolding",
-    desc: "Complete file tree, package.json configs, theme tokens, WatermelonDB schema, 3 starter components, demo mode toggle",
-    prompt: "7",
-    lines: 2200,
-    status: "done",
-  },
-];
-const principles = [
-  {
-    icon: "📝",
-    title: "Credit-Memo First",
-    desc: "Bankers write stories, not forms. NLP extracts the data.",
-  },
-  {
-    icon: "🔄",
-    title: "Continuous Flow",
-    desc: "No blocking gates. Async approval with SLA timers.",
-  },
-  {
-    icon: "⚡",
-    title: "Smart Defaults",
-    desc: "Jack Henry core fills what it knows. Banker confirms.",
-  },
-  {
-    icon: "🛤️",
-    title: "Complexity Lanes",
-    desc: "Fast (<$250K, 15 min), Standard (CRE/C&I), Complex (SBA/committee)",
-  },
-  {
-    icon: "📡",
-    title: "Offline-Tolerant",
-    desc: "Rural OK/TX reality. Works on bad LTE. Syncs when connected.",
-  },
-];
-
-const team = [
-  { name: "Justin Sanderson", role: "Chief Transformation Officer", tag: "Sponsor" },
-  { name: "Henry Marquez", role: "Lead Developer", tag: null },
-  { name: "Ryan Suchala", role: "Chief Banking Officer", tag: "Business Owner" },
-  { name: "Tim Schneider", role: "COO", tag: "Executive Sponsor" },
-];
 export default function Home() {
-  const completed = prompts.filter((p) => p.status === "complete").length;
-  const inProgress = prompts.filter((p) => p.status === "progress").length;
-  const pct = Math.round((completed / prompts.length) * 100);
-
   return (
-    <div className="min-h-screen">
-      {/* Hero */}
+    <div className="min-h-screen bg-[#FAF9F5]">
+      {/* Header Bar */}
       <header className="bg-[#002D72] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
-          <p className="text-sm tracking-widest uppercase text-blue-200 mb-3">First United Bank</p>
-          <h1 className="text-4xl md:text-5xl font-black leading-tight">FUB Lender — Build Portal</h1>
-          <p className="mt-4 text-lg md:text-xl text-blue-100 max-w-2xl">
-            Lending Transformation · Mobile-First Platform
-          </p>
-          <div className="mt-8 flex flex-wrap gap-6 text-sm">
-            <div className="bg-white/10 backdrop-blur rounded-lg px-5 py-3">
-              <span className="block text-2xl font-bold">{completed}/{prompts.length}</span>
-              <span className="text-blue-200">Prompts Complete</span>
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-white/15 flex items-center justify-center font-black text-lg tracking-tight">
+              FUB
             </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg px-5 py-3">
-              <span className="block text-2xl font-bold">{inProgress}</span>
-              <span className="text-blue-200">In Progress</span>
-            </div>
-            <div className="bg-white/10 backdrop-blur rounded-lg px-5 py-3">
-              <span className="block text-2xl font-bold">{pct}%</span>
-              <span className="text-blue-200">Overall Progress</span>
+            <span className="text-sm font-light tracking-wide opacity-80">LENDER BUILD PORTAL</span>
+          </div>
+          <span className="text-xs font-light opacity-60 hidden sm:block">First United Bank · Transformation Office</span>
+        </div>
+      </header>
+
+      {/* Hero */}
+      <section className="bg-[#002D72] text-white pb-16 pt-10">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="max-w-3xl">
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+              FUB Lender
+              <span className="block text-[#C4972A] text-2xl sm:text-3xl font-light mt-1">Mobile Lending Platform</span>
+            </h1>
+            <p className="text-base sm:text-lg font-light leading-relaxed opacity-85 max-w-2xl">
+              Complete build documentation for First United Bank&apos;s mobile-first lending application.
+              Seven interactive deliverables spanning process design, UX, architecture, and implementation.
+            </p>
+            <div className="flex gap-6 mt-8 text-sm font-light opacity-70">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-emerald-400"></div>
+                7 deliverables
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-[#C4972A]"></div>
+                Interactive prototypes
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-white/50"></div>
+                Production-ready specs
+              </div>
             </div>
           </div>
         </div>
-      </header>
-      <main className="max-w-6xl mx-auto px-6 py-12 space-y-20">
+      </section>
 
-        {/* Build Progress */}
-        <section>
-          <h2 className="text-2xl font-bold text-[#002D72] mb-2">Build Progress</h2>
-          <p className="text-gray-500 mb-8">7-prompt chain driving the full platform build</p>
+      {/* Deliverables Grid */}
+      <main className="max-w-6xl mx-auto px-6 -mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {deliverables.map((d, i) => (
+            <a
+              key={i}
+              href={d.file}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group bg-white rounded-xl border border-gray-200/80 shadow-sm hover:shadow-lg hover:border-[#002D72]/30 transition-all duration-200 overflow-hidden flex flex-col"
+            >
+              {/* Card Top Accent */}
+              <div className={`h-1.5 ${d.accent}`}></div>
 
-          {/* Progress bar */}
-          <div className="w-full bg-gray-200 rounded-full h-3 mb-8">
-            <div className="bg-[#002D72] h-3 rounded-full transition-all" style={{ width: `${pct}%` }} />
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {prompts.map((p) => (
-              <div
-                key={p.num}
-                className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <span className="text-xs font-bold text-[#002D72] bg-blue-50 rounded-full w-7 h-7 flex items-center justify-center">
-                    {p.num}
-                  </span>
-                  <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                    Complete
-                  </span>
-                </div>
-                <h3 className="font-semibold text-gray-800">{p.title}</h3>
-                <p className="text-xs text-gray-500 mt-1 leading-relaxed">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        {/* Artifacts */}
-        <section>
-          <h2 className="text-2xl font-bold text-[#002D72] mb-2">Artifacts</h2>
-          <p className="text-gray-500 mb-8">Deliverables produced by each build prompt</p>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {artifacts.map((a) => (
-              <div
-                key={a.title}
-                className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col justify-between hover:shadow-md transition-shadow"
-              >
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-bold text-[#002D72] bg-blue-50 rounded px-1.5 py-0.5">P{a.prompt}</span>
-                    <h3 className="font-bold text-[#002D72]">{a.title}</h3>
+              <div className="p-6 flex flex-col flex-1">
+                {/* Icon + Number */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-12 h-12 rounded-lg bg-[#002D72]/[0.07] text-[#002D72] flex items-center justify-center group-hover:bg-[#002D72] group-hover:text-white transition-colors duration-200">
+                    {d.icon}
                   </div>
-                  <p className="text-sm text-gray-600 leading-relaxed">{a.desc}</p>
-                </div>
-                <div className="mt-4 flex items-center justify-between">
-                  <span className="text-xs text-gray-400">{a.lines?.toLocaleString()} lines</span>
-                  <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" /></svg>
-                    Delivered
+                  <span className="text-xs font-mono text-gray-400 mt-1">
+                    {String(i + 1).padStart(2, "0")}/{String(deliverables.length).padStart(2, "0")}
                   </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </section>
-        {/* Design Principles */}
-        <section>
-          <h2 className="text-2xl font-bold text-[#002D72] mb-2">Design Principles</h2>
-          <p className="text-gray-500 mb-8">The five tenets driving every product decision</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-5">
-            {principles.map((p) => (
-              <div
-                key={p.title}
-                className="bg-white rounded-xl border border-gray-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow"
-              >
-                <span className="text-3xl mb-3 block">{p.icon}</span>
-                <h3 className="font-bold text-[#002D72] mb-2 text-sm">{p.title}</h3>
-                <p className="text-xs text-gray-600 leading-relaxed">{p.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
 
-        {/* Team */}
-        <section>
-          <h2 className="text-2xl font-bold text-[#002D72] mb-2">Team</h2>
-          <p className="text-gray-500 mb-8">Lending Transformation leadership</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {team.map((t) => (
-              <div
-                key={t.name}
-                className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm"
-              >
-                <div className="w-12 h-12 rounded-full bg-[#002D72] text-white flex items-center justify-center font-bold text-lg mb-4">
-                  {t.name.split(" ").map((n) => n[0]).join("")}
+                {/* Title */}
+                <h2 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-[#002D72] transition-colors">
+                  {d.title}
+                </h2>
+
+                {/* Description */}
+                <p className="text-sm text-gray-500 leading-relaxed flex-1">
+                  {d.description}
+                </p>
+
+                {/* View Link */}
+                <div className="mt-5 flex items-center gap-1.5 text-sm font-semibold text-[#002D72] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  View deliverable
+                  <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 translate-x-0 group-hover:translate-x-1 transition-transform">
+                    <path d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z" />
+                  </svg>
                 </div>
-                <h3 className="font-bold text-gray-800">{t.name}</h3>
-                <p className="text-sm text-gray-500">{t.role}</p>
-                {t.tag && (
-                  <span className="inline-block mt-2 text-xs font-semibold text-[#002D72] bg-blue-50 px-2 py-0.5 rounded">
-                    {t.tag}
-                  </span>
-                )}
               </div>
-            ))}
-          </div>
-        </section>
+            </a>
+          ))}
+        </div>
       </main>
+
       {/* Footer */}
-      <footer className="bg-[#002D72] text-blue-200 text-center py-8 mt-12">
-        <p className="text-sm">
-          Built by the Lending Transformation team at First United Bank · Spend Life Wisely®
-        </p>
-        <p className="text-xs text-blue-300/50 mt-2">Last updated May 2026</p>
+      <footer className="max-w-6xl mx-auto px-6 py-12 mt-12">
+        <div className="border-t border-gray-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-gray-400">
+            &copy; {new Date().getFullYear()} First United Bank · Transformation Office
+          </p>
+          <p className="text-xs text-gray-400">
+            Spend Life Wisely&trade;
+          </p>
+        </div>
       </footer>
     </div>
   );

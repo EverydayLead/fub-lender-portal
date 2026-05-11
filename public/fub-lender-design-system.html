@@ -1,0 +1,2347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Design System & Component Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS CUSTOM PROPERTIES (DESIGN TOKENS) ===== */
+:root {
+  /* Brand Colors */
+  --brand-primary: #002D72;
+  --brand-red: #DA291C;
+  --brand-navy: #12284B;
+  --brand-bright-blue: #2D68C4;
+  --brand-light-blue: #8BA6C1;
+  --brand-gray: #C8C9C7;
+  --brand-health-green: #78BE21;
+  --brand-dark-gray: #54585A;
+  --brand-off-white: #FAF9F5;
+
+  /* Semantic Colors */
+  --color-success: #78BE21;
+  --color-success-light: #E8F5D4;
+  --color-success-dark: #5A8F19;
+  --color-warning: #D97706;
+  --color-warning-light: #FEF3C7;
+  --color-warning-dark: #B45309;
+  --color-danger: #DA291C;
+  --color-danger-light: #FEE2E2;
+  --color-danger-dark: #B91C1C;
+  --color-info: #2D68C4;
+  --color-info-light: #DBEAFE;
+  --color-info-dark: #1E4A8A;
+
+  /* Neutral Scale */
+  --neutral-50: #FAFAFA;
+  --neutral-100: #F5F5F5;
+  --neutral-200: #E5E5E5;
+  --neutral-300: #D4D4D4;
+  --neutral-400: #A3A3A3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+
+  /* Surface Colors */
+  --surface-bg: #FAF9F5;
+  --surface-card: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-muted: #F1F1F1;
+  --surface-overlay: rgba(18, 40, 75, 0.5);
+
+  /* Text Colors */
+  --text-primary: #12284B;
+  --text-secondary: #54585A;
+  --text-tertiary: #737373;
+  --text-inverse: #FFFFFF;
+  --text-link: #2D68C4;
+
+  /* Typography */
+  --font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: 28px;
+  --font-h1: 24px;
+  --font-h2: 20px;
+  --font-h3: 16px;
+  --font-body: 14px;
+  --font-caption: 12px;
+  --font-overline: 10px;
+  --weight-regular: 400;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Borders & Radii */
+  --radius-sm: 2px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 50px;
+  --radius-full: 9999px;
+  --border-width: 1px;
+  --border-color: #E5E5E5;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(18, 40, 75, 0.06);
+  --shadow-md: 0 2px 8px rgba(18, 40, 75, 0.10);
+  --shadow-lg: 0 4px 16px rgba(18, 40, 75, 0.12);
+  --shadow-card: 0 1px 4px rgba(18, 40, 75, 0.08);
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-card: 10;
+  --z-sticky: 100;
+  --z-overlay: 500;
+  --z-modal: 1000;
+}
+
+/* Dark Mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-bg: #0F1724;
+    --surface-card: #1A2332;
+    --surface-elevated: #1F2B3D;
+    --surface-muted: #162030;
+    --surface-overlay: rgba(0, 0, 0, 0.7);
+    --text-primary: #F0F4F8;
+    --text-secondary: #A0B0C4;
+    --text-tertiary: #6B7D92;
+    --text-link: #5B9BF0;
+    --border-color: #2A3A4E;
+    --neutral-50: #0F1724;
+    --neutral-100: #162030;
+    --neutral-200: #1F2B3D;
+    --neutral-300: #2A3A4E;
+    --neutral-400: #4A5E74;
+    --neutral-500: #6B7D92;
+    --neutral-800: #D0D8E4;
+    --neutral-900: #F0F4F8;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.4);
+    --shadow-lg: 0 4px 16px rgba(0,0,0,0.5);
+    --shadow-card: 0 1px 4px rgba(0,0,0,0.3);
+    --color-success-light: #1A2E0A;
+    --color-warning-light: #2E1F06;
+    --color-danger-light: #2E0A0A;
+    --color-info-light: #0A1A2E;
+  }
+}
+
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-family);
+  background: var(--surface-bg);
+  color: var(--text-primary);
+  line-height: var(--line-height-normal);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ===== DOCUMENT LAYOUT ===== */
+.doc-header {
+  background: var(--brand-navy);
+  color: white;
+  padding: var(--space-12) var(--space-8);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.doc-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(45,104,196,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.doc-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-2);
+  position: relative;
+}
+.doc-header .subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--brand-light-blue);
+  position: relative;
+}
+.doc-header .meta {
+  margin-top: var(--space-4);
+  font-size: 12px;
+  color: var(--brand-light-blue);
+  opacity: 0.7;
+  position: relative;
+}
+
+/* Sidebar TOC */
+.doc-layout {
+  display: flex;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+.doc-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  padding: var(--space-6);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-color);
+  background: var(--surface-card);
+}
+.doc-sidebar h3 {
+  font-size: var(--font-caption);
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-3);
+}
+.doc-sidebar a {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--easing-default);
+  margin-bottom: 2px;
+}
+.doc-sidebar a:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+.doc-sidebar a.indent { padding-left: 28px; font-size: 12px; }
+
+.doc-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-8) var(--space-10);
+  max-width: 1100px;
+}
+
+/* Section styling */
+.section {
+  margin-bottom: var(--space-16);
+  scroll-margin-top: var(--space-8);
+}
+.section-title {
+  font-size: var(--font-h1);
+  font-weight: var(--weight-bold);
+  color: var(--brand-primary);
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--brand-primary);
+}
+.section-desc {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-6);
+  max-width: 680px;
+}
+.subsection {
+  margin-bottom: var(--space-10);
+  scroll-margin-top: var(--space-8);
+}
+.subsection-title {
+  font-size: var(--font-h2);
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-4);
+}
+
+/* ===== COLOR SWATCHES ===== */
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+.color-swatch {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--surface-card);
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--easing-default), box-shadow var(--duration-fast);
+  position: relative;
+}
+.color-swatch:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.color-swatch:active { transform: scale(0.98); }
+.color-swatch .swatch-block {
+  height: 80px;
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-2) var(--space-3);
+}
+.color-swatch .swatch-info {
+  padding: var(--space-3);
+}
+.color-swatch .swatch-name {
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  color: var(--text-primary);
+}
+.color-swatch .swatch-hex {
+  font-size: 12px;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  color: var(--text-secondary);
+}
+.color-swatch .swatch-token {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.color-swatch .swatch-contrast {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  margin-top: 4px;
+}
+.color-swatch .copied-toast {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  background: var(--brand-navy);
+  color: white;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  pointer-events: none;
+  transition: transform var(--duration-fast) var(--easing-spring);
+  z-index: 10;
+}
+.color-swatch.copied .copied-toast {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Neutral strip */
+.neutral-strip {
+  display: flex;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-6);
+}
+.neutral-chip {
+  flex: 1;
+  height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: var(--weight-semibold);
+  cursor: pointer;
+  transition: transform var(--duration-fast);
+  position: relative;
+}
+.neutral-chip:hover { transform: scaleY(1.1); }
+.neutral-chip span:last-child {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 9px;
+  font-weight: 400;
+  margin-top: 2px;
+  opacity: 0.8;
+}
+
+/* ===== TYPOGRAPHY SAMPLES ===== */
+.type-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-6);
+}
+.type-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-tertiary);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--border-color);
+}
+.type-table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+.type-table .type-sample {
+  color: var(--text-primary);
+}
+.type-table .type-meta {
+  font-size: 11px;
+  font-family: 'SF Mono', monospace;
+  color: var(--text-tertiary);
+}
+
+/* ===== COMPONENT SHOWCASE ===== */
+.component-card {
+  background: var(--surface-card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-8);
+  overflow: hidden;
+  scroll-margin-top: var(--space-6);
+}
+.component-header {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.component-header h3 {
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  color: var(--brand-primary);
+}
+.component-header .comp-tag {
+  font-size: 11px;
+  background: var(--color-info-light);
+  color: var(--color-info);
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-weight: var(--weight-semibold);
+}
+.component-preview {
+  padding: var(--space-6);
+  background: var(--surface-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  align-items: flex-start;
+  justify-content: center;
+}
+.component-details {
+  padding: var(--space-6);
+}
+.component-details h4 {
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-3);
+}
+.component-details p {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-4);
+  line-height: var(--line-height-relaxed);
+}
+.props-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: var(--space-4);
+}
+.props-table th {
+  text-align: left;
+  font-weight: var(--weight-semibold);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 2px solid var(--border-color);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.props-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.props-table code {
+  background: var(--surface-muted);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'SF Mono', monospace;
+  color: var(--brand-primary);
+}
+.usage-note {
+  background: var(--color-info-light);
+  border-left: 3px solid var(--color-info);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-top: var(--space-4);
+}
+
+/* ===== LIVE COMPONENT STYLES ===== */
+
+/* DealCard */
+.deal-card {
+  background: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  width: 340px;
+  cursor: pointer;
+  transition: transform var(--duration-fast) var(--easing-default), box-shadow var(--duration-fast);
+}
+.deal-card:hover { transform: scale(0.98); box-shadow: var(--shadow-sm); }
+.deal-card:active { transform: scale(0.96); }
+.deal-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-3);
+}
+.deal-card-borrower {
+  font-size: var(--font-h3);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+.deal-card-amount {
+  font-size: var(--font-body);
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+.deal-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+}
+.deal-card-lane {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+.deal-card-time {
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+}
+
+/* StatusBadge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.status-badge::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-draft { background: var(--neutral-200); color: var(--neutral-600); }
+.status-draft::before { background: var(--neutral-500); }
+.status-submitted { background: var(--color-info-light); color: var(--color-info); }
+.status-submitted::before { background: var(--color-info); }
+.status-in-review { background: #EDE9FE; color: #7C3AED; }
+.status-in-review::before { background: #7C3AED; }
+.status-approved { background: var(--color-success-light); color: var(--color-success-dark); }
+.status-approved::before { background: var(--color-success); }
+.status-conditional { background: var(--color-warning-light); color: var(--color-warning-dark); }
+.status-conditional::before { background: var(--color-warning); }
+.status-declined { background: var(--color-danger-light); color: var(--color-danger-dark); }
+.status-declined::before { background: var(--color-danger); }
+.status-booked { background: #D1FAE5; color: #065F46; }
+.status-booked::before { background: #059669; }
+.status-closed { background: var(--neutral-200); color: var(--neutral-700); }
+.status-closed::before { background: var(--neutral-700); }
+
+/* LaneBadge */
+.lane-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  letter-spacing: 0.3px;
+}
+.lane-fast { background: var(--color-success-light); color: var(--color-success-dark); }
+.lane-standard { background: var(--color-info-light); color: var(--color-info-dark); }
+.lane-complex { background: var(--color-danger-light); color: var(--color-danger-dark); }
+
+/* StatBox */
+.stat-box {
+  background: var(--surface-card);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  text-align: center;
+  min-width: 120px;
+}
+.stat-box-value {
+  font-size: var(--font-h1);
+  font-weight: var(--weight-bold);
+  color: var(--brand-primary);
+  line-height: 1;
+}
+.stat-box-label {
+  font-size: var(--font-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--text-tertiary);
+  margin-top: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.stat-box.accent .stat-box-value { color: var(--brand-bright-blue); }
+.stat-box.warning .stat-box-value { color: var(--color-warning); }
+.stat-box.danger .stat-box-value { color: var(--color-danger); }
+
+/* AutoFillCard */
+.autofill-card {
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 340px;
+}
+.autofill-icon {
+  width: 32px;
+  height: 32px;
+  background: #FEF3C7;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.autofill-content {
+  flex: 1;
+}
+.autofill-title {
+  font-size: 13px;
+  font-weight: var(--weight-bold);
+  color: var(--brand-navy);
+}
+.autofill-desc {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+/* LaneDetectionCard */
+.lane-detect-card {
+  background: var(--surface-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  width: 340px;
+}
+.lane-detect-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+.lane-detect-label {
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-tertiary);
+}
+.lane-detect-criteria {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+.lane-detect-criteria li {
+  margin-bottom: 2px;
+  list-style: none;
+  padding-left: 16px;
+  position: relative;
+}
+.lane-detect-criteria li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--color-success);
+  font-weight: bold;
+}
+
+/* NLPTag */
+.nlp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: var(--weight-semibold);
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+  border: 1px solid rgba(45, 104, 196, 0.2);
+}
+.nlp-tag.extracted {
+  background: var(--color-success-light);
+  color: var(--color-success-dark);
+  border-color: rgba(120, 190, 33, 0.2);
+}
+.nlp-tag .tag-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+/* RiskCard */
+.risk-card {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 280px;
+  border-left: 4px solid transparent;
+}
+.risk-card.risk-low { border-left-color: var(--color-success); }
+.risk-card.risk-medium { border-left-color: var(--color-warning); }
+.risk-card.risk-high { border-left-color: var(--color-danger); }
+.risk-card.risk-critical { border-left-color: #7C3AED; }
+.risk-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.risk-low .risk-icon { background: var(--color-success-light); }
+.risk-medium .risk-icon { background: var(--color-warning-light); }
+.risk-high .risk-icon { background: var(--color-danger-light); }
+.risk-critical .risk-icon { background: #EDE9FE; }
+.risk-label {
+  font-size: var(--font-body);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+}
+.risk-score {
+  font-size: var(--font-caption);
+  color: var(--text-secondary);
+}
+
+/* TimelineItem */
+.timeline-item {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  position: relative;
+}
+.timeline-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--brand-bright-blue);
+  flex-shrink: 0;
+  margin-top: 5px;
+  position: relative;
+  z-index: 1;
+}
+.timeline-dot.active { background: var(--color-success); }
+.timeline-dot.warning { background: var(--color-warning); }
+.timeline-line {
+  position: relative;
+}
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 20px;
+  bottom: -12px;
+  width: 2px;
+  background: var(--border-color);
+}
+.timeline-item:last-child .timeline-line::before { display: none; }
+.timeline-time {
+  font-size: var(--font-caption);
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  min-width: 80px;
+}
+.timeline-event {
+  font-size: var(--font-body);
+  color: var(--text-primary);
+}
+
+/* SLACountdown */
+.sla-countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--font-body);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+}
+.sla-green { background: var(--color-success-light); color: var(--color-success-dark); }
+.sla-amber { background: var(--color-warning-light); color: var(--color-warning-dark); }
+.sla-red { background: var(--color-danger-light); color: var(--color-danger-dark); }
+.sla-critical {
+  background: var(--color-danger);
+  color: white;
+  animation: sla-pulse 1s ease-in-out infinite;
+}
+@keyframes sla-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.sla-icon { font-size: 14px; }
+
+/* ApprovalButtonGroup */
+.approval-group {
+  display: flex;
+  gap: var(--space-2);
+}
+.approval-btn {
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-pill);
+  border: none;
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  font-weight: var(--weight-bold);
+  cursor: pointer;
+  transition: all var(--duration-fast) var(--easing-default);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.approval-btn:active { transform: scale(0.95); }
+.btn-approve {
+  background: var(--color-success);
+  color: white;
+}
+.btn-approve:hover { background: var(--color-success-dark); }
+.btn-conditions {
+  background: var(--color-warning);
+  color: white;
+}
+.btn-conditions:hover { background: var(--color-warning-dark); }
+.btn-decline {
+  background: var(--color-danger);
+  color: white;
+}
+.btn-decline:hover { background: var(--color-danger-dark); }
+
+/* CreditMemoEditor */
+.memo-editor {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  width: 360px;
+  overflow: hidden;
+}
+.memo-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-3);
+  background: var(--surface-muted);
+  border-bottom: 1px solid var(--border-color);
+}
+.memo-toolbar .nlp-active {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: var(--weight-semibold);
+  color: var(--color-success-dark);
+}
+.nlp-active-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--color-success);
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.3); }
+}
+.memo-textarea {
+  width: 100%;
+  border: none;
+  padding: var(--space-3);
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  line-height: var(--line-height-relaxed);
+  color: var(--text-primary);
+  background: transparent;
+  resize: none;
+  outline: none;
+  min-height: 100px;
+}
+.memo-extracted {
+  padding: var(--space-3);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* FormField */
+.form-field {
+  width: 340px;
+}
+.form-label {
+  display: block;
+  font-size: var(--font-caption);
+  font-weight: var(--weight-semibold);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-input {
+  width: 100%;
+  padding: var(--space-3);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: var(--font-family);
+  font-size: var(--font-body);
+  color: var(--text-primary);
+  background: var(--surface-card);
+  outline: none;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.form-input:focus {
+  border-color: var(--brand-bright-blue);
+  box-shadow: 0 0 0 3px rgba(45, 104, 196, 0.15);
+}
+.form-input.autofilled {
+  background: #FFFBEB;
+  border-color: #FDE68A;
+}
+.form-input.error {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(218, 41, 28, 0.1);
+}
+.form-helper {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  margin-top: var(--space-1);
+}
+.form-error {
+  font-size: 11px;
+  color: var(--color-danger);
+  margin-top: var(--space-1);
+}
+
+/* NavBar */
+.navbar {
+  background: var(--surface-card);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  padding: var(--space-2) 0;
+  width: 390px;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  color: var(--text-tertiary);
+  transition: color var(--duration-fast);
+  position: relative;
+  min-width: 52px;
+}
+.nav-item.active { color: var(--brand-primary); }
+.nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 24px;
+  height: 3px;
+  background: var(--brand-primary);
+  border-radius: 0 0 2px 2px;
+}
+.nav-icon { font-size: 20px; line-height: 1; }
+.nav-label { font-size: 10px; font-weight: var(--weight-semibold); }
+
+/* PhoneFrame */
+.phone-frame {
+  width: 390px;
+  height: 844px;
+  border-radius: 40px;
+  background: #000;
+  padding: 12px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.1);
+  position: relative;
+  overflow: hidden;
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  border-radius: 32px;
+  background: var(--surface-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.phone-status-bar {
+  height: 54px;
+  background: var(--brand-navy);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 var(--space-6) var(--space-2);
+  color: white;
+  font-size: 14px;
+  font-weight: var(--weight-semibold);
+  flex-shrink: 0;
+}
+.phone-status-bar .notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 30px;
+  background: #000;
+  border-radius: 0 0 20px 20px;
+  z-index: 2;
+}
+.phone-header {
+  background: var(--brand-navy);
+  padding: var(--space-2) var(--space-4) var(--space-4);
+  color: white;
+  flex-shrink: 0;
+}
+.phone-header h2 {
+  font-size: var(--font-h1);
+  font-weight: var(--weight-bold);
+}
+.phone-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+.phone-nav {
+  flex-shrink: 0;
+}
+.phone-home-indicator {
+  height: 20px;
+  background: var(--surface-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.phone-home-indicator::after {
+  content: '';
+  width: 134px;
+  height: 5px;
+  background: var(--neutral-300);
+  border-radius: 3px;
+}
+
+/* ===== SPACING SCALE VIS ===== */
+.spacing-visual {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+.spacing-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.spacing-bar {
+  height: 24px;
+  background: var(--brand-bright-blue);
+  border-radius: 2px;
+  opacity: 0.7;
+}
+.spacing-label {
+  font-size: 12px;
+  font-family: 'SF Mono', monospace;
+  color: var(--text-tertiary);
+  min-width: 100px;
+}
+
+/* ===== LAYOUT PATTERN DIAGRAMS ===== */
+.layout-diagram {
+  background: var(--surface-card);
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 280px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+.layout-block {
+  border: 1px solid var(--brand-light-blue);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  background: var(--color-info-light);
+  color: var(--color-info-dark);
+  font-weight: var(--weight-semibold);
+}
+.layout-block.flex-row {
+  display: flex;
+  gap: var(--space-2);
+}
+.layout-block.flex-row > div { flex: 1; }
+.layout-block.scrollable {
+  flex: 1;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--color-info-light),
+    var(--color-info-light) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+}
+
+/* ===== MOTION DEMOS ===== */
+.motion-demo {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+.motion-box {
+  width: 120px;
+  height: 80px;
+  background: var(--brand-bright-blue);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 11px;
+  font-weight: var(--weight-bold);
+  text-align: center;
+  cursor: pointer;
+}
+.motion-box.press:active {
+  transform: scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+.motion-box.pulse {
+  animation: sla-pulse 1.5s ease-in-out infinite;
+}
+.motion-box.skeleton {
+  background: linear-gradient(90deg, var(--neutral-200) 25%, var(--neutral-100) 50%, var(--neutral-200) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  color: transparent;
+}
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ===== A11Y SECTION ===== */
+.a11y-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+.a11y-card {
+  background: var(--surface-card);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+.a11y-card h4 {
+  font-size: var(--font-body);
+  font-weight: var(--weight-bold);
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+.a11y-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: var(--line-height-relaxed);
+}
+.contrast-sample {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: var(--weight-semibold);
+  margin-top: var(--space-2);
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+  .doc-sidebar { display: none; }
+  .doc-main { padding: var(--space-6); }
+  .color-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+  .phone-frame { transform: scale(0.8); transform-origin: top center; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="doc-header">
+  <div class="meta">PROMPT 6 — FUB LENDER BUILD PLAYBOOK</div>
+  <h1>Design System & Component Library</h1>
+  <p class="subtitle">First United Bank · Lending Application · v1.0</p>
+  <p class="meta">Last updated: May 10, 2026 · React Native · Mobile-First</p>
+</header>
+
+<!-- ===== LAYOUT ===== -->
+<div class="doc-layout">
+
+<!-- SIDEBAR NAV -->
+<nav class="doc-sidebar">
+  <h3>Design System</h3>
+  <a href="#colors">Color Palette</a>
+  <a href="#brand-colors" class="indent">Brand Colors</a>
+  <a href="#semantic-colors" class="indent">Semantic Colors</a>
+  <a href="#neutrals" class="indent">Neutral Scale</a>
+  <a href="#surfaces" class="indent">Surfaces</a>
+  <a href="#typography">Typography</a>
+  <a href="#type-scale" class="indent">Type Scale</a>
+  <a href="#type-weights" class="indent">Weights</a>
+  <h3 style="margin-top: 16px;">Components</h3>
+  <a href="#comp-dealcard">DealCard</a>
+  <a href="#comp-statusbadge">StatusBadge</a>
+  <a href="#comp-lanebadge">LaneBadge</a>
+  <a href="#comp-statbox">StatBox</a>
+  <a href="#comp-autofill">AutoFillCard</a>
+  <a href="#comp-lanedetect">LaneDetectionCard</a>
+  <a href="#comp-nlptag">NLPTag</a>
+  <a href="#comp-riskcard">RiskCard</a>
+  <a href="#comp-timeline">TimelineItem</a>
+  <a href="#comp-sla">SLACountdown</a>
+  <a href="#comp-approval">ApprovalButtonGroup</a>
+  <a href="#comp-memo">CreditMemoEditor</a>
+  <a href="#comp-formfield">FormField</a>
+  <a href="#comp-navbar">NavBar</a>
+  <a href="#comp-phoneframe">PhoneFrame</a>
+  <h3 style="margin-top: 16px;">Patterns</h3>
+  <a href="#layout">Layout Patterns</a>
+  <a href="#spacing">Spacing Scale</a>
+  <a href="#motion">Motion & Interaction</a>
+  <a href="#a11y">Accessibility</a>
+  <h3 style="margin-top: 16px;">Preview</h3>
+  <a href="#preview">Phone Preview</a>
+</nav>
+
+<!-- MAIN CONTENT -->
+<main class="doc-main">
+
+<!-- ============================================ -->
+<!-- 1. COLOR PALETTE -->
+<!-- ============================================ -->
+<section id="colors" class="section">
+  <h2 class="section-title">Color Palette</h2>
+  <p class="section-desc">
+    All colors are defined as CSS custom properties on <code>:root</code>. Dark mode variants activate automatically via <code>prefers-color-scheme</code>. Click any swatch to copy its hex value.
+  </p>
+
+  <div id="brand-colors" class="subsection">
+    <h3 class="subsection-title">Brand Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copySwatch(this, '#002D72')">
+        <div class="swatch-block" style="background:#002D72;"><span style="color:rgba(255,255,255,0.6);font-size:10px;">PMS 288</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Primary Blue</div>
+          <div class="swatch-hex">#002D72</div>
+          <div class="swatch-token">--brand-primary</div>
+          <div class="swatch-contrast">⬜ 10.5:1 white · ⬛ 1.9:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#DA291C')">
+        <div class="swatch-block" style="background:#DA291C;"><span style="color:rgba(255,255,255,0.6);font-size:10px;">PMS 485</span></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Red Accent</div>
+          <div class="swatch-hex">#DA291C</div>
+          <div class="swatch-token">--brand-red</div>
+          <div class="swatch-contrast">⬜ 4.5:1 white · ⬛ 4.6:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#12284B')">
+        <div class="swatch-block" style="background:#12284B;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Navy</div>
+          <div class="swatch-hex">#12284B</div>
+          <div class="swatch-token">--brand-navy</div>
+          <div class="swatch-contrast">⬜ 12.7:1 white · ⬛ 1.7:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#2D68C4')">
+        <div class="swatch-block" style="background:#2D68C4;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Bright Blue</div>
+          <div class="swatch-hex">#2D68C4</div>
+          <div class="swatch-token">--brand-bright-blue</div>
+          <div class="swatch-contrast">⬜ 4.7:1 white · ⬛ 4.4:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#8BA6C1')">
+        <div class="swatch-block" style="background:#8BA6C1;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Light Blue</div>
+          <div class="swatch-hex">#8BA6C1</div>
+          <div class="swatch-token">--brand-light-blue</div>
+          <div class="swatch-contrast">⬜ 2.6:1 white · ⬛ 8.2:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#C8C9C7')">
+        <div class="swatch-block" style="background:#C8C9C7;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Gray</div>
+          <div class="swatch-hex">#C8C9C7</div>
+          <div class="swatch-token">--brand-gray</div>
+          <div class="swatch-contrast">⬜ 1.6:1 white · ⬛ 12.9:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#78BE21')">
+        <div class="swatch-block" style="background:#78BE21;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Health Green</div>
+          <div class="swatch-hex">#78BE21</div>
+          <div class="swatch-token">--brand-health-green</div>
+          <div class="swatch-contrast">⬜ 2.8:1 white · ⬛ 7.6:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#FAF9F5')">
+        <div class="swatch-block" style="background:#FAF9F5; border: 1px solid #E5E5E5;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Off-White</div>
+          <div class="swatch-hex">#FAF9F5</div>
+          <div class="swatch-token">--brand-off-white</div>
+          <div class="swatch-contrast">⬜ 1.04:1 white · ⬛ 20:1 black</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="semantic-colors" class="subsection">
+    <h3 class="subsection-title">Semantic Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copySwatch(this, '#78BE21')">
+        <div class="swatch-block" style="background: linear-gradient(135deg, #78BE21 50%, #E8F5D4 50%);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Success</div>
+          <div class="swatch-hex">#78BE21 / #E8F5D4</div>
+          <div class="swatch-token">--color-success / -light</div>
+          <div class="swatch-contrast">Approvals, low-risk, fast lane</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#D97706')">
+        <div class="swatch-block" style="background: linear-gradient(135deg, #D97706 50%, #FEF3C7 50%);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Warning</div>
+          <div class="swatch-hex">#D97706 / #FEF3C7</div>
+          <div class="swatch-token">--color-warning / -light</div>
+          <div class="swatch-contrast">SLA warnings, conditions, review needed</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#DA291C')">
+        <div class="swatch-block" style="background: linear-gradient(135deg, #DA291C 50%, #FEE2E2 50%);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Danger</div>
+          <div class="swatch-hex">#DA291C / #FEE2E2</div>
+          <div class="swatch-token">--color-danger / -light</div>
+          <div class="swatch-contrast">Declines, SLA breach, complex lane</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#2D68C4')">
+        <div class="swatch-block" style="background: linear-gradient(135deg, #2D68C4 50%, #DBEAFE 50%);"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Info</div>
+          <div class="swatch-hex">#2D68C4 / #DBEAFE</div>
+          <div class="swatch-token">--color-info / -light</div>
+          <div class="swatch-contrast">In-progress, standard lane, links</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="neutrals" class="subsection">
+    <h3 class="subsection-title">Neutral Scale</h3>
+    <div class="neutral-strip">
+      <div class="neutral-chip" style="background:#FAFAFA; color:#171717;" onclick="copySwatch(this,'#FAFAFA')"><span>50</span><span>#FAFAFA</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#F5F5F5; color:#171717;" onclick="copySwatch(this,'#F5F5F5')"><span>100</span><span>#F5F5F5</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#E5E5E5; color:#171717;" onclick="copySwatch(this,'#E5E5E5')"><span>200</span><span>#E5E5E5</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#D4D4D4; color:#171717;" onclick="copySwatch(this,'#D4D4D4')"><span>300</span><span>#D4D4D4</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#A3A3A3; color:#171717;" onclick="copySwatch(this,'#A3A3A3')"><span>400</span><span>#A3A3A3</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#737373; color:#fff;" onclick="copySwatch(this,'#737373')"><span>500</span><span>#737373</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#525252; color:#fff;" onclick="copySwatch(this,'#525252')"><span>600</span><span>#525252</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#404040; color:#fff;" onclick="copySwatch(this,'#404040')"><span>700</span><span>#404040</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#262626; color:#fff;" onclick="copySwatch(this,'#262626')"><span>800</span><span>#262626</span><div class="copied-toast">Copied!</div></div>
+      <div class="neutral-chip" style="background:#171717; color:#fff;" onclick="copySwatch(this,'#171717')"><span>900</span><span>#171717</span><div class="copied-toast">Copied!</div></div>
+    </div>
+  </div>
+
+  <div id="surfaces" class="subsection">
+    <h3 class="subsection-title">Surface Colors</h3>
+    <div class="color-grid">
+      <div class="color-swatch" onclick="copySwatch(this, '#FAF9F5')">
+        <div class="swatch-block" style="background:#FAF9F5; border:1px solid #E5E5E5;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Background</div>
+          <div class="swatch-hex">#FAF9F5</div>
+          <div class="swatch-token">--surface-bg</div>
+          <div class="swatch-contrast">App background, warm off-white</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#FFFFFF')">
+        <div class="swatch-block" style="background:#FFFFFF; border:1px solid #E5E5E5;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Card</div>
+          <div class="swatch-hex">#FFFFFF</div>
+          <div class="swatch-token">--surface-card</div>
+          <div class="swatch-contrast">Card surfaces, modals</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+      <div class="color-swatch" onclick="copySwatch(this, '#F1F1F1')">
+        <div class="swatch-block" style="background:#F1F1F1; border:1px solid #E5E5E5;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Muted</div>
+          <div class="swatch-hex">#F1F1F1</div>
+          <div class="swatch-token">--surface-muted</div>
+          <div class="swatch-contrast">Input backgrounds, dividers</div>
+        </div>
+        <div class="copied-toast">Copied!</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 2. TYPOGRAPHY -->
+<!-- ============================================ -->
+<section id="typography" class="section">
+  <h2 class="section-title">Typography Scale</h2>
+  <p class="section-desc">
+    Lato is the sole typeface, loaded via Google Fonts CDN. The scale maps to React Native <code>Text</code> style presets. All sizes are in logical pixels for cross-platform consistency.
+  </p>
+
+  <div id="type-scale" class="subsection">
+    <h3 class="subsection-title">Type Scale</h3>
+    <table class="type-table">
+      <thead>
+        <tr><th>Level</th><th>Sample</th><th>Size / Weight / Line-Height</th><th>Letter Spacing</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="type-meta">Display</td>
+          <td class="type-sample" style="font-size:28px; font-weight:700; line-height:1.2;">Pipeline Overview</td>
+          <td class="type-meta">28px / Bold (700) / 1.2</td>
+          <td class="type-meta">-0.5px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">H1</td>
+          <td class="type-sample" style="font-size:24px; font-weight:700; line-height:1.2;">New Deal Entry</td>
+          <td class="type-meta">24px / Bold (700) / 1.2</td>
+          <td class="type-meta">-0.3px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">H2</td>
+          <td class="type-sample" style="font-size:20px; font-weight:600; line-height:1.3;">Credit Memo Summary</td>
+          <td class="type-meta">20px / SemiBold (600) / 1.3</td>
+          <td class="type-meta">-0.2px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">H3</td>
+          <td class="type-sample" style="font-size:16px; font-weight:600; line-height:1.4;">Borrower Details</td>
+          <td class="type-meta">16px / SemiBold (600) / 1.4</td>
+          <td class="type-meta">0px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">Body</td>
+          <td class="type-sample" style="font-size:14px; font-weight:400; line-height:1.5;">The borrower is requesting a $1.2M commercial real estate loan for property acquisition in the Plano, TX market.</td>
+          <td class="type-meta">14px / Regular (400) / 1.5</td>
+          <td class="type-meta">0px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">Caption</td>
+          <td class="type-sample" style="font-size:12px; font-weight:400; line-height:1.5; color:var(--text-secondary);">Submitted 2 hours ago · SLA: 4h remaining</td>
+          <td class="type-meta">12px / Regular (400) / 1.5</td>
+          <td class="type-meta">0.2px</td>
+        </tr>
+        <tr>
+          <td class="type-meta">Overline</td>
+          <td class="type-sample" style="font-size:10px; font-weight:700; line-height:1.5; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-tertiary);">RISK ASSESSMENT</td>
+          <td class="type-meta">10px / Bold (700) / 1.5</td>
+          <td class="type-meta">1.2px</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="type-weights" class="subsection">
+    <h3 class="subsection-title">Font Weights</h3>
+    <div style="display:flex; gap:32px; flex-wrap:wrap; margin-bottom:var(--space-6);">
+      <div>
+        <p style="font-size:24px; font-weight:400; color:var(--text-primary);">Regular 400</p>
+        <p style="font-size:12px; color:var(--text-tertiary);">Body text, captions, form inputs</p>
+      </div>
+      <div>
+        <p style="font-size:24px; font-weight:600; color:var(--text-primary);">SemiBold 600</p>
+        <p style="font-size:12px; color:var(--text-tertiary);">Subheads, labels, emphasis</p>
+      </div>
+      <div>
+        <p style="font-size:24px; font-weight:700; color:var(--text-primary);">Bold 700</p>
+        <p style="font-size:12px; color:var(--text-tertiary);">Headlines, stat values, CTAs</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 3. COMPONENT LIBRARY -->
+<!-- ============================================ -->
+<section id="components" class="section">
+  <h2 class="section-title">Component Library</h2>
+  <p class="section-desc">
+    Each component maps 1:1 to a React Native component. Previews below render in HTML/CSS using the same design tokens the native build will consume.
+  </p>
+
+  <!-- DealCard -->
+  <div id="comp-dealcard" class="component-card">
+    <div class="component-header"><h3>DealCard</h3><span class="comp-tag">List Item</span></div>
+    <div class="component-preview">
+      <div class="deal-card">
+        <div class="deal-card-top">
+          <div>
+            <div class="deal-card-borrower">Acme Industries LLC</div>
+            <div class="deal-card-amount">$2,450,000 · CRE Term</div>
+          </div>
+          <span class="status-badge status-in-review">In Review</span>
+        </div>
+        <div class="deal-card-bottom">
+          <div class="deal-card-lane"><span class="lane-badge lane-standard">⚡ Standard</span></div>
+          <span class="deal-card-time">2h ago</span>
+        </div>
+      </div>
+      <div class="deal-card">
+        <div class="deal-card-top">
+          <div>
+            <div class="deal-card-borrower">Martinez Holdings</div>
+            <div class="deal-card-amount">$875,000 · C&I Line</div>
+          </div>
+          <span class="status-badge status-submitted">Submitted</span>
+        </div>
+        <div class="deal-card-bottom">
+          <div class="deal-card-lane"><span class="lane-badge lane-fast">⚡ Fast Lane</span></div>
+          <span class="deal-card-time">45m ago</span>
+        </div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>borrowerName</code></td><td><code>string</code></td><td>Primary display name</td></tr>
+        <tr><td><code>amount</code></td><td><code>number</code></td><td>Loan amount, formatted as currency</td></tr>
+        <tr><td><code>loanType</code></td><td><code>string</code></td><td>CRE Term, C&I Line, Construction, etc.</td></tr>
+        <tr><td><code>status</code></td><td><code>StatusEnum</code></td><td>Maps to StatusBadge variant</td></tr>
+        <tr><td><code>lane</code></td><td><code>'fast'|'standard'|'complex'</code></td><td>Lane classification</td></tr>
+        <tr><td><code>timeAgo</code></td><td><code>string</code></td><td>Relative timestamp</td></tr>
+        <tr><td><code>onPress</code></td><td><code>() => void</code></td><td>Navigation to Deal Detail</td></tr>
+      </table>
+      <div class="usage-note">Press interaction uses <code>scale(0.98)</code> with shadow reduction. Card background is <code>--surface-card</code> on <code>--surface-muted</code> list background.</div>
+    </div>
+  </div>
+
+  <!-- StatusBadge -->
+  <div id="comp-statusbadge" class="component-card">
+    <div class="component-header"><h3>StatusBadge</h3><span class="comp-tag">Indicator</span></div>
+    <div class="component-preview">
+      <span class="status-badge status-draft">Draft</span>
+      <span class="status-badge status-submitted">Submitted</span>
+      <span class="status-badge status-in-review">In Review</span>
+      <span class="status-badge status-approved">Approved</span>
+      <span class="status-badge status-conditional">Conditions</span>
+      <span class="status-badge status-declined">Declined</span>
+      <span class="status-badge status-booked">Booked</span>
+      <span class="status-badge status-closed">Closed</span>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>status</code></td><td><code>StatusEnum</code></td><td>One of 8 status values</td></tr>
+        <tr><td><code>size</code></td><td><code>'sm'|'md'</code></td><td>Small (pipeline list) or medium (detail view)</td></tr>
+      </table>
+      <div class="usage-note">Each badge includes a colored dot indicator before the label. Never rely on color alone — the text label is always present for accessibility.</div>
+    </div>
+  </div>
+
+  <!-- LaneBadge -->
+  <div id="comp-lanebadge" class="component-card">
+    <div class="component-header"><h3>LaneBadge</h3><span class="comp-tag">Indicator</span></div>
+    <div class="component-preview">
+      <span class="lane-badge lane-fast">⚡ Fast Lane</span>
+      <span class="lane-badge lane-standard">◆ Standard</span>
+      <span class="lane-badge lane-complex">⚠ Complex</span>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>lane</code></td><td><code>'fast'|'standard'|'complex'</code></td><td>Lane classification from rules engine</td></tr>
+      </table>
+      <p>Fast Lane is green (deals under $500K, existing relationship, standard collateral). Standard is blue (typical underwriting). Complex is red (participations, construction, policy exceptions).</p>
+    </div>
+  </div>
+
+  <!-- StatBox -->
+  <div id="comp-statbox" class="component-card">
+    <div class="component-header"><h3>StatBox</h3><span class="comp-tag">Data Display</span></div>
+    <div class="component-preview">
+      <div class="stat-box"><div class="stat-box-value">24</div><div class="stat-box-label">Active Deals</div></div>
+      <div class="stat-box accent"><div class="stat-box-value">$47.2M</div><div class="stat-box-label">Total Volume</div></div>
+      <div class="stat-box warning"><div class="stat-box-value">7</div><div class="stat-box-label">Need Action</div></div>
+      <div class="stat-box danger"><div class="stat-box-value">2</div><div class="stat-box-label">SLA Breach</div></div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>value</code></td><td><code>string|number</code></td><td>Big number display (pre-formatted)</td></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Descriptor below the number</td></tr>
+        <tr><td><code>variant</code></td><td><code>'default'|'accent'|'warning'|'danger'</code></td><td>Color variant for the value</td></tr>
+      </table>
+      <div class="usage-note">Use in rows of 2 or 3. On pipeline screen, the stat row sits between the header and the deal list. Values use tabular-nums for alignment.</div>
+    </div>
+  </div>
+
+  <!-- AutoFillCard -->
+  <div id="comp-autofill" class="component-card">
+    <div class="component-header"><h3>AutoFillCard</h3><span class="comp-tag">Data Entry</span></div>
+    <div class="component-preview">
+      <div class="autofill-card">
+        <div class="autofill-icon">⚡</div>
+        <div class="autofill-content">
+          <div class="autofill-title">Jack Henry Data Found</div>
+          <div class="autofill-desc">12 fields auto-populated from core · Acme Industries LLC · TIN ••••4521</div>
+        </div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>customerName</code></td><td><code>string</code></td><td>Matched customer name from JH</td></tr>
+        <tr><td><code>fieldCount</code></td><td><code>number</code></td><td>Number of fields auto-populated</td></tr>
+        <tr><td><code>maskedTIN</code></td><td><code>string</code></td><td>Last 4 of TIN for confirmation</td></tr>
+        <tr><td><code>onDismiss</code></td><td><code>() => void</code></td><td>Clear auto-fill data</td></tr>
+      </table>
+      <div class="usage-note">Appears on New Deal screen after customer search match. Yellow background (#FFFBEB) signals auto-populated data. Fields filled by JH show the autofilled input style.</div>
+    </div>
+  </div>
+
+  <!-- LaneDetectionCard -->
+  <div id="comp-lanedetect" class="component-card">
+    <div class="component-header"><h3>LaneDetectionCard</h3><span class="comp-tag">System</span></div>
+    <div class="component-preview">
+      <div class="lane-detect-card">
+        <div class="lane-detect-header">
+          <span class="lane-detect-label">System Classification</span>
+          <span class="lane-badge lane-fast">⚡ Fast Lane</span>
+        </div>
+        <ul class="lane-detect-criteria">
+          <li>Loan amount under $500K threshold</li>
+          <li>Existing borrower relationship (3+ years)</li>
+          <li>Standard collateral type (CRE — owner occupied)</li>
+          <li>No policy exceptions required</li>
+        </ul>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>lane</code></td><td><code>'fast'|'standard'|'complex'</code></td><td>Detected lane</td></tr>
+        <tr><td><code>criteria</code></td><td><code>string[]</code></td><td>List of matching criteria</td></tr>
+        <tr><td><code>overrideable</code></td><td><code>boolean</code></td><td>Whether lender can override</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- NLPTag -->
+  <div id="comp-nlptag" class="component-card">
+    <div class="component-header"><h3>NLPTag</h3><span class="comp-tag">NLP</span></div>
+    <div class="component-preview">
+      <span class="nlp-tag extracted"><span class="tag-label">Amount</span> $1,200,000</span>
+      <span class="nlp-tag extracted"><span class="tag-label">Purpose</span> Acquisition</span>
+      <span class="nlp-tag extracted"><span class="tag-label">Collateral</span> CRE</span>
+      <span class="nlp-tag"><span class="tag-label">LTV</span> 72%</span>
+      <span class="nlp-tag"><span class="tag-label">DSCR</span> 1.35x</span>
+      <span class="nlp-tag extracted"><span class="tag-label">Term</span> 10 years</span>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Field name (Amount, LTV, etc.)</td></tr>
+        <tr><td><code>value</code></td><td><code>string</code></td><td>Extracted or computed value</td></tr>
+        <tr><td><code>extracted</code></td><td><code>boolean</code></td><td>Whether NLP extracted this from memo text</td></tr>
+        <tr><td><code>onPress</code></td><td><code>() => void</code></td><td>Highlight source text in memo</td></tr>
+      </table>
+      <div class="usage-note">Green tags = NLP-extracted from narrative text. Blue tags = computed/calculated fields. Pressing a tag scrolls to and highlights the source text in the memo editor.</div>
+    </div>
+  </div>
+
+  <!-- RiskCard -->
+  <div id="comp-riskcard" class="component-card">
+    <div class="component-header"><h3>RiskCard</h3><span class="comp-tag">Assessment</span></div>
+    <div class="component-preview">
+      <div class="risk-card risk-low"><div class="risk-icon">✓</div><div><div class="risk-label">Low Risk</div><div class="risk-score">Score: 82 / 100</div></div></div>
+      <div class="risk-card risk-medium"><div class="risk-icon">◆</div><div><div class="risk-label">Medium Risk</div><div class="risk-score">Score: 58 / 100</div></div></div>
+      <div class="risk-card risk-high"><div class="risk-icon">▲</div><div><div class="risk-label">High Risk</div><div class="risk-score">Score: 34 / 100</div></div></div>
+      <div class="risk-card risk-critical"><div class="risk-icon">✕</div><div><div class="risk-label">Critical</div><div class="risk-score">Score: 12 / 100</div></div></div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>level</code></td><td><code>'low'|'medium'|'high'|'critical'</code></td><td>Risk classification</td></tr>
+        <tr><td><code>score</code></td><td><code>number</code></td><td>Numeric score (0-100)</td></tr>
+        <tr><td><code>factors</code></td><td><code>string[]</code></td><td>Contributing risk factors (expandable)</td></tr>
+      </table>
+      <div class="usage-note">Left border color provides quick visual scan. Icons use geometric shapes (not color alone) for accessibility: ✓ low, ◆ medium, ▲ high, ✕ critical.</div>
+    </div>
+  </div>
+
+  <!-- TimelineItem -->
+  <div id="comp-timeline" class="component-card">
+    <div class="component-header"><h3>TimelineItem</h3><span class="comp-tag">Activity</span></div>
+    <div class="component-preview">
+      <div style="padding: 8px;">
+        <div class="timeline-item">
+          <div class="timeline-line"><div class="timeline-dot active"></div></div>
+          <div class="timeline-time">10:42 AM</div>
+          <div class="timeline-event"><strong>Approved</strong> by SVP Credit — M. Johnson</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-line"><div class="timeline-dot"></div></div>
+          <div class="timeline-time">9:15 AM</div>
+          <div class="timeline-event">Credit memo reviewed — risk score updated to 82</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-line"><div class="timeline-dot warning"></div></div>
+          <div class="timeline-time">Yesterday</div>
+          <div class="timeline-event">SLA warning — 2 hours remaining</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-line"><div class="timeline-dot"></div></div>
+          <div class="timeline-time">May 8</div>
+          <div class="timeline-event">Deal submitted for review by R. Chen</div>
+        </div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>timestamp</code></td><td><code>Date</code></td><td>Event time, formatted relative or absolute</td></tr>
+        <tr><td><code>event</code></td><td><code>string</code></td><td>Event description</td></tr>
+        <tr><td><code>type</code></td><td><code>'default'|'active'|'warning'</code></td><td>Dot color variant</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLACountdown -->
+  <div id="comp-sla" class="component-card">
+    <div class="component-header"><h3>SLACountdown</h3><span class="comp-tag">Timer</span></div>
+    <div class="component-preview">
+      <div class="sla-countdown sla-green"><span class="sla-icon">⏱</span> 3h 42m remaining</div>
+      <div class="sla-countdown sla-amber"><span class="sla-icon">⏱</span> 1h 15m remaining</div>
+      <div class="sla-countdown sla-red"><span class="sla-icon">⏱</span> 0h 38m remaining</div>
+      <div class="sla-countdown sla-critical"><span class="sla-icon">⏱</span> 0h 09m — BREACH IMMINENT</div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>deadline</code></td><td><code>Date</code></td><td>SLA deadline timestamp</td></tr>
+        <tr><td><code>compact</code></td><td><code>boolean</code></td><td>Inline vs block display</td></tr>
+      </table>
+      <p>Color thresholds: green (&gt;2hr), amber (1-2hr), red (&lt;1hr), flashing red (&lt;15min). The critical state pulses at 1s intervals. Timer updates every 60s normally, every 15s under 1hr, every 5s under 15min.</p>
+    </div>
+  </div>
+
+  <!-- ApprovalButtonGroup -->
+  <div id="comp-approval" class="component-card">
+    <div class="component-header"><h3>ApprovalButtonGroup</h3><span class="comp-tag">Action</span></div>
+    <div class="component-preview">
+      <div class="approval-group">
+        <button class="approval-btn btn-approve">Approve</button>
+        <button class="approval-btn btn-conditions">Conditions</button>
+        <button class="approval-btn btn-decline">Decline</button>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>onApprove</code></td><td><code>() => void</code></td><td>Full approval action</td></tr>
+        <tr><td><code>onConditions</code></td><td><code>() => void</code></td><td>Opens conditions modal</td></tr>
+        <tr><td><code>onDecline</code></td><td><code>() => void</code></td><td>Opens decline reason modal</td></tr>
+        <tr><td><code>disabled</code></td><td><code>boolean</code></td><td>Disables all buttons during processing</td></tr>
+      </table>
+      <div class="usage-note">All three buttons use pill shape (50px border-radius) per FUB brand. Approve and Decline require a confirmation dialog. Conditions opens a structured form.</div>
+    </div>
+  </div>
+
+  <!-- CreditMemoEditor -->
+  <div id="comp-memo" class="component-card">
+    <div class="component-header"><h3>CreditMemoEditor</h3><span class="comp-tag">Editor</span></div>
+    <div class="component-preview">
+      <div class="memo-editor">
+        <div class="memo-toolbar">
+          <span style="font-size:12px;font-weight:600;color:var(--text-secondary);">Credit Memo</span>
+          <span class="nlp-active"><span class="nlp-active-dot"></span> NLP Active</span>
+        </div>
+        <textarea class="memo-textarea" readonly>Borrower is requesting $1,200,000 for the acquisition of a commercial property located at 4200 Preston Rd, Plano TX. The property will serve as primary collateral with an estimated LTV of 72%. Borrower has maintained deposit relationship since 2019...</textarea>
+        <div class="memo-extracted">
+          <span class="nlp-tag extracted"><span class="tag-label">Amount</span> $1.2M</span>
+          <span class="nlp-tag extracted"><span class="tag-label">Purpose</span> Acquisition</span>
+          <span class="nlp-tag extracted"><span class="tag-label">LTV</span> 72%</span>
+          <span class="nlp-tag extracted"><span class="tag-label">Collateral</span> CRE</span>
+        </div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>value</code></td><td><code>string</code></td><td>Memo narrative text</td></tr>
+        <tr><td><code>extractedFields</code></td><td><code>NLPField[]</code></td><td>NLP-extracted field tags</td></tr>
+        <tr><td><code>nlpActive</code></td><td><code>boolean</code></td><td>Whether NLP is processing</td></tr>
+        <tr><td><code>onChange</code></td><td><code>(text) => void</code></td><td>Text change handler</td></tr>
+      </table>
+      <div class="usage-note">NLP processing activates after 500ms debounce on text change. The green pulsing dot indicates active extraction. Fields appear below as NLPTag components.</div>
+    </div>
+  </div>
+
+  <!-- FormField -->
+  <div id="comp-formfield" class="component-card">
+    <div class="component-header"><h3>FormField</h3><span class="comp-tag">Input</span></div>
+    <div class="component-preview" style="flex-direction:column; align-items:center;">
+      <div class="form-field">
+        <label class="form-label">Borrower Name</label>
+        <input class="form-input" type="text" value="Acme Industries LLC" readonly>
+        <div class="form-helper">Legal entity name from Jack Henry</div>
+      </div>
+      <div class="form-field" style="margin-top:12px;">
+        <label class="form-label">Loan Amount</label>
+        <input class="form-input autofilled" type="text" value="$1,200,000" readonly>
+        <div class="form-helper">⚡ Auto-filled from credit memo</div>
+      </div>
+      <div class="form-field" style="margin-top:12px;">
+        <label class="form-label">Collateral Description</label>
+        <input class="form-input error" type="text" value="" placeholder="Required field" readonly>
+        <div class="form-error">This field is required</div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>label</code></td><td><code>string</code></td><td>Field label (uppercase overline style)</td></tr>
+        <tr><td><code>value</code></td><td><code>string</code></td><td>Current field value</td></tr>
+        <tr><td><code>helperText</code></td><td><code>string?</code></td><td>Helper text below input</td></tr>
+        <tr><td><code>error</code></td><td><code>string?</code></td><td>Error message (replaces helper)</td></tr>
+        <tr><td><code>autofilled</code></td><td><code>boolean</code></td><td>Yellow highlight for auto-populated fields</td></tr>
+        <tr><td><code>required</code></td><td><code>boolean</code></td><td>Required field indicator</td></tr>
+      </table>
+      <div class="usage-note">Focus state: blue border + 3px blue glow. Error state: red border + red glow. Auto-filled: yellow background (#FFFBEB) with amber border. Forms stack fields with 16px gap.</div>
+    </div>
+  </div>
+
+  <!-- NavBar -->
+  <div id="comp-navbar" class="component-card">
+    <div class="component-header"><h3>NavBar</h3><span class="comp-tag">Navigation</span></div>
+    <div class="component-preview" style="justify-content:center;">
+      <div class="navbar">
+        <div class="nav-item active"><span class="nav-icon">📊</span><span class="nav-label">Pipeline</span></div>
+        <div class="nav-item"><span class="nav-icon">➕</span><span class="nav-label">New Deal</span></div>
+        <div class="nav-item"><span class="nav-icon">📝</span><span class="nav-label">Memos</span></div>
+        <div class="nav-item"><span class="nav-icon">✅</span><span class="nav-label">Approvals</span></div>
+        <div class="nav-item"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+    <div class="component-details">
+      <h4>Props</h4>
+      <table class="props-table">
+        <tr><th>Prop</th><th>Type</th><th>Description</th></tr>
+        <tr><td><code>activeTab</code></td><td><code>TabEnum</code></td><td>Currently active tab</td></tr>
+        <tr><td><code>badgeCounts</code></td><td><code>Record&lt;Tab, number&gt;</code></td><td>Notification badges per tab</td></tr>
+        <tr><td><code>onTabPress</code></td><td><code>(tab) => void</code></td><td>Tab switch handler</td></tr>
+      </table>
+      <div class="usage-note">Active tab indicated by navy top bar (3px) and primary color icon/label. Icons will be Tabler Icons in production. Bottom safe area padding handled by PhoneFrame.</div>
+    </div>
+  </div>
+
+  <!-- PhoneFrame -->
+  <div id="comp-phoneframe" class="component-card">
+    <div class="component-header"><h3>PhoneFrame</h3><span class="comp-tag">Wrapper</span></div>
+    <div class="component-details">
+      <h4>Specification</h4>
+      <table class="props-table">
+        <tr><th>Property</th><th>Value</th><th>Notes</th></tr>
+        <tr><td>Dimensions</td><td><code>390 × 844px</code></td><td>iPhone 14 Pro logical size</td></tr>
+        <tr><td>Corner radius</td><td><code>40px outer, 32px screen</code></td><td>Matches device bezel</td></tr>
+        <tr><td>Status bar</td><td><code>54px height</code></td><td>Includes dynamic island notch</td></tr>
+        <tr><td>Home indicator</td><td><code>20px height</code></td><td>Bottom safe area</td></tr>
+        <tr><td>Safe content area</td><td><code>390 × 770px</code></td><td>Between status bar and home indicator</td></tr>
+      </table>
+      <div class="usage-note">PhoneFrame is a preview-only component for design reviews. Not rendered in the production app. Content fills the screen area between status bar and bottom nav.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 4. LAYOUT PATTERNS -->
+<!-- ============================================ -->
+<section id="layout" class="section">
+  <h2 class="section-title">Layout Patterns</h2>
+  <p class="section-desc">
+    Standard screen layouts for the lending app. All screens follow the same vertical rhythm: status bar → header → scrollable content → bottom navigation.
+  </p>
+
+  <div class="component-preview" style="background:var(--surface-bg); padding:24px; border-radius:12px; margin-bottom:24px;">
+    <div class="layout-diagram" style="height:400px;">
+      <div class="layout-block" style="background:#12284B;color:white;">Status Bar (54px)</div>
+      <div class="layout-block" style="background:#002D72;color:white;">Header + Title</div>
+      <div class="layout-block flex-row">
+        <div>Stat</div><div>Stat</div><div>Stat</div>
+      </div>
+      <div class="layout-block scrollable">Scrollable Content Area<br>(Cards, Forms, Timeline)</div>
+      <div class="layout-block" style="background:var(--surface-card);color:var(--text-primary);">Bottom Nav (5 tabs)</div>
+      <div class="layout-block" style="height:20px;font-size:9px;">Home Indicator</div>
+    </div>
+
+    <div class="layout-diagram" style="height:400px;">
+      <div class="layout-block" style="background:#12284B;color:white;">Status Bar</div>
+      <div class="layout-block" style="background:#002D72;color:white;">Header: "New Deal"</div>
+      <div class="layout-block scrollable" style="text-align:left;padding:8px;">
+        <div style="width:100%;">
+          <div style="border:1px dashed var(--color-info);padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">Search Field</div>
+          <div style="border:1px dashed #D97706;padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">AutoFill Card</div>
+          <div style="border:1px dashed var(--color-info);padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">Lane Detection</div>
+          <div style="border:1px dashed var(--neutral-400);padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">Form Field</div>
+          <div style="border:1px dashed var(--neutral-400);padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">Form Field</div>
+          <div style="border:1px dashed var(--neutral-400);padding:4px;margin:2px 0;border-radius:4px;font-size:9px;">Form Field</div>
+        </div>
+      </div>
+      <div class="layout-block" style="background:var(--surface-card);color:var(--text-primary);">Bottom Nav</div>
+    </div>
+
+    <div class="layout-diagram" style="height:400px;">
+      <div class="layout-block" style="background:#12284B;color:white;">Status Bar</div>
+      <div class="layout-block" style="background:#002D72;color:white;">Header: "Approvals"</div>
+      <div class="layout-block scrollable" style="text-align:left;padding:8px;">
+        <div style="width:100%;">
+          <div style="border:1px solid var(--border-color);padding:6px;margin:4px 0;border-radius:4px;font-size:9px;background:white;">
+            Deal Card + SLA<br>
+            <div style="display:flex;gap:2px;margin-top:4px;">
+              <span style="background:#78BE21;color:white;padding:1px 4px;border-radius:8px;font-size:7px;">Approve</span>
+              <span style="background:#D97706;color:white;padding:1px 4px;border-radius:8px;font-size:7px;">Cond.</span>
+              <span style="background:#DA291C;color:white;padding:1px 4px;border-radius:8px;font-size:7px;">Decline</span>
+            </div>
+          </div>
+          <div style="border:1px solid var(--border-color);padding:6px;margin:4px 0;border-radius:4px;font-size:9px;background:white;">Deal Card + SLA<br><span style="font-size:7px;color:var(--text-tertiary);">+ Approval Buttons</span></div>
+        </div>
+      </div>
+      <div class="layout-block" style="background:var(--surface-card);color:var(--text-primary);">Bottom Nav</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 5. SPACING SCALE -->
+<!-- ============================================ -->
+<section id="spacing" class="subsection">
+  <h3 class="subsection-title">Spacing Scale</h3>
+  <p class="section-desc">Base unit: 4px. All spacing uses multiples of the base unit for consistent rhythm.</p>
+  <div class="spacing-visual">
+    <div class="spacing-row"><span class="spacing-label">--space-1 (4px)</span><div class="spacing-bar" style="width:16px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-2 (8px)</span><div class="spacing-bar" style="width:32px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-3 (12px)</span><div class="spacing-bar" style="width:48px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-4 (16px)</span><div class="spacing-bar" style="width:64px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-5 (20px)</span><div class="spacing-bar" style="width:80px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-6 (24px)</span><div class="spacing-bar" style="width:96px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-8 (32px)</span><div class="spacing-bar" style="width:128px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-10 (40px)</span><div class="spacing-bar" style="width:160px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-12 (48px)</span><div class="spacing-bar" style="width:192px;"></div></div>
+    <div class="spacing-row"><span class="spacing-label">--space-16 (64px)</span><div class="spacing-bar" style="width:256px;"></div></div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 6. MOTION & INTERACTION -->
+<!-- ============================================ -->
+<section id="motion" class="section">
+  <h2 class="section-title">Motion & Interaction</h2>
+  <p class="section-desc">
+    Micro-interactions reinforce the lending workflow. All animations respect <code>prefers-reduced-motion</code> and degrade to instant state changes.
+  </p>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Interactive Demos</h3>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Click or hover the boxes below to see each effect.</p>
+    <div class="motion-demo">
+      <div>
+        <div class="motion-box press" style="transition: transform 150ms cubic-bezier(0.4,0,0.2,1), box-shadow 150ms;">Card Press</div>
+        <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;text-align:center;">scale(0.98) on press</p>
+      </div>
+      <div>
+        <div class="motion-box pulse">SLA Pulse</div>
+        <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;text-align:center;">Opacity pulse 1.5s</p>
+      </div>
+      <div>
+        <div class="motion-box skeleton"></div>
+        <p style="font-size:11px;color:var(--text-tertiary);margin-top:8px;text-align:center;">Skeleton loading</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Timing Tokens</h3>
+    <table class="props-table" style="max-width:500px;">
+      <tr><th>Token</th><th>Value</th><th>Use Case</th></tr>
+      <tr><td><code>--duration-fast</code></td><td>150ms</td><td>Button press, badge change</td></tr>
+      <tr><td><code>--duration-normal</code></td><td>250ms</td><td>Card transitions, slide panels</td></tr>
+      <tr><td><code>--duration-slow</code></td><td>400ms</td><td>Screen transitions, modals</td></tr>
+      <tr><td><code>--easing-default</code></td><td>cubic-bezier(0.4, 0, 0.2, 1)</td><td>Standard motion</td></tr>
+      <tr><td><code>--easing-spring</code></td><td>cubic-bezier(0.34, 1.56, 0.64, 1)</td><td>Bouncy confirmations</td></tr>
+    </table>
+  </div>
+
+  <div class="subsection">
+    <h3 class="subsection-title">Screen Transitions</h3>
+    <table class="props-table" style="max-width:600px;">
+      <tr><th>Transition</th><th>Animation</th><th>Duration</th></tr>
+      <tr><td>Forward navigation</td><td>Slide left, incoming screen from right edge</td><td>400ms ease</td></tr>
+      <tr><td>Back navigation</td><td>Slide right, previous screen from left edge</td><td>400ms ease</td></tr>
+      <tr><td>Modal open</td><td>Slide up from bottom + backdrop fade</td><td>250ms ease</td></tr>
+      <tr><td>Modal close</td><td>Slide down + backdrop fade out</td><td>200ms ease</td></tr>
+      <tr><td>Tab switch</td><td>Cross-fade (no directional slide)</td><td>150ms</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 7. ACCESSIBILITY -->
+<!-- ============================================ -->
+<section id="a11y" class="section">
+  <h2 class="section-title">Accessibility</h2>
+  <p class="section-desc">
+    Banking apps serve diverse users across Community Bank locations. These standards ensure WCAG 2.1 AA compliance across all components.
+  </p>
+
+  <div class="a11y-grid">
+    <div class="a11y-card">
+      <h4>Contrast Ratios</h4>
+      <p>Body text (14px): minimum 4.5:1 against background. Large text (18px+ or 14px bold): minimum 3:1. All interactive elements: minimum 3:1 against adjacent colors.</p>
+      <div class="contrast-sample" style="background:var(--brand-primary);color:white;">
+        <span>#002D72 on white</span><span>10.5:1 ✓</span>
+      </div>
+      <div class="contrast-sample" style="background:var(--surface-bg);color:var(--brand-dark-gray);">
+        <span>#54585A on #FAF9F5</span><span>5.7:1 ✓</span>
+      </div>
+      <div class="contrast-sample" style="background:var(--color-success);color:white;">
+        <span>#78BE21 on white</span><span>2.8:1 — large text only</span>
+      </div>
+    </div>
+
+    <div class="a11y-card">
+      <h4>Touch Targets</h4>
+      <p>All interactive elements (buttons, links, form fields, cards, nav items) maintain a minimum touch target of 44×44pt. Padding or invisible hit areas extend small visual elements to meet this minimum.</p>
+    </div>
+
+    <div class="a11y-card">
+      <h4>Screen Reader Labels</h4>
+      <p>Every component exposes an <code>accessibilityLabel</code> prop. StatusBadge reads as "Status: In Review." SLACountdown reads as "SLA deadline: 3 hours 42 minutes remaining." RiskCard reads as "Risk level: Low, score 82 out of 100."</p>
+    </div>
+
+    <div class="a11y-card">
+      <h4>Color-Blind Safety</h4>
+      <p>Status is never conveyed by color alone. StatusBadge always includes text labels. RiskCard uses distinct geometric icons (✓, ◆, ▲, ✕). SLACountdown includes text description alongside color. LaneBadge includes icon differentiation (⚡, ◆, ⚠).</p>
+    </div>
+
+    <div class="a11y-card">
+      <h4>Reduced Motion</h4>
+      <p>When <code>prefers-reduced-motion: reduce</code> is active, all animations complete instantly. SLA pulse stops. Skeleton loading shows a static gray block. Screen transitions cross-fade in 0ms.</p>
+    </div>
+
+    <div class="a11y-card">
+      <h4>Focus Management</h4>
+      <p>Keyboard/switch-control focus uses a 2px blue outline offset by 2px. Focus order follows visual layout top-to-bottom, left-to-right. Modals trap focus. Approval actions require explicit confirmation — no accidental activations.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- 8. PHONE PREVIEW -->
+<!-- ============================================ -->
+<section id="preview" class="section">
+  <h2 class="section-title">Phone Preview</h2>
+  <p class="section-desc">
+    A sample Pipeline screen rendered using only the defined design tokens and components. This validates that the system produces a cohesive, production-ready interface.
+  </p>
+
+  <div style="display:flex;justify-content:center;padding:var(--space-8) 0;">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-status-bar">
+          <div class="notch"></div>
+          <span>9:41</span>
+          <span style="font-size:12px;">●●● WiFi 🔋</span>
+        </div>
+        <div class="phone-header">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="font-size:22px;font-weight:700;">Pipeline</h2>
+            <span style="font-size:20px;cursor:pointer;">🔍</span>
+          </div>
+        </div>
+
+        <!-- Stat Row -->
+        <div style="display:flex;gap:8px;padding:12px 16px;background:var(--surface-bg);">
+          <div class="stat-box" style="flex:1;padding:10px 8px;">
+            <div class="stat-box-value" style="font-size:20px;">24</div>
+            <div class="stat-box-label" style="font-size:9px;">Active</div>
+          </div>
+          <div class="stat-box accent" style="flex:1;padding:10px 8px;">
+            <div class="stat-box-value" style="font-size:20px;">$47M</div>
+            <div class="stat-box-label" style="font-size:9px;">Volume</div>
+          </div>
+          <div class="stat-box warning" style="flex:1;padding:10px 8px;">
+            <div class="stat-box-value" style="font-size:20px;">7</div>
+            <div class="stat-box-label" style="font-size:9px;">Action</div>
+          </div>
+        </div>
+
+        <!-- Deal List -->
+        <div class="phone-content" style="padding:8px 16px; background:var(--surface-bg);">
+          <div class="deal-card" style="width:100%;margin-bottom:8px;">
+            <div class="deal-card-top">
+              <div>
+                <div class="deal-card-borrower" style="font-size:14px;">Acme Industries</div>
+                <div class="deal-card-amount" style="font-size:12px;">$2.45M · CRE Term</div>
+              </div>
+              <span class="status-badge status-in-review" style="font-size:9px;">In Review</span>
+            </div>
+            <div class="deal-card-bottom">
+              <span class="lane-badge lane-standard" style="font-size:9px;">◆ Standard</span>
+              <span class="deal-card-time" style="font-size:10px;">2h ago</span>
+            </div>
+          </div>
+
+          <div class="deal-card" style="width:100%;margin-bottom:8px;">
+            <div class="deal-card-top">
+              <div>
+                <div class="deal-card-borrower" style="font-size:14px;">Martinez Holdings</div>
+                <div class="deal-card-amount" style="font-size:12px;">$875K · C&I Line</div>
+              </div>
+              <span class="status-badge status-submitted" style="font-size:9px;">Submitted</span>
+            </div>
+            <div class="deal-card-bottom">
+              <span class="lane-badge lane-fast" style="font-size:9px;">⚡ Fast</span>
+              <span class="deal-card-time" style="font-size:10px;">45m ago</span>
+            </div>
+          </div>
+
+          <div class="deal-card" style="width:100%;margin-bottom:8px;">
+            <div class="deal-card-top">
+              <div>
+                <div class="deal-card-borrower" style="font-size:14px;">Lone Star Devs LLC</div>
+                <div class="deal-card-amount" style="font-size:12px;">$4.1M · Construction</div>
+              </div>
+              <span class="status-badge status-conditional" style="font-size:9px;">Conditions</span>
+            </div>
+            <div class="deal-card-bottom">
+              <span class="lane-badge lane-complex" style="font-size:9px;">⚠ Complex</span>
+              <span class="deal-card-time" style="font-size:10px;">1d ago</span>
+            </div>
+          </div>
+
+          <div class="deal-card" style="width:100%;margin-bottom:8px;">
+            <div class="deal-card-top">
+              <div>
+                <div class="deal-card-borrower" style="font-size:14px;">Preston Park Medical</div>
+                <div class="deal-card-amount" style="font-size:12px;">$620K · CRE Refi</div>
+              </div>
+              <span class="status-badge status-approved" style="font-size:9px;">Approved</span>
+            </div>
+            <div class="deal-card-bottom">
+              <span class="lane-badge lane-fast" style="font-size:9px;">⚡ Fast</span>
+              <span class="deal-card-time" style="font-size:10px;">3h ago</span>
+            </div>
+          </div>
+
+          <div class="deal-card" style="width:100%;margin-bottom:8px;">
+            <div class="deal-card-top">
+              <div>
+                <div class="deal-card-borrower" style="font-size:14px;">Cedar Creek Ranch</div>
+                <div class="deal-card-amount" style="font-size:12px;">$1.8M · Ag Land</div>
+              </div>
+              <span class="status-badge status-draft" style="font-size:9px;">Draft</span>
+            </div>
+            <div class="deal-card-bottom">
+              <span class="lane-badge lane-standard" style="font-size:9px;">◆ Standard</span>
+              <span class="deal-card-time" style="font-size:10px;">5h ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="phone-nav">
+          <div class="navbar" style="width:100%;">
+            <div class="nav-item active"><span class="nav-icon" style="font-size:16px;">📊</span><span class="nav-label">Pipeline</span></div>
+            <div class="nav-item"><span class="nav-icon" style="font-size:16px;">➕</span><span class="nav-label">New Deal</span></div>
+            <div class="nav-item"><span class="nav-icon" style="font-size:16px;">📝</span><span class="nav-label">Memos</span></div>
+            <div class="nav-item"><span class="nav-icon" style="font-size:16px;">✅</span><span class="nav-label">Approvals</span></div>
+            <div class="nav-item"><span class="nav-icon" style="font-size:16px;">👤</span><span class="nav-label">Profile</span></div>
+          </div>
+        </div>
+        <div class="phone-home-indicator"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ===== COPY SCRIPT ===== -->
+<script>
+function copySwatch(el, hex) {
+  navigator.clipboard.writeText(hex).then(function() {
+    el.classList.add('copied');
+    setTimeout(function() { el.classList.remove('copied'); }, 1200);
+  }).catch(function() {
+    // Fallback for non-secure contexts
+    var ta = document.createElement('textarea');
+    ta.value = hex;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    el.classList.add('copied');
+    setTimeout(function() { el.classList.remove('copied'); }, 1200);
+  });
+}
+
+// Smooth scroll for sidebar links
+document.querySelectorAll('.doc-sidebar a').forEach(function(link) {
+  link.addEventListener('click', function(e) {
+    var href = this.getAttribute('href');
+    if (href && href.startsWith('#')) {
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  });
+});
+
+// Highlight active sidebar link on scroll
+var sections = document.querySelectorAll('[id]');
+var sidebarLinks = document.querySelectorAll('.doc-sidebar a');
+window.addEventListener('scroll', function() {
+  var scrollPos = window.scrollY + 100;
+  sections.forEach(function(section) {
+    if (section.offsetTop <= scrollPos && (section.offsetTop + section.offsetHeight) > scrollPos) {
+      sidebarLinks.forEach(function(link) {
+        link.style.background = '';
+        link.style.color = '';
+        if (link.getAttribute('href') === '#' + section.id) {
+          link.style.background = 'var(--surface-muted)';
+          link.style.color = 'var(--brand-primary)';
+          link.style.fontWeight = '600';
+        } else {
+          link.style.fontWeight = '';
+        }
+      });
+    }
+  });
+}, { passive: true });
+</script>
+
+</body>
+</html>

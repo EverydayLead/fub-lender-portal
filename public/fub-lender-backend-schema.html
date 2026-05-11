@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Backend Schema, Auth &amp; Security Design</title>
+<style>
+  :root {
+    --navy: #002D72;
+    --navy-dark: #001A45;
+    --navy-light: #003D99;
+    --gold: #C5A55A;
+    --gold-light: #E8D5A0;
+    --warm-white: #FAF9F5;
+    --warm-gray: #F0EDE6;
+    --text: #1A1A1A;
+    --text-secondary: #4A4A4A;
+    --text-muted: #7A7A7A;
+    --border: #D4D0C8;
+    --green: #1B7A3D;
+    --green-bg: #E8F5EC;
+    --red: #B91C1C;
+    --red-bg: #FEF2F2;
+    --amber: #92400E;
+    --amber-bg: #FFFBEB;
+    --blue-bg: #EFF6FF;
+    --code-bg: #1E293B;
+    --code-text: #E2E8F0;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--warm-white);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* — Header — */
+  .header {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+    color: white;
+    padding: 48px 40px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 40%;
+    background: linear-gradient(135deg, transparent 40%, rgba(197,165,90,0.08) 100%);
+    pointer-events: none;
+  }
+  .header-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-badge {
+    display: inline-block;
+    background: rgba(197,165,90,0.2);
+    border: 1px solid rgba(197,165,90,0.4);
+    color: var(--gold-light);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .header-sub {
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    max-width: 600px;
+  }
+  .header-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+  }
+  .header-meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* — Tab Navigation — */
+  .tab-nav {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .tab-nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tab-nav-inner::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    padding: 14px 20px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .tab-btn:hover { color: var(--navy); background: var(--warm-gray); }
+  .tab-btn.active {
+    color: var(--navy);
+    border-bottom-color: var(--gold);
+  }
+
+  /* — Content — */
+  .content { max-width: 1200px; margin: 0 auto; padding: 32px 40px 80px; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 0 0 8px;
+    letter-spacing: -0.3px;
+  }
+  h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy-dark);
+    margin: 32px 0 12px;
+  }
+  h4 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 24px 0 8px;
+  }
+  .section-intro {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 28px;
+    max-width: 800px;
+  }
+
+  /* — ERD Diagram — */
+  .erd-container {
+    overflow-x: auto;
+    padding: 24px 0;
+  }
+  .erd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-width: 900px;
+    position: relative;
+  }
+  .erd-table {
+    background: white;
+    border: 2px solid var(--navy);
+    border-radius: var(--radius);
+    width: 280px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .erd-table-header {
+    background: var(--navy);
+    color: white;
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .erd-table-header .icon {
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+  }
+  .erd-col {
+    padding: 5px 14px;
+    font-size: 12.5px;
+    border-bottom: 1px solid #EEE;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .erd-col:last-child { border-bottom: none; }
+  .erd-col-name { font-weight: 600; color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; }
+  .erd-col-type { color: var(--text-muted); font-size: 11px; font-family: 'SF Mono', 'Fira Code', monospace; }
+  .erd-col.pk { background: #FFFDE7; }
+  .erd-col.pk .erd-col-name::before { content: '🔑 '; font-size: 10px; }
+  .erd-col.fk .erd-col-name::before { content: '→ '; color: var(--navy-light); font-weight: 400; }
+  .erd-col.idx .erd-col-name::after { content: ' ⚡'; font-size: 10px; }
+
+  /* — Code Blocks — */
+  .code-block {
+    background: var(--code-bg);
+    color: var(--code-text);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  .code-header {
+    background: rgba(255,255,255,0.06);
+    padding: 8px 16px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .code-lang {
+    background: rgba(197,165,90,0.2);
+    color: var(--gold);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .code-body {
+    padding: 16px;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  }
+  .code-body pre { white-space: pre; }
+  .kw { color: #93C5FD; }
+  .str { color: #86EFAC; }
+  .num { color: #FDE68A; }
+  .cm { color: #64748B; font-style: italic; }
+  .fn { color: #C4B5FD; }
+  .tp { color: #F9A8D4; }
+  .op { color: #94A3B8; }
+
+  /* — Cards & Tables — */
+  .card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin: 16px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card-icon {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+  .card-title { font-weight: 700; font-size: 16px; color: var(--navy); }
+
+  table.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+  table.data-table th {
+    background: var(--warm-gray);
+    color: var(--navy);
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+  }
+  table.data-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #EEE;
+    vertical-align: top;
+  }
+  table.data-table tr:hover td { background: #FAFAF8; }
+  table.data-table code {
+    background: var(--warm-gray);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* — Threat Cards — */
+  .threat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+  .threat-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    border-left: 4px solid var(--red);
+  }
+  .threat-card.high { border-left-color: var(--red); }
+  .threat-card.medium { border-left-color: var(--amber); }
+  .threat-card .threat-id {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+  .threat-card .threat-title { font-weight: 700; font-size: 15px; color: var(--text); margin-bottom: 8px; }
+  .threat-card .threat-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 12px; }
+  .threat-card .threat-mitigation {
+    background: var(--green-bg);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 12.5px;
+    color: var(--green);
+  }
+  .threat-card .threat-mitigation strong { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px; }
+  .severity-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .severity-critical { background: var(--red-bg); color: var(--red); }
+  .severity-high { background: #FFF7ED; color: #C2410C; }
+  .severity-medium { background: var(--amber-bg); color: var(--amber); }
+
+  /* — Workflow Cards — */
+  .workflow-card {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 16px 0;
+    overflow: hidden;
+  }
+  .workflow-header {
+    background: var(--warm-gray);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .workflow-header h4 { margin: 0; font-size: 15px; }
+  .workflow-trigger {
+    font-size: 11px;
+    background: var(--navy);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+  }
+  .workflow-body { padding: 20px; }
+  .workflow-steps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .wf-step {
+    background: var(--blue-bg);
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+    white-space: nowrap;
+  }
+  .wf-arrow { color: var(--text-muted); font-size: 16px; }
+
+  /* — API Method badges — */
+  .method {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'SF Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+  .method-get { background: #DCFCE7; color: #166534; }
+  .method-post { background: #DBEAFE; color: #1E40AF; }
+  .method-put { background: #FEF3C7; color: #92400E; }
+  .method-delete { background: #FEE2E2; color: #991B1B; }
+
+  .endpoint-path {
+    font-family: 'SF Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-left: 10px;
+  }
+
+  /* — Misc — */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 12px;
+    letter-spacing: 0.3px;
+  }
+  .badge-navy { background: rgba(0,45,114,0.1); color: var(--navy); }
+  .badge-gold { background: rgba(197,165,90,0.15); color: #8B6914; }
+  .badge-green { background: var(--green-bg); color: var(--green); }
+
+  .callout {
+    border-left: 4px solid var(--gold);
+    background: rgba(197,165,90,0.06);
+    padding: 16px 20px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+  .callout strong { color: var(--navy); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 800px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  .coexistence-table td:first-child { font-family: 'SF Mono', monospace; font-size: 12px; font-weight: 600; }
+  .sync-yes { color: var(--green); font-weight: 700; }
+  .sync-no { color: var(--text-muted); }
+
+  /* ERD relationship legend */
+  .erd-legend {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .erd-legend span { display: flex; align-items: center; gap: 6px; }
+  .legend-pk { width: 12px; height: 12px; background: #FFFDE7; border: 1px solid #EAB308; border-radius: 2px; }
+  .legend-fk { width: 12px; height: 12px; background: #EFF6FF; border: 1px solid var(--navy-light); border-radius: 2px; }
+  .legend-idx { width: 12px; height: 12px; background: #F0FDF4; border: 1px solid var(--green); border-radius: 2px; }
+
+  .footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-badge">Prompt 5 of 8 — Lender Build Playbook</div>
+    <h1>Backend Schema, Auth &amp; Security Design</h1>
+    <p class="header-sub">PostgreSQL schema, RESTful API contracts, authority enforcement, threat model, n8n workflows, and nCino coexistence layer for FUB Lender.</p>
+    <div class="header-meta">
+      <span>First United Bank</span>
+      <span>|</span>
+      <span>v1.0 — May 2026</span>
+      <span>|</span>
+      <span>Owner: Henry Marquez (Eng) / Saqib Kheiri (CRO)</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TABS ========== -->
+<nav class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" data-tab="schema">Database Schema</button>
+    <button class="tab-btn" data-tab="api">API Endpoints</button>
+    <button class="tab-btn" data-tab="authority">Authority &amp; Auth</button>
+    <button class="tab-btn" data-tab="threats">Threat Model</button>
+    <button class="tab-btn" data-tab="n8n">n8n Workflows</button>
+    <button class="tab-btn" data-tab="ncino">nCino Coexistence</button>
+  </div>
+</nav>
+
+<!-- ========== CONTENT ========== -->
+<div class="content">
+
+<!-- ==================== TAB 1: DATABASE SCHEMA ==================== -->
+<div class="tab-panel active" id="tab-schema">
+  <h2>Database Schema (PostgreSQL 15+)</h2>
+  <p class="section-intro">Nine core tables on Azure Database for PostgreSQL — Flexible Server. All timestamps are <code>timestamptz</code>. Soft deletes via <code>deleted_at</code> where applicable. JSONB columns enable schema flexibility for NLP extraction and offline sync payloads without sacrificing query performance.</p>
+
+  <div class="callout">
+    <strong>Jackie Parsons trace:</strong> A $110K cattle deal flows through <code>deals</code> (lane = 'standard', collateral_class = 'livestock'), linked to a <code>credit_memos</code> row whose <code>narrative_text</code> is banker-authored. NLP extraction populates <code>nlp_extracted_fields</code> with structured DSCR, LTV, and purpose. Authority routing sends it to a Level 3 approver ($250K ceiling).
+  </div>
+
+  <div class="erd-legend">
+    <span><span class="legend-pk"></span> Primary Key</span>
+    <span><span class="legend-fk"></span> Foreign Key</span>
+    <span><span class="legend-idx"></span> Indexed</span>
+  </div>
+
+  <!-- ERD Row 1 -->
+  <h3>Entity-Relationship Diagram</h3>
+  <div class="erd-container">
+    <div class="erd">
+
+      <!-- deals -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">D</span> deals</div>
+        <div class="erd-col pk"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">borrower_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">lane</span><span class="erd-col-type">ENUM NOT NULL</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">status</span><span class="erd-col-type">ENUM NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">amount</span><span class="erd-col-type">NUMERIC(15,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">purpose</span><span class="erd-col-type">VARCHAR(500)</span></div>
+        <div class="erd-col"><span class="erd-col-name">loan_type</span><span class="erd-col-type">VARCHAR(50)</span></div>
+        <div class="erd-col"><span class="erd-col-name">collateral_class</span><span class="erd-col-type">VARCHAR(50)</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">created_by</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">assigned_approver</span><span class="erd-col-type">UUID FK NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">created_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+        <div class="erd-col"><span class="erd-col-name">updated_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+        <div class="erd-col"><span class="erd-col-name">submitted_at</span><span class="erd-col-type">TIMESTAMPTZ NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">approved_at</span><span class="erd-col-type">TIMESTAMPTZ NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">booked_at</span><span class="erd-col-type">TIMESTAMPTZ NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">deleted_at</span><span class="erd-col-type">TIMESTAMPTZ NULL</span></div>
+      </div>
+
+      <!-- borrowers -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">B</span> borrowers</div>
+        <div class="erd-col pk"><span class="erd-col-name">borrower_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">jh_customer_id</span><span class="erd-col-type">VARCHAR(20) UNIQUE</span></div>
+        <div class="erd-col"><span class="erd-col-name">legal_name</span><span class="erd-col-type">VARCHAR(255) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">tin_hash</span><span class="erd-col-type">CHAR(64) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">entity_type</span><span class="erd-col-type">VARCHAR(30)</span></div>
+        <div class="erd-col"><span class="erd-col-name">address_json</span><span class="erd-col-type">JSONB</span></div>
+        <div class="erd-col"><span class="erd-col-name">phone</span><span class="erd-col-type">VARCHAR(20)</span></div>
+        <div class="erd-col"><span class="erd-col-name">email</span><span class="erd-col-type">VARCHAR(255)</span></div>
+        <div class="erd-col"><span class="erd-col-name">relationship_start</span><span class="erd-col-type">DATE</span></div>
+        <div class="erd-col"><span class="erd-col-name">risk_rating</span><span class="erd-col-type">SMALLINT CHECK(1-10)</span></div>
+        <div class="erd-col"><span class="erd-col-name">created_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+        <div class="erd-col"><span class="erd-col-name">updated_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+      </div>
+
+      <!-- credit_memos -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">M</span> credit_memos</div>
+        <div class="erd-col pk"><span class="erd-col-name">memo_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">narrative_text</span><span class="erd-col-type">TEXT NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">nlp_extracted_fields</span><span class="erd-col-type">JSONB</span></div>
+        <div class="erd-col"><span class="erd-col-name">risk_assessment</span><span class="erd-col-type">VARCHAR(20)</span></div>
+        <div class="erd-col"><span class="erd-col-name">ltv_ratio</span><span class="erd-col-type">NUMERIC(5,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">dscr</span><span class="erd-col-type">NUMERIC(5,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">version</span><span class="erd-col-type">INTEGER DEFAULT 1</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">created_by</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">created_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+      </div>
+
+      <!-- approval_actions -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">A</span> approval_actions</div>
+        <div class="erd-col pk"><span class="erd-col-name">action_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">approver_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">action</span><span class="erd-col-type">ENUM NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">conditions_text</span><span class="erd-col-type">TEXT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">authority_level_used</span><span class="erd-col-type">SMALLINT NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">device_fingerprint</span><span class="erd-col-type">VARCHAR(128)</span></div>
+        <div class="erd-col"><span class="erd-col-name">ip_address</span><span class="erd-col-type">INET</span></div>
+        <div class="erd-col"><span class="erd-col-name">location_coords</span><span class="erd-col-type">POINT</span></div>
+        <div class="erd-col"><span class="erd-col-name">timestamp</span><span class="erd-col-type">TIMESTAMPTZ NOT NULL</span></div>
+      </div>
+
+      <!-- documents -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">F</span> documents</div>
+        <div class="erd-col pk"><span class="erd-col-name">doc_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">file_type</span><span class="erd-col-type">VARCHAR(10)</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">classification</span><span class="erd-col-type">ENUM NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">storage_ref</span><span class="erd-col-type">VARCHAR(500)</span></div>
+        <div class="erd-col"><span class="erd-col-name">ocr_text</span><span class="erd-col-type">TEXT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">sha256_hash</span><span class="erd-col-type">CHAR(64)</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">uploaded_by</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">uploaded_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+      </div>
+
+      <!-- collateral -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">C</span> collateral</div>
+        <div class="erd-col pk"><span class="erd-col-name">collateral_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">type</span><span class="erd-col-type">VARCHAR(50) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">description</span><span class="erd-col-type">TEXT</span></div>
+        <div class="erd-col"><span class="erd-col-name">appraised_value</span><span class="erd-col-type">NUMERIC(15,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">lien_position</span><span class="erd-col-type">SMALLINT DEFAULT 1</span></div>
+        <div class="erd-col"><span class="erd-col-name">valuation_date</span><span class="erd-col-type">DATE</span></div>
+        <div class="erd-col"><span class="erd-col-name">created_at</span><span class="erd-col-type">TIMESTAMPTZ</span></div>
+      </div>
+
+      <!-- audit_events -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">E</span> audit_events</div>
+        <div class="erd-col pk"><span class="erd-col-name">event_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col fk idx"><span class="erd-col-name">deal_id</span><span class="erd-col-type">UUID FK NULL</span></div>
+        <div class="erd-col fk idx"><span class="erd-col-name">user_id</span><span class="erd-col-type">UUID FK NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">event_type</span><span class="erd-col-type">VARCHAR(50) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">event_data</span><span class="erd-col-type">JSONB</span></div>
+        <div class="erd-col"><span class="erd-col-name">ip_address</span><span class="erd-col-type">INET</span></div>
+        <div class="erd-col"><span class="erd-col-name">device_info</span><span class="erd-col-type">JSONB</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">timestamp</span><span class="erd-col-type">TIMESTAMPTZ NOT NULL</span></div>
+      </div>
+
+      <!-- authority_matrix -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">L</span> authority_matrix</div>
+        <div class="erd-col pk"><span class="erd-col-name">level_id</span><span class="erd-col-type">SERIAL PK</span></div>
+        <div class="erd-col"><span class="erd-col-name">level_number</span><span class="erd-col-type">SMALLINT UNIQUE</span></div>
+        <div class="erd-col"><span class="erd-col-name">role</span><span class="erd-col-type">VARCHAR(50) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">individual_limit</span><span class="erd-col-type">NUMERIC(15,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">relationship_limit</span><span class="erd-col-type">NUMERIC(15,2)</span></div>
+        <div class="erd-col"><span class="erd-col-name">requires_committee</span><span class="erd-col-type">BOOLEAN DEFAULT FALSE</span></div>
+        <div class="erd-col"><span class="erd-col-name">effective_date</span><span class="erd-col-type">DATE NOT NULL</span></div>
+      </div>
+
+      <!-- sync_queue -->
+      <div class="erd-table">
+        <div class="erd-table-header"><span class="icon">S</span> sync_queue</div>
+        <div class="erd-col pk"><span class="erd-col-name">queue_id</span><span class="erd-col-type">UUID PK</span></div>
+        <div class="erd-col idx"><span class="erd-col-name">device_id</span><span class="erd-col-type">VARCHAR(128) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">entity_type</span><span class="erd-col-type">VARCHAR(50) NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">entity_id</span><span class="erd-col-type">UUID NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">operation</span><span class="erd-col-type">ENUM NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">payload</span><span class="erd-col-type">JSONB NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">created_at</span><span class="erd-col-type">TIMESTAMPTZ NOT NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">synced_at</span><span class="erd-col-type">TIMESTAMPTZ NULL</span></div>
+        <div class="erd-col"><span class="erd-col-name">conflict_resolved</span><span class="erd-col-type">BOOLEAN DEFAULT FALSE</span></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SQL DDL -->
+  <h3>Full DDL — Core Tables</h3>
+
+  <div class="code-block">
+    <div class="code-header"><span>deals + borrowers + enums</span><span class="code-lang">SQL</span></div>
+    <div class="code-body"><pre><span class="cm">-- Custom ENUM types</span>
+<span class="kw">CREATE TYPE</span> deal_lane <span class="kw">AS ENUM</span> (<span class="str">'fast'</span>, <span class="str">'standard'</span>, <span class="str">'complex'</span>);
+<span class="kw">CREATE TYPE</span> deal_status <span class="kw">AS ENUM</span> (
+  <span class="str">'draft'</span>, <span class="str">'submitted'</span>, <span class="str">'in_review'</span>, <span class="str">'approved'</span>,
+  <span class="str">'conditionally_approved'</span>, <span class="str">'declined'</span>, <span class="str">'booked'</span>, <span class="str">'closed'</span>
+);
+<span class="kw">CREATE TYPE</span> approval_action_type <span class="kw">AS ENUM</span> (
+  <span class="str">'approve'</span>, <span class="str">'decline'</span>, <span class="str">'condition'</span>, <span class="str">'escalate'</span>
+);
+<span class="kw">CREATE TYPE</span> sync_operation <span class="kw">AS ENUM</span> (<span class="str">'create'</span>, <span class="str">'update'</span>);
+<span class="kw">CREATE TYPE</span> doc_classification <span class="kw">AS ENUM</span> (
+  <span class="str">'tax_return'</span>, <span class="str">'financial_stmt'</span>, <span class="str">'appraisal'</span>,
+  <span class="str">'title'</span>, <span class="str">'insurance'</span>, <span class="str">'other'</span>
+);
+
+<span class="cm">-- ─── borrowers ───</span>
+<span class="kw">CREATE TABLE</span> borrowers (
+  borrower_id     <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  jh_customer_id  <span class="tp">VARCHAR(20)</span> <span class="kw">UNIQUE</span>,
+  legal_name      <span class="tp">VARCHAR(255)</span> <span class="kw">NOT NULL</span>,
+  tin_hash        <span class="tp">CHAR(64)</span> <span class="kw">NOT NULL</span>,  <span class="cm">-- SHA-256 of TIN; raw TIN never stored</span>
+  entity_type     <span class="tp">VARCHAR(30)</span>,
+  address_json    <span class="tp">JSONB</span>,
+  phone           <span class="tp">VARCHAR(20)</span>,
+  email           <span class="tp">VARCHAR(255)</span>,
+  relationship_start <span class="tp">DATE</span>,
+  risk_rating     <span class="tp">SMALLINT</span> <span class="kw">CHECK</span> (risk_rating <span class="kw">BETWEEN</span> <span class="num">1</span> <span class="kw">AND</span> <span class="num">10</span>),
+  created_at      <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now(),
+  updated_at      <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_borrowers_jh <span class="kw">ON</span> borrowers(jh_customer_id);
+<span class="kw">CREATE INDEX</span> idx_borrowers_name <span class="kw">ON</span> borrowers <span class="kw">USING</span> gin(legal_name gin_trgm_ops);
+
+<span class="cm">-- ─── deals ───</span>
+<span class="kw">CREATE TABLE</span> deals (
+  deal_id           <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  borrower_id       <span class="tp">UUID</span> <span class="kw">NOT NULL REFERENCES</span> borrowers(borrower_id),
+  lane              deal_lane <span class="kw">NOT NULL</span>,
+  status            deal_status <span class="kw">NOT NULL DEFAULT</span> <span class="str">'draft'</span>,
+  amount            <span class="tp">NUMERIC(15,2)</span>,
+  purpose           <span class="tp">VARCHAR(500)</span>,
+  loan_type         <span class="tp">VARCHAR(50)</span>,
+  collateral_class  <span class="tp">VARCHAR(50)</span>,
+  created_by        <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,  <span class="cm">-- Okta user ID</span>
+  assigned_approver <span class="tp">UUID</span>,
+  created_at        <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now(),
+  updated_at        <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now(),
+  submitted_at      <span class="tp">TIMESTAMPTZ</span>,
+  approved_at       <span class="tp">TIMESTAMPTZ</span>,
+  booked_at         <span class="tp">TIMESTAMPTZ</span>,
+  deleted_at        <span class="tp">TIMESTAMPTZ</span>
+);
+<span class="kw">CREATE INDEX</span> idx_deals_status <span class="kw">ON</span> deals(status) <span class="kw">WHERE</span> deleted_at <span class="kw">IS NULL</span>;
+<span class="kw">CREATE INDEX</span> idx_deals_lane <span class="kw">ON</span> deals(lane);
+<span class="kw">CREATE INDEX</span> idx_deals_borrower <span class="kw">ON</span> deals(borrower_id);
+<span class="kw">CREATE INDEX</span> idx_deals_approver <span class="kw">ON</span> deals(assigned_approver);
+<span class="kw">CREATE INDEX</span> idx_deals_created_by <span class="kw">ON</span> deals(created_by);</pre></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span>credit_memos + approval_actions + documents</span><span class="code-lang">SQL</span></div>
+    <div class="code-body"><pre><span class="cm">-- ─── credit_memos ───</span>
+<span class="kw">CREATE TABLE</span> credit_memos (
+  memo_id             <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  deal_id             <span class="tp">UUID</span> <span class="kw">NOT NULL REFERENCES</span> deals(deal_id),
+  narrative_text      <span class="tp">TEXT</span> <span class="kw">NOT NULL</span>,
+  nlp_extracted_fields <span class="tp">JSONB</span> <span class="kw">DEFAULT</span> <span class="str">'{}'</span>::jsonb,
+  risk_assessment     <span class="tp">VARCHAR(20)</span>,  <span class="cm">-- low / moderate / elevated / high</span>
+  ltv_ratio           <span class="tp">NUMERIC(5,2)</span>,
+  dscr                <span class="tp">NUMERIC(5,2)</span>,
+  version             <span class="tp">INTEGER</span> <span class="kw">NOT NULL DEFAULT</span> <span class="num">1</span>,
+  created_by          <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,
+  created_at          <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now(),
+  <span class="kw">UNIQUE</span>(deal_id, version)  <span class="cm">-- one memo per version per deal</span>
+);
+<span class="kw">CREATE INDEX</span> idx_memos_deal <span class="kw">ON</span> credit_memos(deal_id);
+
+<span class="cm">-- ─── approval_actions ───</span>
+<span class="kw">CREATE TABLE</span> approval_actions (
+  action_id           <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  deal_id             <span class="tp">UUID</span> <span class="kw">NOT NULL REFERENCES</span> deals(deal_id),
+  approver_id         <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,
+  action              approval_action_type <span class="kw">NOT NULL</span>,
+  conditions_text     <span class="tp">TEXT</span>,
+  authority_level_used <span class="tp">SMALLINT</span> <span class="kw">NOT NULL</span>,
+  device_fingerprint  <span class="tp">VARCHAR(128)</span>,
+  ip_address          <span class="tp">INET</span>,
+  location_coords     <span class="tp">POINT</span>,
+  timestamp           <span class="tp">TIMESTAMPTZ</span> <span class="kw">NOT NULL DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_approvals_deal <span class="kw">ON</span> approval_actions(deal_id);
+<span class="kw">CREATE INDEX</span> idx_approvals_approver <span class="kw">ON</span> approval_actions(approver_id);
+
+<span class="cm">-- ─── documents ───</span>
+<span class="kw">CREATE TABLE</span> documents (
+  doc_id          <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  deal_id         <span class="tp">UUID</span> <span class="kw">NOT NULL REFERENCES</span> deals(deal_id),
+  file_type       <span class="tp">VARCHAR(10)</span>,
+  classification  doc_classification <span class="kw">NOT NULL DEFAULT</span> <span class="str">'other'</span>,
+  storage_ref     <span class="tp">VARCHAR(500)</span> <span class="kw">NOT NULL</span>,  <span class="cm">-- OpenText document ID</span>
+  ocr_text        <span class="tp">TEXT</span>,
+  sha256_hash     <span class="tp">CHAR(64)</span> <span class="kw">NOT NULL</span>,
+  uploaded_by     <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,
+  uploaded_at     <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_docs_deal <span class="kw">ON</span> documents(deal_id);
+<span class="kw">CREATE INDEX</span> idx_docs_class <span class="kw">ON</span> documents(classification);</pre></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span>collateral + audit_events + authority_matrix + sync_queue</span><span class="code-lang">SQL</span></div>
+    <div class="code-body"><pre><span class="cm">-- ─── collateral ───</span>
+<span class="kw">CREATE TABLE</span> collateral (
+  collateral_id   <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  deal_id         <span class="tp">UUID</span> <span class="kw">NOT NULL REFERENCES</span> deals(deal_id),
+  type            <span class="tp">VARCHAR(50)</span> <span class="kw">NOT NULL</span>,
+  description     <span class="tp">TEXT</span>,
+  appraised_value <span class="tp">NUMERIC(15,2)</span>,
+  lien_position   <span class="tp">SMALLINT</span> <span class="kw">DEFAULT</span> <span class="num">1</span>,
+  valuation_date  <span class="tp">DATE</span>,
+  created_at      <span class="tp">TIMESTAMPTZ</span> <span class="kw">DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_collateral_deal <span class="kw">ON</span> collateral(deal_id);
+
+<span class="cm">-- ─── audit_events ─── (append-only, no UPDATE/DELETE grants)</span>
+<span class="kw">CREATE TABLE</span> audit_events (
+  event_id    <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  deal_id     <span class="tp">UUID</span> <span class="kw">REFERENCES</span> deals(deal_id),
+  user_id     <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,
+  event_type  <span class="tp">VARCHAR(50)</span> <span class="kw">NOT NULL</span>,
+  event_data  <span class="tp">JSONB</span>,
+  ip_address  <span class="tp">INET</span>,
+  device_info <span class="tp">JSONB</span>,
+  timestamp   <span class="tp">TIMESTAMPTZ</span> <span class="kw">NOT NULL DEFAULT</span> now()
+);
+<span class="kw">CREATE INDEX</span> idx_audit_deal <span class="kw">ON</span> audit_events(deal_id);
+<span class="kw">CREATE INDEX</span> idx_audit_user <span class="kw">ON</span> audit_events(user_id);
+<span class="kw">CREATE INDEX</span> idx_audit_ts <span class="kw">ON</span> audit_events(timestamp);
+<span class="kw">CREATE INDEX</span> idx_audit_type <span class="kw">ON</span> audit_events(event_type);
+
+<span class="cm">-- Prevent deletes/updates on audit table at DB level</span>
+<span class="kw">REVOKE</span> UPDATE, DELETE <span class="kw">ON</span> audit_events <span class="kw">FROM</span> app_role;
+
+<span class="cm">-- ─── authority_matrix ───</span>
+<span class="kw">CREATE TABLE</span> authority_matrix (
+  level_id          <span class="tp">SERIAL</span> <span class="kw">PRIMARY KEY</span>,
+  level_number      <span class="tp">SMALLINT</span> <span class="kw">UNIQUE NOT NULL</span>,
+  role              <span class="tp">VARCHAR(50)</span> <span class="kw">NOT NULL</span>,
+  individual_limit  <span class="tp">NUMERIC(15,2)</span> <span class="kw">NOT NULL</span>,
+  relationship_limit <span class="tp">NUMERIC(15,2)</span>,
+  requires_committee <span class="tp">BOOLEAN</span> <span class="kw">DEFAULT</span> <span class="num">FALSE</span>,
+  effective_date    <span class="tp">DATE</span> <span class="kw">NOT NULL DEFAULT</span> CURRENT_DATE
+);
+
+<span class="cm">-- Seed the authority matrix</span>
+<span class="kw">INSERT INTO</span> authority_matrix (level_number, role, individual_limit, requires_committee, effective_date) <span class="kw">VALUES</span>
+  (<span class="num">1</span>, <span class="str">'Community Banker'</span>,      <span class="num">50000</span>,   <span class="num">FALSE</span>, <span class="str">'2026-01-01'</span>),
+  (<span class="num">2</span>, <span class="str">'Senior Lender'</span>,          <span class="num">100000</span>,  <span class="num">FALSE</span>, <span class="str">'2026-01-01'</span>),
+  (<span class="num">3</span>, <span class="str">'Market President'</span>,       <span class="num">250000</span>,  <span class="num">FALSE</span>, <span class="str">'2026-01-01'</span>),
+  (<span class="num">4</span>, <span class="str">'Regional Credit Officer'</span>, <span class="num">500000</span>,  <span class="num">FALSE</span>, <span class="str">'2026-01-01'</span>),
+  (<span class="num">5</span>, <span class="str">'Chief Credit Officer'</span>,   <span class="num">1000000</span>, <span class="num">FALSE</span>, <span class="str">'2026-01-01'</span>),
+  (<span class="num">6</span>, <span class="str">'Loan Committee'</span>,         <span class="num">999999999</span>, <span class="num">TRUE</span>, <span class="str">'2026-01-01'</span>);
+
+<span class="cm">-- ─── sync_queue ─── (offline-first mobile support)</span>
+<span class="kw">CREATE TABLE</span> sync_queue (
+  queue_id          <span class="tp">UUID</span> <span class="kw">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  device_id         <span class="tp">VARCHAR(128)</span> <span class="kw">NOT NULL</span>,
+  entity_type       <span class="tp">VARCHAR(50)</span> <span class="kw">NOT NULL</span>,
+  entity_id         <span class="tp">UUID</span> <span class="kw">NOT NULL</span>,
+  operation         sync_operation <span class="kw">NOT NULL</span>,
+  payload           <span class="tp">JSONB</span> <span class="kw">NOT NULL</span>,
+  created_at        <span class="tp">TIMESTAMPTZ</span> <span class="kw">NOT NULL DEFAULT</span> now(),
+  synced_at         <span class="tp">TIMESTAMPTZ</span>,
+  conflict_resolved <span class="tp">BOOLEAN</span> <span class="kw">DEFAULT</span> <span class="num">FALSE</span>
+);
+<span class="kw">CREATE INDEX</span> idx_sync_device <span class="kw">ON</span> sync_queue(device_id);
+<span class="kw">CREATE INDEX</span> idx_sync_pending <span class="kw">ON</span> sync_queue(synced_at) <span class="kw">WHERE</span> synced_at <span class="kw">IS NULL</span>;</pre></div>
+  </div>
+
+  <h3>Key Schema Design Decisions</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4 style="margin-top:0;">TIN hashing, not encryption</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">TINs are stored as SHA-256 hashes. The app never needs to display a full TIN — it only needs to verify uniqueness and match against Jack Henry records. This eliminates an entire class of data-at-rest exposure. The raw TIN lives only in Jack Henry SilverLake.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Append-only audit table</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">The <code>audit_events</code> table has UPDATE and DELETE revoked at the PostgreSQL role level. The application database user physically cannot modify history. A separate read-only replica feeds the compliance dashboard. Examiner-grade immutability.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">JSONB for NLP extraction</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">The <code>nlp_extracted_fields</code> column in credit_memos stores structured output from NLP without requiring schema migrations as the extraction model improves. GIN indexes on JSONB paths support fast queries on specific extracted fields (e.g., DSCR, collateral type).</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Conflict-aware sync queue</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">Offline edits from field bankers queue in <code>sync_queue</code> with full payloads. On reconnect, the server applies last-write-wins for non-critical fields and flags conflicts for manual resolution on approval actions — a banker can't unknowingly overwrite an approver's decision.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 2: API ENDPOINTS ==================== -->
+<div class="tab-panel" id="tab-api">
+  <h2>API Endpoint Design</h2>
+  <p class="section-intro">RESTful API served via MuleSoft API Gateway → Azure AKS (Node.js / NestJS). All endpoints require Okta JWT bearer token. Rate limits: 100 req/min per user, 1000 req/min per service account. API versioning via URL path (<code>/api/v1/</code>).</p>
+
+  <!-- POST /api/deals -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/api/v1/deals</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Create a new deal. Auto-assigns lane based on amount and loan_type. Returns the created deal with a generated <code>deal_id</code>.</p>
+    <div class="grid-2">
+      <div>
+        <h4 style="margin-top:0;">Request Body</h4>
+        <div class="code-block">
+          <div class="code-header"><span>Example: Jackie Parsons cattle deal</span><span class="code-lang">JSON</span></div>
+          <div class="code-body"><pre>{
+  <span class="str">"borrower_id"</span>: <span class="str">"b7f2e8a1-..."</span>,
+  <span class="str">"amount"</span>: <span class="num">110000.00</span>,
+  <span class="str">"purpose"</span>: <span class="str">"Purchase of 50 head Black Angus cattle for existing ranch operation"</span>,
+  <span class="str">"loan_type"</span>: <span class="str">"agricultural_term"</span>,
+  <span class="str">"collateral_class"</span>: <span class="str">"livestock"</span>
+}</pre></div>
+        </div>
+      </div>
+      <div>
+        <h4 style="margin-top:0;">Response <span class="badge badge-green">201 Created</span></h4>
+        <div class="code-block">
+          <div class="code-header"><span>Auto-assigned lane: standard ($110K)</span><span class="code-lang">JSON</span></div>
+          <div class="code-body"><pre>{
+  <span class="str">"deal_id"</span>: <span class="str">"d4a91c3f-..."</span>,
+  <span class="str">"borrower_id"</span>: <span class="str">"b7f2e8a1-..."</span>,
+  <span class="str">"lane"</span>: <span class="str">"standard"</span>,
+  <span class="str">"status"</span>: <span class="str">"draft"</span>,
+  <span class="str">"amount"</span>: <span class="num">110000.00</span>,
+  <span class="str">"created_by"</span>: <span class="str">"u-banker-01"</span>,
+  <span class="str">"created_at"</span>: <span class="str">"2026-05-10T14:30:00Z"</span>,
+  <span class="str">"_links"</span>: {
+    <span class="str">"self"</span>: <span class="str">"/api/v1/deals/d4a91c3f-..."</span>,
+    <span class="str">"memo"</span>: <span class="str">"/api/v1/deals/d4a91c3f-.../memo"</span>,
+    <span class="str">"documents"</span>: <span class="str">"/api/v1/deals/d4a91c3f-.../documents"</span>
+  }
+}</pre></div>
+        </div>
+      </div>
+    </div>
+    <div class="callout"><strong>Lane assignment logic:</strong> amount &le; $250K &amp;&amp; loan_type not in [SBA, participation, multi-entity] → <code>fast</code>. Amount &le; $250K otherwise → <code>standard</code>. Amount &gt; $250K or SBA/participation/multi-entity → <code>complex</code>.</div>
+  </div>
+
+  <!-- GET /api/deals -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/v1/deals</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">List deals with filtering, sorting, and cursor-based pagination. Bankers see their own deals; approvers see deals assigned to them or awaiting their authority level; admins see all.</p>
+    <h4 style="margin-top:0;">Query Parameters</h4>
+    <table class="data-table">
+      <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>lane</code></td><td>enum</td><td>Filter by fast | standard | complex</td></tr>
+        <tr><td><code>status</code></td><td>enum[]</td><td>Comma-separated: <code>status=draft,submitted</code></td></tr>
+        <tr><td><code>assigned_to</code></td><td>UUID</td><td>Filter by assigned approver</td></tr>
+        <tr><td><code>created_by</code></td><td>UUID</td><td>Filter by originating banker</td></tr>
+        <tr><td><code>date_from</code></td><td>ISO date</td><td>Created on or after</td></tr>
+        <tr><td><code>date_to</code></td><td>ISO date</td><td>Created on or before</td></tr>
+        <tr><td><code>sort</code></td><td>string</td><td><code>created_at</code> | <code>amount</code> | <code>submitted_at</code></td></tr>
+        <tr><td><code>cursor</code></td><td>string</td><td>Opaque cursor from previous response</td></tr>
+        <tr><td><code>limit</code></td><td>int</td><td>1–100, default 25</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PUT /api/deals/:id/memo -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-put">PUT</span>
+      <span class="endpoint-path">/api/v1/deals/:id/memo</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Create or update the credit memo narrative. Each save creates a new version (immutable history). Triggers async NLP extraction pipeline via n8n webhook.</p>
+    <div class="code-block">
+      <div class="code-header"><span>Request body</span><span class="code-lang">JSON</span></div>
+      <div class="code-body"><pre>{
+  <span class="str">"narrative_text"</span>: <span class="str">"Jackie Parsons is a 7-year customer with a strong repayment history. She operates a 200-acre ranch in Ardmore, OK and is requesting $110,000 to purchase 50 head of registered Black Angus cattle. Current DSCR based on 2025 tax returns is 1.45x. Collateral includes the livestock plus an existing blanket lien on ranch equipment valued at $85,000..."</span>,
+  <span class="str">"risk_assessment"</span>: <span class="str">"moderate"</span>,
+  <span class="str">"ltv_ratio"</span>: <span class="num">72.5</span>,
+  <span class="str">"dscr"</span>: <span class="num">1.45</span>
+}</pre></div>
+    </div>
+    <div class="code-block">
+      <div class="code-header"><span>Response — 200 OK</span><span class="code-lang">JSON</span></div>
+      <div class="code-body"><pre>{
+  <span class="str">"memo_id"</span>: <span class="str">"m-8c4a..."</span>,
+  <span class="str">"version"</span>: <span class="num">2</span>,
+  <span class="str">"nlp_status"</span>: <span class="str">"processing"</span>,
+  <span class="str">"nlp_webhook"</span>: <span class="str">"/api/v1/deals/d4a91c3f-.../memo/nlp-status"</span>
+}</pre></div>
+    </div>
+  </div>
+
+  <!-- POST /api/deals/:id/submit -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/api/v1/deals/:id/submit</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Submit deal for approval. Server validates completeness (memo exists, required docs attached, collateral defined), determines required authority level, and routes to the appropriate approver. Rejects if the submitter would be the approver (self-approval block).</p>
+    <h4 style="margin-top:0;">Validation Checklist (server-enforced)</h4>
+    <table class="data-table">
+      <thead><tr><th>Check</th><th>Failure Response</th></tr></thead>
+      <tbody>
+        <tr><td>Credit memo exists with version ≥ 1</td><td><code>422</code> — "Credit memo required before submission"</td></tr>
+        <tr><td>At least one collateral record</td><td><code>422</code> — "Collateral definition required"</td></tr>
+        <tr><td>Required docs by lane (Fast: 2+, Standard: 4+, Complex: 6+)</td><td><code>422</code> — "Insufficient documentation for [lane] lane"</td></tr>
+        <tr><td>Borrower has <code>jh_customer_id</code> (core system match)</td><td><code>422</code> — "Borrower must be linked to core system"</td></tr>
+        <tr><td>NLP extraction completed</td><td><code>422</code> — "NLP analysis still processing, retry shortly"</td></tr>
+        <tr><td>Self-approval check passes</td><td><code>403</code> — "Cannot self-approve: deal will be routed to next authority level"</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- POST /api/deals/:id/approve -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/api/v1/deals/:id/approve</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Record an approval action. Validates the approver's authority level against deal amount and existing relationship exposure. Logs full device context for audit.</p>
+    <div class="code-block">
+      <div class="code-header"><span>Request body</span><span class="code-lang">JSON</span></div>
+      <div class="code-body"><pre>{
+  <span class="str">"action"</span>: <span class="str">"approve"</span>,
+  <span class="str">"conditions_text"</span>: <span class="kw">null</span>,
+  <span class="str">"device_fingerprint"</span>: <span class="str">"ios-14pro-a8f2c..."</span>,
+  <span class="str">"location_coords"</span>: { <span class="str">"lat"</span>: <span class="num">34.1752</span>, <span class="str">"lng"</span>: <span class="num">-97.1436</span> }
+}</pre></div>
+    </div>
+    <div class="callout"><strong>Conditional approval:</strong> When <code>action</code> = <code>"condition"</code>, <code>conditions_text</code> is required. Deal status moves to <code>conditionally_approved</code> and the originating banker is notified to satisfy conditions before final booking.</div>
+  </div>
+
+  <!-- GET /api/core/borrower/search -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/v1/core/borrower/search</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Search Jack Henry SilverLake via Jxchange cloud API for borrower records. Results are cached 15 minutes in Redis. Fuzzy match on name, exact match on TIN hash or customer ID.</p>
+    <table class="data-table">
+      <thead><tr><th>Param</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>q</code></td><td>string</td><td>Search term (name, customer ID, or last-4 TIN)</td></tr>
+        <tr><td><code>type</code></td><td>enum</td><td><code>individual</code> | <code>entity</code> | <code>all</code></td></tr>
+        <tr><td><code>limit</code></td><td>int</td><td>1–20, default 10</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- POST /api/documents/upload -->
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-post">POST</span>
+      <span class="endpoint-path">/api/v1/documents/upload</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">Multipart file upload. Files are streamed to OpenText via server-side proxy — the client never talks directly to OpenText. Classification is auto-detected via ML model and can be overridden by the user.</p>
+    <table class="data-table">
+      <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>file</code></td><td>binary</td><td>Max 25MB. Accepted: PDF, JPEG, PNG, TIFF, DOCX</td></tr>
+        <tr><td><code>deal_id</code></td><td>UUID</td><td>Required</td></tr>
+        <tr><td><code>classification</code></td><td>enum</td><td>Optional override; auto-classified if omitted</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Security:</strong> Files are scanned by ClamAV before storage. SHA-256 hash is computed on upload and stored in the <code>documents</code> table. Any subsequent hash mismatch triggers an integrity alert in the audit log.</div>
+  </div>
+</div>
+
+<!-- ==================== TAB 3: AUTHORITY & AUTH ==================== -->
+<div class="tab-panel" id="tab-authority">
+  <h2>Authority Enforcement &amp; Authentication</h2>
+  <p class="section-intro">Three layers of enforcement: Okta SSO for identity, server-side middleware for authority validation, and SLA timers for escalation. No approval action bypasses the middleware — the API controller calls the authority service before persisting any approval record.</p>
+
+  <h3>Authority Matrix</h3>
+  <table class="data-table">
+    <thead><tr><th>Level</th><th>Role</th><th>Individual Limit</th><th>Relationship Limit</th><th>Committee</th><th>SLA (from submit)</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-navy">1</span></td><td>Community Banker</td><td>$50,000</td><td>$150,000</td><td>No</td><td>—</td></tr>
+      <tr><td><span class="badge badge-navy">2</span></td><td>Senior Lender</td><td>$100,000</td><td>$300,000</td><td>No</td><td>4 hours (Fast Lane)</td></tr>
+      <tr><td><span class="badge badge-navy">3</span></td><td>Market President</td><td>$250,000</td><td>$750,000</td><td>No</td><td>24 hours (Standard)</td></tr>
+      <tr><td><span class="badge badge-navy">4</span></td><td>Regional Credit Officer</td><td>$500,000</td><td>$1,500,000</td><td>No</td><td>24 hours</td></tr>
+      <tr><td><span class="badge badge-navy">5</span></td><td>Chief Credit Officer</td><td>$1,000,000</td><td>$3,000,000</td><td>No</td><td>48 hours</td></tr>
+      <tr><td><span class="badge badge-gold">6</span></td><td>Loan Committee</td><td>Unlimited</td><td>Unlimited</td><td>Yes</td><td>72 hours (Complex)</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Server-Side Middleware — Authority Validation</h3>
+  <div class="code-block">
+    <div class="code-header"><span>authority.middleware.ts — NestJS Guard</span><span class="code-lang">TypeScript</span></div>
+    <div class="code-body"><pre><span class="kw">import</span> { Injectable, CanActivate, ExecutionContext } <span class="kw">from</span> <span class="str">'@nestjs/common'</span>;
+
+@Injectable()
+<span class="kw">export class</span> <span class="fn">AuthorityGuard</span> <span class="kw">implements</span> CanActivate {
+  <span class="kw">async</span> <span class="fn">canActivate</span>(context: ExecutionContext): <span class="tp">Promise&lt;boolean&gt;</span> {
+    <span class="kw">const</span> req = context.switchToHttp().getRequest();
+    <span class="kw">const</span> deal = <span class="kw">await</span> <span class="kw">this</span>.dealService.findById(req.params.id);
+    <span class="kw">const</span> user = req.user; <span class="cm">// from Okta JWT</span>
+
+    <span class="cm">// Rule 1: Self-approval prevention</span>
+    <span class="kw">if</span> (deal.created_by === user.id) {
+      <span class="kw">throw new</span> ForbiddenException(
+        <span class="str">'SELF_APPROVAL_BLOCKED'</span>,
+        <span class="str">'Originator cannot approve their own deal'</span>
+      );
+    }
+
+    <span class="cm">// Rule 2: Authority level check</span>
+    <span class="kw">const</span> requiredLevel = <span class="kw">await</span> <span class="kw">this</span>.getRequiredLevel(deal.amount);
+    <span class="kw">const</span> userLevel = <span class="kw">await</span> <span class="kw">this</span>.getUserAuthorityLevel(user.id);
+
+    <span class="kw">if</span> (userLevel.level_number &lt; requiredLevel) {
+      <span class="kw">throw new</span> ForbiddenException(
+        <span class="str">'INSUFFICIENT_AUTHORITY'</span>,
+        <span class="str">`Requires Level ${requiredLevel}, user has Level ${userLevel.level_number}`</span>
+      );
+    }
+
+    <span class="cm">// Rule 3: Relationship exposure check</span>
+    <span class="kw">const</span> totalExposure = <span class="kw">await</span> <span class="kw">this</span>.calcRelationshipExposure(
+      deal.borrower_id, user.id
+    );
+    <span class="kw">if</span> (totalExposure + deal.amount &gt; userLevel.relationship_limit) {
+      <span class="kw">throw new</span> ForbiddenException(
+        <span class="str">'RELATIONSHIP_LIMIT_EXCEEDED'</span>,
+        <span class="str">`Total exposure $${totalExposure + deal.amount} exceeds limit`</span>
+      );
+    }
+
+    <span class="cm">// Rule 4: Committee requirement</span>
+    <span class="kw">if</span> (deal.amount &gt; <span class="num">1000000</span> || deal.requiresCommittee) {
+      <span class="kw">if</span> (!user.roles.includes(<span class="str">'committee_member'</span>)) {
+        <span class="kw">throw new</span> ForbiddenException(
+          <span class="str">'COMMITTEE_REQUIRED'</span>,
+          <span class="str">'Deals over $1M require Loan Committee approval'</span>
+        );
+      }
+    }
+
+    <span class="kw">return true</span>;
+  }
+
+  <span class="cm">// Determine minimum authority level for a given amount</span>
+  <span class="kw">private async</span> <span class="fn">getRequiredLevel</span>(amount: <span class="tp">number</span>): <span class="tp">Promise&lt;number&gt;</span> {
+    <span class="kw">const</span> level = <span class="kw">await</span> <span class="kw">this</span>.authorityRepo
+      .createQueryBuilder(<span class="str">'am'</span>)
+      .where(<span class="str">'am.individual_limit >= :amount'</span>, { amount })
+      .andWhere(<span class="str">'am.effective_date <= CURRENT_DATE'</span>)
+      .orderBy(<span class="str">'am.level_number'</span>, <span class="str">'ASC'</span>)
+      .getOne();
+    <span class="kw">return</span> level?.level_number ?? <span class="num">6</span>; <span class="cm">// default to committee</span>
+  }
+}</pre></div>
+  </div>
+
+  <h3>Escalation Routing Algorithm</h3>
+  <div class="card">
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">When a deal is submitted, the routing service finds the next available approver who (a) has sufficient authority, (b) is not the originator, and (c) is within the originator's market or region. If no one is available within the SLA window, it escalates one level up.</p>
+    <div class="code-block">
+      <div class="code-header"><span>routing.service.ts — Approver selection</span><span class="code-lang">TypeScript</span></div>
+      <div class="code-body"><pre><span class="kw">async</span> <span class="fn">routeDealForApproval</span>(deal: Deal): <span class="tp">Promise&lt;RoutingResult&gt;</span> {
+  <span class="kw">const</span> requiredLevel = <span class="kw">await</span> <span class="kw">this</span>.getRequiredLevel(deal.amount);
+  <span class="kw">const</span> slaHours = <span class="kw">this</span>.getSlaByLane(deal.lane);
+  <span class="cm">// { fast: 4, standard: 24, complex: 72 }</span>
+
+  <span class="cm">// Step 1: Find approvers at the required level in same market</span>
+  <span class="kw">let</span> candidates = <span class="kw">await</span> <span class="kw">this</span>.findApprovers({
+    minLevel: requiredLevel,
+    marketId: deal.originMarketId,
+    excludeUserId: deal.created_by,  <span class="cm">// never self-approve</span>
+    isAvailable: <span class="kw">true</span>,               <span class="cm">// not OOO</span>
+  });
+
+  <span class="cm">// Step 2: If no local approvers, widen to region</span>
+  <span class="kw">if</span> (candidates.length === <span class="num">0</span>) {
+    candidates = <span class="kw">await</span> <span class="kw">this</span>.findApprovers({
+      minLevel: requiredLevel,
+      regionId: deal.originRegionId,
+      excludeUserId: deal.created_by,
+      isAvailable: <span class="kw">true</span>,
+    });
+  }
+
+  <span class="cm">// Step 3: If still empty, escalate to next level</span>
+  <span class="kw">if</span> (candidates.length === <span class="num">0</span>) {
+    <span class="kw">return</span> <span class="kw">this</span>.routeDealForApproval({
+      ...deal,
+      amount: deal.amount, <span class="cm">// triggers higher level match</span>
+      _escalated: <span class="kw">true</span>,
+    });
+  }
+
+  <span class="cm">// Step 4: Select approver with lightest current queue</span>
+  <span class="kw">const</span> selected = candidates.sort(
+    (a, b) =&gt; a.pendingDealCount - b.pendingDealCount
+  )[<span class="num">0</span>];
+
+  <span class="cm">// Step 5: Set SLA timer</span>
+  <span class="kw">await</span> <span class="kw">this</span>.slaService.startTimer({
+    dealId: deal.deal_id,
+    approverId: selected.id,
+    deadlineHours: slaHours,
+    escalationAction: <span class="str">'notify_next_level'</span>,
+  });
+
+  <span class="kw">return</span> { approverId: selected.id, slaDeadline: slaHours };
+}</pre></div>
+    </div>
+  </div>
+
+  <h3>Authentication Architecture</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4 style="margin-top:0;">Identity Layer — Okta</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">All users authenticate via Okta with SAML 2.0 for web and OIDC/PKCE for mobile. JWT access tokens contain: <code>sub</code> (user ID), <code>authority_level</code>, <code>market_id</code>, <code>region_id</code>, <code>roles[]</code>. Tokens expire in 15 minutes; refresh tokens last 8 hours. Biometric unlock (Face ID / fingerprint) re-issues tokens from a secure device-bound refresh token — no stored passwords on device.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Approval MFA Step-Up</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">Any approval action (approve, decline, condition) triggers an Okta step-up challenge. The approver must re-authenticate with biometrics or Okta Verify push notification. The step-up token is single-use and bound to the specific <code>deal_id</code> + <code>action</code> pair. This prevents replay attacks where a captured approval token is reused on a different deal.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Dual Control for High-Value</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">Deals above $500K require two independent approvals (different users, different authority levels). The first approval moves the deal to <code>in_review</code> with a flag; the second moves it to <code>approved</code>. Both approvers' device fingerprints and locations are logged.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Offline Token Handling</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">When offline, the mobile app can read cached deal data but cannot approve. Draft memo edits are queued in <code>sync_queue</code> with a signed device attestation. On reconnect, the sync service validates each queued operation against current auth state — a revoked user's offline edits are rejected.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 4: THREAT MODEL ==================== -->
+<div class="tab-panel" id="tab-threats">
+  <h2>Threat Model — Top 10</h2>
+  <p class="section-intro">STRIDE-based threat analysis focused on the lending approval pipeline. Each threat includes attack vector, impact assessment, and layered mitigations. Ordered by risk score (likelihood × impact).</p>
+
+  <div class="threat-grid">
+
+    <div class="threat-card high">
+      <div class="threat-id">T-01</div>
+      <span class="severity-badge severity-critical">Critical</span>
+      <div class="threat-title">Insider Self-Approval Bypass</div>
+      <div class="threat-desc">A banker with approver credentials approves their own deal, either directly or by manipulating the <code>assigned_approver</code> field via API tampering.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        Server-side guard compares <code>deal.created_by</code> against <code>req.user.id</code> — no client-side check dependency. The <code>assigned_approver</code> field is set only by the routing service, never accepted from client input. Audit log flags any approval where originator and approver share the same market, triggering compliance review.
+      </div>
+    </div>
+
+    <div class="threat-card high">
+      <div class="threat-id">T-02</div>
+      <span class="severity-badge severity-critical">Critical</span>
+      <div class="threat-title">Stolen Device with Cached Credentials</div>
+      <div class="threat-desc">A lost or stolen phone with an active session and cached deal data. Attacker attempts to approve deals using biometric bypass (e.g., printed fingerprint).</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        Approval actions require Okta step-up MFA (push or biometric), not just session token. Device attestation validates iOS Secure Enclave / Android Keystore integrity. Remote wipe via Okta device management revokes all tokens. Offline mode is read-only — no approval actions can be queued offline.
+      </div>
+    </div>
+
+    <div class="threat-card high">
+      <div class="threat-id">T-03</div>
+      <span class="severity-badge severity-high">High</span>
+      <div class="threat-title">SIM Swap on Approver's Phone</div>
+      <div class="threat-desc">Attacker performs SIM swap to intercept SMS-based MFA, then approves deals from a different device.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        No SMS-based MFA — Okta Verify push and biometric only. Device fingerprint is logged with every approval; a new device triggers a mandatory re-enrollment flow that requires in-person identity verification. Anomaly detection flags approvals from unrecognized devices.
+      </div>
+    </div>
+
+    <div class="threat-card high">
+      <div class="threat-id">T-04</div>
+      <span class="severity-badge severity-high">High</span>
+      <div class="threat-title">SQL Injection on Search/Filter</div>
+      <div class="threat-desc">Malicious input in the borrower search or deal list filter parameters targets the PostgreSQL backend.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        All database access uses parameterized queries via TypeORM query builder — no string concatenation. MuleSoft API Gateway applies input validation regex before requests reach AKS. WAF rules on Azure Front Door block common injection patterns. Quarterly penetration testing with reported findings.
+      </div>
+    </div>
+
+    <div class="threat-card high">
+      <div class="threat-id">T-05</div>
+      <span class="severity-badge severity-critical">Critical</span>
+      <div class="threat-title">Document Tampering Post-Approval</div>
+      <div class="threat-desc">After a deal is approved, someone replaces a financial statement in OpenText with a falsified version to cover fraud.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        SHA-256 hash of every document is stored in the <code>documents</code> table at upload time. A nightly integrity job re-hashes documents in OpenText and compares. Post-approval documents are locked in OpenText with read-only retention policy. Any hash mismatch triggers an immediate alert to the CRO and freezes the deal.
+      </div>
+    </div>
+
+    <div class="threat-card high">
+      <div class="threat-id">T-06</div>
+      <span class="severity-badge severity-high">High</span>
+      <div class="threat-title">Privilege Escalation (Banker → Approver)</div>
+      <div class="threat-desc">A banker manipulates their Okta group membership or JWT claims to gain approver-level authority they shouldn't have.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        Authority level is stored in both Okta (source of truth) and the <code>authority_matrix</code> table. The middleware cross-references both — a mismatch logs an alert and denies the action. Okta group changes require admin approval and trigger an audit event. JWTs are validated against Okta's JWKS endpoint on every request, not just at login.
+      </div>
+    </div>
+
+    <div class="threat-card medium">
+      <div class="threat-id">T-07</div>
+      <span class="severity-badge severity-high">High</span>
+      <div class="threat-title">Offline Queue Poisoning</div>
+      <div class="threat-desc">An attacker with physical device access injects malicious payloads into the sync queue while the device is offline, hoping they'll be applied when connectivity returns.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        Each sync queue entry includes a device-signed attestation token. The sync service validates the signature against the device's registered public key. Payloads are schema-validated server-side before applying. Approval actions are never accepted from the sync queue — they require live connectivity and step-up MFA.
+      </div>
+    </div>
+
+    <div class="threat-card medium">
+      <div class="threat-id">T-08</div>
+      <span class="severity-badge severity-medium">Medium</span>
+      <div class="threat-title">API Key / Token Theft</div>
+      <div class="threat-desc">Service account credentials for the MuleSoft → AKS connection or the Jxchange API are compromised, allowing unauthorized access to borrower data or deal creation.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        Service-to-service auth uses Azure Managed Identities (no static keys). MuleSoft API keys are rotated every 90 days and stored in Azure Key Vault. All service accounts have narrowly scoped permissions — the Jxchange service account is read-only. Network policies restrict AKS pod communication to whitelisted services only.
+      </div>
+    </div>
+
+    <div class="threat-card medium">
+      <div class="threat-id">T-09</div>
+      <span class="severity-badge severity-high">High</span>
+      <div class="threat-title">OFAC Screening Bypass</div>
+      <div class="threat-desc">A deal is approved for a borrower who appears on the OFAC SDN list, either because screening was skipped or the borrower's name was slightly altered to evade matching.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        OFAC screening is a mandatory step in the submit workflow — the API rejects submission if screening hasn't completed. Fuzzy matching with a configurable threshold (default 85%) catches name variations. Screening results are stored as audit events and cannot be overridden without a compliance officer's approval. Daily re-screening of all active borrowers against updated OFAC lists.
+      </div>
+    </div>
+
+    <div class="threat-card medium">
+      <div class="threat-id">T-10</div>
+      <span class="severity-badge severity-critical">Critical</span>
+      <div class="threat-title">Audit Log Tampering</div>
+      <div class="threat-desc">An insider with database access modifies or deletes audit records to cover fraudulent approvals.</div>
+      <div class="threat-mitigation">
+        <strong>Mitigations</strong>
+        UPDATE and DELETE are revoked on <code>audit_events</code> at the PostgreSQL role level — the application user physically cannot modify records. A separate read-only replica streams audit data to Azure Log Analytics (immutable retention). Database superuser access requires dual approval and is logged via Azure PIM. Quarterly reconciliation compares primary audit table row counts against the replica.
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ==================== TAB 5: N8N WORKFLOWS ==================== -->
+<div class="tab-panel" id="tab-n8n">
+  <h2>n8n Workflow Integration</h2>
+  <p class="section-intro">Six automated workflows running on a self-hosted n8n instance in the Azure AKS cluster. Each workflow is triggered by webhooks from the FUB Lender API or scheduled via cron. Credentials are managed in n8n's encrypted credential store, backed by Azure Key Vault.</p>
+
+  <!-- Workflow 1 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-01: Deal Status Change Notifications</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Push notifications + email when deal status transitions</span>
+      </div>
+      <span class="workflow-trigger">Webhook</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Webhook receives status_change event</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Switch on new_status</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Resolve recipient(s) from deal context</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Send push via Firebase Cloud Messaging</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Send email via SendGrid</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Log to audit_events</span>
+      </div>
+      <table class="data-table">
+        <thead><tr><th>Status Transition</th><th>Notify</th><th>Channel</th></tr></thead>
+        <tbody>
+          <tr><td><code>draft → submitted</code></td><td>Assigned approver</td><td>Push + Email</td></tr>
+          <tr><td><code>submitted → approved</code></td><td>Originating banker + borrower</td><td>Push + Email</td></tr>
+          <tr><td><code>submitted → conditionally_approved</code></td><td>Originating banker</td><td>Push + Email</td></tr>
+          <tr><td><code>submitted → declined</code></td><td>Originating banker + manager</td><td>Push + Email</td></tr>
+          <tr><td><code>approved → booked</code></td><td>Originating banker + ops team</td><td>Email only</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Workflow 2 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-02: SLA Breach Escalation</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Escalates deals that exceed their lane-specific SLA</span>
+      </div>
+      <span class="workflow-trigger">Cron: every 15 min</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Query deals WHERE status = 'submitted' AND age &gt; SLA</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Check lane SLA (4h / 24h / 72h)</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">At 75% SLA: warn current approver</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">At 100% SLA: escalate to next authority level</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">At 150% SLA: alert CRO + compliance</span>
+      </div>
+      <div class="callout"><strong>Jackie Parsons example:</strong> Standard lane = 24h SLA. If the assigned Level 3 approver hasn't acted within 18 hours (75%), they get a reminder push. At 24 hours, the deal auto-reassigns to the next available Level 4 approver. At 36 hours, Saqib Kheiri gets a direct alert.</div>
+    </div>
+  </div>
+
+  <!-- Workflow 3 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-03: Document Classification Pipeline</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Auto-classifies uploaded documents using Azure AI Document Intelligence</span>
+      </div>
+      <span class="workflow-trigger">Webhook</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Receive upload webhook</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Fetch file from OpenText</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Send to Azure AI Doc Intelligence</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Map result to doc_classification enum</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Update documents table</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Store OCR text</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:12px;">The classification model is trained on FUB's historical document corpus. Confidence threshold: 90% for auto-classification, below that the document is flagged for manual review by the originating banker. Classification accuracy is tracked monthly; model retraining triggers when accuracy drops below 95%.</p>
+    </div>
+  </div>
+
+  <!-- Workflow 4 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-04: NLP Credit Memo Extraction</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Extracts structured fields from narrative credit memos</span>
+      </div>
+      <span class="workflow-trigger">Webhook</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Receive memo_saved webhook</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Fetch narrative_text</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Send to Azure OpenAI (GPT-4o)</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Parse structured JSON response</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Validate extracted values</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Update nlp_extracted_fields JSONB</span>
+      </div>
+      <div class="code-block">
+        <div class="code-header"><span>NLP extraction prompt template (simplified)</span><span class="code-lang">JSON</span></div>
+        <div class="code-body"><pre><span class="cm">// Extracted fields structure stored in nlp_extracted_fields</span>
+{
+  <span class="str">"borrower_name"</span>: <span class="str">"Jackie Parsons"</span>,
+  <span class="str">"loan_amount"</span>: <span class="num">110000</span>,
+  <span class="str">"loan_purpose"</span>: <span class="str">"livestock_purchase"</span>,
+  <span class="str">"collateral_types"</span>: [<span class="str">"livestock"</span>, <span class="str">"equipment"</span>],
+  <span class="str">"dscr_mentioned"</span>: <span class="num">1.45</span>,
+  <span class="str">"ltv_mentioned"</span>: <span class="num">72.5</span>,
+  <span class="str">"relationship_years"</span>: <span class="num">7</span>,
+  <span class="str">"risk_factors"</span>: [<span class="str">"commodity_price_volatility"</span>],
+  <span class="str">"strengths"</span>: [<span class="str">"long_relationship"</span>, <span class="str">"strong_repayment_history"</span>],
+  <span class="str">"confidence_score"</span>: <span class="num">0.94</span>
+}</pre></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Workflow 5 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-05: Jack Henry Core Sync (Post-Booking Write-Back)</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Writes approved and booked deals back to SilverLake via Jxchange</span>
+      </div>
+      <span class="workflow-trigger">Webhook on status → booked</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Receive deal_booked webhook</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Build Jxchange loan creation payload</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Map FUB fields → SilverLake fields</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">POST to Jxchange loan API</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Store core_loan_id on deal record</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Trigger DocuSign envelope</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:12px;">This is the only write operation to Jack Henry. All other core interactions are read-only lookups. The workflow includes retry logic with exponential backoff (max 3 retries over 15 minutes). On permanent failure, the deal is flagged as <code>booking_failed</code> and the ops team is notified for manual core entry.</p>
+    </div>
+  </div>
+
+  <!-- Workflow 6 -->
+  <div class="workflow-card">
+    <div class="workflow-header">
+      <div>
+        <h4 style="margin:0;">WF-06: Nightly Portfolio Health Scoring</h4>
+        <span style="font-size:12px;color:var(--text-muted);">Calculates risk scores across the active portfolio</span>
+      </div>
+      <span class="workflow-trigger">Cron: 2:00 AM CT daily</span>
+    </div>
+    <div class="workflow-body">
+      <div class="workflow-steps">
+        <span class="wf-step">Query all deals WHERE status IN (booked, closed)</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Pull latest financials from Jxchange</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Calculate current DSCR, LTV, risk metrics</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Flag deteriorating credits (DSCR &lt; 1.1 or LTV &gt; 85%)</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Generate portfolio_health_scores table</span>
+        <span class="wf-arrow">→</span>
+        <span class="wf-step">Email daily digest to CRO</span>
+      </div>
+      <p style="font-size:13px;color:var(--text-secondary);margin-top:12px;">Scoring model weights: payment history (30%), current DSCR (25%), LTV ratio (20%), collateral volatility (15%), relationship tenure (10%). Credits that drop below watch thresholds are auto-flagged and appear on the CRO's morning dashboard.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TAB 6: NCINO COEXISTENCE ==================== -->
+<div class="tab-panel" id="tab-ncino">
+  <h2>nCino Coexistence Layer</h2>
+  <p class="section-intro">FUB Lender runs alongside nCino during the transition period. The coexistence layer provides read-only access to nCino data via the Salesforce REST API, enabling bankers to reference historical deals without switching systems. No data flows from FUB Lender into nCino.</p>
+
+  <div class="callout">
+    <strong>Risk context:</strong> nCino carries a three-layer dependency stack (nCino → Salesforce → AWS). This coexistence design deliberately avoids adding a fourth dependency layer. FUB Lender reads from nCino but never depends on it for any write operation or approval flow. If nCino goes down, FUB Lender continues to operate independently.
+  </div>
+
+  <h3>Architecture</h3>
+  <div class="card">
+    <div class="code-block">
+      <div class="code-header"><span>Coexistence data flow</span><span class="code-lang">Diagram</span></div>
+      <div class="code-body"><pre>
+┌─────────────┐    Read-Only     ┌─────────────────┐     Salesforce    ┌──────────┐
+│  FUB Lender │ ──────────────→  │  MuleSoft API   │ ──────────────→  │  nCino   │
+│  (AKS)      │    REST API      │  Gateway        │     REST API     │  (SFDC)  │
+└─────────────┘                  └─────────────────┘                  └──────────┘
+       │                                                                    │
+       │  Writes to                                                         │ Reads from
+       ▼                                                                    ▼
+┌─────────────┐                                                      ┌──────────┐
+│  PostgreSQL │                                                      │  AWS     │
+│  (Azure)    │                                                      │  (SFDC)  │
+└─────────────┘                                                      └──────────┘
+
+<span class="cm">Direction of data flow: nCino → FUB Lender (read-only)</span>
+<span class="cm">Never: FUB Lender → nCino</span></pre></div>
+    </div>
+  </div>
+
+  <h3>Salesforce API Connection</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4 style="margin-top:0;">Authentication</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">OAuth 2.0 JWT Bearer flow with a Salesforce Connected App. The private key is stored in Azure Key Vault. Token refresh is handled by MuleSoft's built-in OAuth provider policy. No user credentials are stored or proxied — this is a system-to-system integration.</p>
+    </div>
+    <div class="card">
+      <h4 style="margin-top:0;">Rate Limits &amp; Caching</h4>
+      <p style="font-size:13px;color:var(--text-secondary);">Salesforce API calls are capped at FUB's org limit. To stay well under, all nCino reads are cached in Redis with a 30-minute TTL. Bankers see a "last synced" timestamp on nCino data. Cache is invalidated on-demand if a banker explicitly refreshes.</p>
+    </div>
+  </div>
+
+  <h3>Field Mapping: nCino → FUB Lender</h3>
+  <table class="data-table coexistence-table">
+    <thead><tr><th>nCino Field (SFDC Object)</th><th>FUB Lender Field</th><th>Syncs?</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>LLC_BI__Loan__c.Name</td><td>deals.purpose</td><td class="sync-yes">Read</td><td>Display only, for historical reference</td></tr>
+      <tr><td>LLC_BI__Loan__c.LLC_BI__Amount__c</td><td>deals.amount</td><td class="sync-yes">Read</td><td>Used to show total relationship exposure</td></tr>
+      <tr><td>LLC_BI__Loan__c.LLC_BI__Status__c</td><td>—</td><td class="sync-yes">Read</td><td>Displayed in borrower history panel</td></tr>
+      <tr><td>LLC_BI__Loan__c.LLC_BI__CloseDate__c</td><td>—</td><td class="sync-yes">Read</td><td>Timeline display</td></tr>
+      <tr><td>LLC_BI__Loan__c.LLC_BI__Product_Type__c</td><td>deals.loan_type</td><td class="sync-yes">Read</td><td>Mapped to FUB loan_type enum</td></tr>
+      <tr><td>Account.Name</td><td>borrowers.legal_name</td><td class="sync-yes">Read</td><td>Cross-referenced, not overwritten</td></tr>
+      <tr><td>Account.LLC_BI__Risk_Rating__c</td><td>borrowers.risk_rating</td><td class="sync-yes">Read</td><td>Displayed but FUB maintains its own rating</td></tr>
+      <tr><td>LLC_BI__Collateral__c.*</td><td>collateral.*</td><td class="sync-yes">Read</td><td>Historical collateral for context</td></tr>
+      <tr><td>ContentDocument (attachments)</td><td>—</td><td class="sync-no">No</td><td>Too large to cache; link-out to nCino UI</td></tr>
+      <tr><td>LLC_BI__Approval__c.*</td><td>—</td><td class="sync-no">No</td><td>nCino approvals are view-only; not replicated</td></tr>
+      <tr><td>Custom fields / workflows</td><td>—</td><td class="sync-no">No</td><td>nCino customizations don't carry forward</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Migration Path — Sunsetting nCino</h3>
+  <div class="card">
+    <p style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;">The coexistence layer is designed to be turned off without any schema changes to FUB Lender. The migration follows three phases.</p>
+    <table class="data-table">
+      <thead><tr><th>Phase</th><th>Duration</th><th>Action</th><th>nCino State</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-navy">Phase 1</span></td>
+          <td>Months 1–6</td>
+          <td>Parallel operation. New deals created in FUB Lender. Existing deals remain in nCino. Bankers can view nCino history from within FUB Lender.</td>
+          <td>Active (read/write for legacy)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-gold">Phase 2</span></td>
+          <td>Months 6–12</td>
+          <td>nCino goes read-only. All new origination, approval, and booking happens in FUB Lender. Historical nCino data is batch-migrated to PostgreSQL for long-term access. MuleSoft continues to serve cached nCino data.</td>
+          <td>Read-only</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-green">Phase 3</span></td>
+          <td>Month 12+</td>
+          <td>nCino Salesforce org is decommissioned. All historical data lives in PostgreSQL. The coexistence API endpoints return data from the migrated tables instead of Salesforce. MuleSoft nCino policies are removed.</td>
+          <td>Decommissioned</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout"><strong>Key safeguard:</strong> The batch migration in Phase 2 includes a reconciliation step that compares nCino record counts and checksums against the migrated PostgreSQL data. Migration isn't marked complete until 100% parity is verified and signed off by the CRO.</div>
+  </div>
+
+  <h3>Coexistence API Endpoints</h3>
+  <div class="card">
+    <div class="card-header">
+      <span class="method method-get">GET</span>
+      <span class="endpoint-path">/api/v1/ncino/borrower/:jh_customer_id/history</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">Returns a borrower's historical loan history from nCino, merged with any active FUB Lender deals. Used in the borrower detail panel so bankers see the complete relationship picture.</p>
+    <div class="code-block">
+      <div class="code-header"><span>Response example — Jackie Parsons historical view</span><span class="code-lang">JSON</span></div>
+      <div class="code-body"><pre>{
+  <span class="str">"borrower"</span>: {
+    <span class="str">"legal_name"</span>: <span class="str">"Jackie Parsons"</span>,
+    <span class="str">"jh_customer_id"</span>: <span class="str">"JH-40281"</span>,
+    <span class="str">"relationship_years"</span>: <span class="num">7</span>
+  },
+  <span class="str">"ncino_loans"</span>: [
+    {
+      <span class="str">"source"</span>: <span class="str">"ncino"</span>,
+      <span class="str">"loan_name"</span>: <span class="str">"2022 Equipment Line"</span>,
+      <span class="str">"amount"</span>: <span class="num">45000</span>,
+      <span class="str">"status"</span>: <span class="str">"Paid Off"</span>,
+      <span class="str">"close_date"</span>: <span class="str">"2022-03-15"</span>,
+      <span class="str">"cached_at"</span>: <span class="str">"2026-05-10T12:00:00Z"</span>
+    }
+  ],
+  <span class="str">"fub_lender_deals"</span>: [
+    {
+      <span class="str">"source"</span>: <span class="str">"fub_lender"</span>,
+      <span class="str">"deal_id"</span>: <span class="str">"d4a91c3f-..."</span>,
+      <span class="str">"amount"</span>: <span class="num">110000</span>,
+      <span class="str">"status"</span>: <span class="str">"submitted"</span>,
+      <span class="str">"lane"</span>: <span class="str">"standard"</span>
+    }
+  ],
+  <span class="str">"total_exposure"</span>: <span class="num">110000</span>,
+  <span class="str">"_meta"</span>: { <span class="str">"ncino_cache_ttl"</span>: <span class="num">1800</span> }
+}</pre></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<!-- ========== FOOTER ========== -->
+<div class="footer">
+  First United Bank — Lender Build Playbook — Prompt 5: Backend Schema, Auth &amp; Security &nbsp;|&nbsp; Confidential &nbsp;|&nbsp; May 2026
+</div>
+
+<!-- ========== TAB SWITCHING JS ========== -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const btns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+});
+</script>
+
+</body>
+</html>

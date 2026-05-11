@@ -1,0 +1,2615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Full Mobile UX Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+/* ============================================================
+   0. CSS CUSTOM PROPERTIES — FUB Design System Tokens
+   ============================================================ */
+:root {
+  /* Brand Palette */
+  --fub-blue:       #002D72;
+  --fub-blue-light: #1A4A8A;
+  --fub-blue-muted: #4A6FA5;
+  --fub-red:        #DA291C;
+  --fub-red-light:  #E85A50;
+  --fub-gold:       #C4A035;
+  --fub-gold-light: #E8D48B;
+  --fub-warm-white: #FAF9F5;
+  --fub-warm-100:   #F5F3EE;
+  --fub-warm-200:   #E8E4DB;
+  --fub-warm-300:   #D4CEC2;
+  --fub-green:      #1B8C4E;
+  --fub-green-light:#D4EDDA;
+  --fub-amber:      #E6A817;
+  --fub-amber-light:#FFF3CD;
+  --fub-gray-50:    #FAFAFA;
+  --fub-gray-100:   #F5F5F5;
+  --fub-gray-200:   #E5E5E5;
+  --fub-gray-300:   #D4D4D4;
+  --fub-gray-400:   #A3A3A3;
+  --fub-gray-500:   #737373;
+  --fub-gray-600:   #525252;
+  --fub-gray-700:   #404040;
+  --fub-gray-800:   #262626;
+  --fub-gray-900:   #171717;
+  /* Semantic */
+  --color-success:  var(--fub-green);
+  --color-warning:  var(--fub-amber);
+  --color-error:    var(--fub-red);
+  --color-info:     var(--fub-blue);
+  /* Typography */
+  --font-family:    'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+  --fs-xs:   11px;
+  --fs-sm:   13px;
+  --fs-base: 15px;
+  --fs-md:   17px;
+  --fs-lg:   20px;
+  --fs-xl:   24px;
+  --fs-2xl:  28px;
+  --fs-3xl:  34px;
+  /* Spacing */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+  /* Phone Frame */
+  --phone-w: 390px;
+  --phone-h: 844px;
+}
+
+/* ============================================================
+   1. RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+body {
+  font-family: var(--font-family);
+  background: #F0EDE6;
+  color: var(--fub-gray-800);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ============================================================
+   2. SIDEBAR NAVIGATION
+   ============================================================ */
+.sidebar {
+  width: 280px;
+  min-width: 280px;
+  background: var(--fub-blue);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 100;
+}
+.sidebar-header {
+  padding: var(--sp-6);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+.sidebar-header h1 {
+  font-size: var(--fs-md);
+  font-weight: 900;
+  letter-spacing: -.3px;
+  color: #fff;
+}
+.sidebar-header .subtitle {
+  font-size: var(--fs-xs);
+  color: var(--fub-gold-light);
+  margin-top: var(--sp-1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+.sidebar-section {
+  padding: var(--sp-4) var(--sp-6) var(--sp-2);
+}
+.sidebar-section-title {
+  font-size: var(--fs-xs);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--fub-gold);
+  font-weight: 700;
+  margin-bottom: var(--sp-2);
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-6);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  font-size: var(--fs-sm);
+  color: rgba(255,255,255,.75);
+  border-left: 3px solid transparent;
+}
+.nav-item:hover {
+  background: rgba(255,255,255,.08);
+  color: #fff;
+}
+.nav-item.active {
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  border-left-color: var(--fub-gold);
+  font-weight: 700;
+}
+.nav-item i { font-size: 18px; width: 20px; text-align: center; }
+.nav-item .badge {
+  margin-left: auto;
+  background: var(--fub-red);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-weight: 700;
+}
+.nav-divider {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: var(--sp-2) var(--sp-6);
+}
+
+/* ============================================================
+   3. MAIN CONTENT AREA
+   ============================================================ */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-8);
+  background: #fff;
+  border-bottom: 1px solid var(--fub-gray-200);
+  flex-shrink: 0;
+}
+.toolbar-title {
+  font-size: var(--fs-lg);
+  font-weight: 900;
+  color: var(--fub-blue);
+}
+.toolbar-meta {
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-500);
+}
+.state-toggles {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+}
+.state-btn {
+  padding: var(--sp-1) var(--sp-3);
+  border: 1.5px solid var(--fub-gray-300);
+  background: #fff;
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-family: var(--font-family);
+  font-weight: 700;
+  color: var(--fub-gray-600);
+  cursor: pointer;
+  transition: all .15s;
+}
+.state-btn:hover { border-color: var(--fub-blue); color: var(--fub-blue); }
+.state-btn.active {
+  background: var(--fub-blue);
+  border-color: var(--fub-blue);
+  color: #fff;
+}
+
+/* ============================================================
+   4. CONTENT PANEL — phone frame + spec panel
+   ============================================================ */
+.content-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.phone-panel {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-8);
+  background: var(--fub-warm-100);
+}
+.phone-frame {
+  width: var(--phone-w);
+  height: var(--phone-h);
+  background: var(--fub-warm-white);
+  border-radius: 44px;
+  box-shadow: 0 0 0 10px #1a1a1a, 0 0 0 12px #333, var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.phone-notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 34px;
+  background: #1a1a1a;
+  border-radius: 0 0 20px 20px;
+  z-index: 50;
+}
+.phone-status-bar {
+  height: 54px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 var(--sp-6) var(--sp-2);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--fub-gray-800);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 40;
+}
+.phone-status-bar.dark { color: #fff; }
+.status-time { margin-left: var(--sp-2); }
+.status-icons { display: flex; gap: 5px; align-items: center; font-size: 13px; margin-right: var(--sp-2);}
+.phone-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+.phone-home-bar {
+  height: 34px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  flex-shrink: 0;
+}
+.home-indicator {
+  width: 134px;
+  height: 5px;
+  background: var(--fub-gray-800);
+  border-radius: 3px;
+  opacity: .2;
+}
+
+/* ============================================================
+   5. SPEC PANEL — right side documentation
+   ============================================================ */
+.spec-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--sp-8);
+  background: #fff;
+  border-left: 1px solid var(--fub-gray-200);
+}
+.spec-section {
+  margin-bottom: var(--sp-8);
+}
+.spec-section h3 {
+  font-size: var(--fs-md);
+  font-weight: 900;
+  color: var(--fub-blue);
+  margin-bottom: var(--sp-3);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.spec-section h3 i { color: var(--fub-gold); }
+.spec-section h4 {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--fub-gray-700);
+  margin: var(--sp-4) 0 var(--sp-2);
+}
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-xs);
+  margin-bottom: var(--sp-4);
+}
+.spec-table th {
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--fub-warm-100);
+  color: var(--fub-blue);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  border-bottom: 2px solid var(--fub-blue);
+}
+.spec-table td {
+  padding: var(--sp-2) var(--sp-3);
+  border-bottom: 1px solid var(--fub-gray-200);
+  vertical-align: top;
+}
+.spec-table tr:hover td { background: var(--fub-warm-100); }
+.spec-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.spec-tag.required { background: #FDE8E7; color: var(--fub-red); }
+.spec-tag.a11y { background: #E0ECFF; color: var(--fub-blue); }
+.spec-tag.haptic { background: #F3E8FF; color: #7C3AED; }
+.spec-tag.offline { background: var(--fub-amber-light); color: #92400E; }
+.spec-tag.gesture { background: var(--fub-green-light); color: #065F46; }
+.spec-note {
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--fub-warm-100);
+  border-left: 3px solid var(--fub-gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-700);
+  margin: var(--sp-3) 0;
+}
+.spec-note.warning {
+  background: #FFF8E1;
+  border-left-color: var(--fub-amber);
+}
+.spec-note.error {
+  background: #FDE8E7;
+  border-left-color: var(--fub-red);
+}
+.focus-order {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin: var(--sp-2) 0;
+}
+.focus-step {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-600);
+}
+.focus-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--fub-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+/* ============================================================
+   6. IN-PHONE COMPONENT STYLES
+   ============================================================ */
+/* --- Offline Banner --- */
+.offline-banner {
+  background: var(--fub-gray-800);
+  color: #fff;
+  padding: 6px var(--sp-4);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  justify-content: center;
+}
+.offline-banner i { font-size: 14px; }
+.offline-banner .sync-count {
+  background: var(--fub-red);
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  margin-left: auto;
+}
+
+/* --- App Header --- */
+.app-header {
+  padding: var(--sp-3) var(--sp-5) var(--sp-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-header.blue-bg {
+  background: var(--fub-blue);
+  color: #fff;
+}
+.app-header-title {
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  letter-spacing: -.3px;
+}
+.app-header-actions {
+  display: flex;
+  gap: var(--sp-3);
+}
+.app-header-actions i {
+  font-size: 22px;
+  cursor: pointer;
+  opacity: .8;
+}
+
+/* --- Stat Boxes --- */
+.stat-row {
+  display: flex;
+  gap: var(--sp-3);
+  padding: 0 var(--sp-5) var(--sp-4);
+}
+.stat-box {
+  flex: 1;
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: var(--sp-3);
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.stat-box.on-blue {
+  background: rgba(255,255,255,.12);
+  box-shadow: none;
+}
+.stat-box .stat-value {
+  font-size: var(--fs-xl);
+  font-weight: 900;
+  color: var(--fub-blue);
+}
+.stat-box.on-blue .stat-value { color: #fff; }
+.stat-box .stat-label {
+  font-size: 10px;
+  color: var(--fub-gray-500);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+.stat-box.on-blue .stat-label { color: rgba(255,255,255,.65); }
+.stat-box.highlight .stat-value { color: var(--fub-red); }
+
+/* --- Deal Card --- */
+.deal-card {
+  margin: 0 var(--sp-5) var(--sp-3);
+  background: #fff;
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid var(--fub-blue);
+  position: relative;
+}
+.deal-card.fast-lane { border-left-color: var(--fub-green); }
+.deal-card.complex { border-left-color: var(--fub-red); }
+.deal-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--sp-2);
+}
+.deal-card-name {
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--fub-gray-900);
+}
+.deal-card-amount {
+  font-size: var(--fs-sm);
+  font-weight: 900;
+  color: var(--fub-blue);
+}
+.deal-card-meta {
+  display: flex;
+  gap: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-500);
+  margin-bottom: var(--sp-2);
+}
+.deal-card-badges {
+  display: flex;
+  gap: var(--sp-2);
+}
+.lane-badge {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.lane-badge.fast { background: var(--fub-green-light); color: var(--fub-green); }
+.lane-badge.standard { background: #E0ECFF; color: var(--fub-blue); }
+.lane-badge.complex { background: #FDE8E7; color: var(--fub-red); }
+.status-badge {
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+}
+.status-badge.draft { background: var(--fub-gray-200); color: var(--fub-gray-600); }
+.status-badge.review { background: var(--fub-amber-light); color: #92400E; }
+.status-badge.approved { background: var(--fub-green-light); color: var(--fub-green); }
+.status-badge.pending { background: #E0ECFF; color: var(--fub-blue); }
+
+/* --- SLA Timer --- */
+.sla-timer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+}
+.sla-timer.green { color: var(--fub-green); }
+.sla-timer.amber { color: var(--fub-amber); }
+.sla-timer.red { color: var(--fub-red); }
+.sla-timer.flash { color: var(--fub-red); animation: sla-flash .5s infinite alternate; }
+@keyframes sla-flash { from { opacity: 1; } to { opacity: .3; } }
+
+/* --- Search Bar --- */
+.search-bar {
+  margin: 0 var(--sp-5) var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--fub-gray-100);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-size: var(--fs-sm);
+  color: var(--fub-gray-400);
+}
+.search-bar.active {
+  background: #fff;
+  box-shadow: 0 0 0 2px var(--fub-blue);
+  color: var(--fub-gray-800);
+}
+
+/* --- Filter Pills --- */
+.filter-row {
+  display: flex;
+  gap: var(--sp-2);
+  padding: 0 var(--sp-5) var(--sp-4);
+  overflow-x: auto;
+}
+.filter-pill {
+  padding: var(--sp-2) var(--sp-4);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  white-space: nowrap;
+  background: var(--fub-gray-100);
+  color: var(--fub-gray-600);
+}
+.filter-pill.active {
+  background: var(--fub-blue);
+  color: #fff;
+}
+
+/* --- Form Elements --- */
+.form-group {
+  margin-bottom: var(--sp-4);
+  padding: 0 var(--sp-5);
+}
+.form-label {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--fub-gray-600);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-bottom: var(--sp-1);
+}
+.form-input {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1.5px solid var(--fub-gray-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-base);
+  font-family: var(--font-family);
+  background: #fff;
+  color: var(--fub-gray-800);
+}
+.form-input:focus { border-color: var(--fub-blue); outline: none; box-shadow: 0 0 0 3px rgba(0,45,114,.12); }
+.form-input.error { border-color: var(--fub-red); background: #FFF5F5; }
+.form-error {
+  font-size: var(--fs-xs);
+  color: var(--fub-red);
+  margin-top: var(--sp-1);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.form-textarea {
+  width: 100%;
+  padding: var(--sp-3) var(--sp-4);
+  border: 1.5px solid var(--fub-gray-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-base);
+  font-family: var(--font-family);
+  resize: none;
+  min-height: 180px;
+  line-height: 1.6;
+}
+
+/* --- Buttons --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-6);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  font-family: var(--font-family);
+  border: none;
+  cursor: pointer;
+  transition: all .15s;
+  min-height: 44px;
+}
+.btn-primary { background: var(--fub-blue); color: #fff; }
+.btn-primary:hover { background: var(--fub-blue-light); }
+.btn-danger { background: var(--fub-red); color: #fff; }
+.btn-success { background: var(--fub-green); color: #fff; }
+.btn-outline { background: transparent; border: 1.5px solid var(--fub-blue); color: var(--fub-blue); }
+.btn-full { width: calc(100% - var(--sp-10)); margin: 0 var(--sp-5); }
+
+/* --- NLP Tags --- */
+.nlp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: #E0ECFF;
+  color: var(--fub-blue);
+  border-radius: var(--radius-pill);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  margin: 2px;
+}
+.nlp-tag .confidence {
+  font-size: 9px;
+  opacity: .6;
+}
+.nlp-tag .edit-icon {
+  font-size: 12px;
+  opacity: .5;
+  cursor: pointer;
+}
+
+/* --- Auto-fill Card --- */
+.autofill-card {
+  margin: 0 var(--sp-5) var(--sp-4);
+  background: #E8F5E9;
+  border: 1.5px solid var(--fub-green);
+  border-radius: var(--radius-md);
+  padding: var(--sp-4);
+}
+.autofill-card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-2);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--fub-green);
+}
+.autofill-field {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--sp-1) 0;
+  font-size: var(--fs-xs);
+  border-bottom: 1px solid rgba(27,140,78,.15);
+}
+.autofill-field:last-child { border-bottom: none; }
+.autofill-field .label { color: var(--fub-gray-600); }
+.autofill-field .value { font-weight: 700; color: var(--fub-gray-800); }
+
+/* --- Lane Detection Banner --- */
+.lane-detect-banner {
+  margin: 0 var(--sp-5) var(--sp-4);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.lane-detect-banner.fast { background: var(--fub-green-light); border: 1px solid var(--fub-green); }
+.lane-detect-banner .lane-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--fub-green);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+.lane-detect-banner .lane-text {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--fub-green);
+}
+.lane-detect-banner .lane-sub {
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-500);
+  margin-top: 1px;
+}
+
+/* --- Timeline --- */
+.timeline {
+  padding: 0 var(--sp-5);
+}
+.timeline-item {
+  display: flex;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-5);
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 32px;
+  bottom: 0;
+  width: 2px;
+  background: var(--fub-gray-200);
+}
+.timeline-item:last-child::before { display: none; }
+.timeline-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fub-blue);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+.timeline-dot.success { background: var(--fub-green); }
+.timeline-dot.pending { background: var(--fub-gray-300); }
+.timeline-content {
+  flex: 1;
+}
+.timeline-title {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--fub-gray-800);
+}
+.timeline-time {
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-500);
+}
+.timeline-desc {
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-600);
+  margin-top: var(--sp-1);
+}
+
+/* --- Approval Actions --- */
+.approval-actions {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+}
+.approval-actions .btn { flex: 1; }
+
+/* --- Skeleton Loading --- */
+.skeleton {
+  background: linear-gradient(90deg, var(--fub-gray-100) 0%, var(--fub-gray-200) 50%, var(--fub-gray-100) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+.skeleton-card {
+  margin: 0 var(--sp-5) var(--sp-3);
+  height: 100px;
+  border-radius: var(--radius-md);
+}
+.skeleton-stat {
+  height: 60px;
+  flex: 1;
+  border-radius: var(--radius-md);
+}
+.skeleton-text { height: 14px; margin-bottom: var(--sp-2); }
+.skeleton-text.w60 { width: 60%; }
+.skeleton-text.w80 { width: 80%; }
+.skeleton-text.w40 { width: 40%; }
+
+/* --- Empty State --- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-10) var(--sp-8);
+  text-align: center;
+}
+.empty-state i {
+  font-size: 56px;
+  color: var(--fub-gray-300);
+  margin-bottom: var(--sp-4);
+}
+.empty-state h3 {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--fub-gray-700);
+  margin-bottom: var(--sp-2);
+}
+.empty-state p {
+  font-size: var(--fs-sm);
+  color: var(--fub-gray-500);
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+/* --- Error State --- */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-10) var(--sp-8);
+  text-align: center;
+}
+.error-state .error-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FDE8E7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-4);
+}
+.error-state .error-icon i { font-size: 32px; color: var(--fub-red); }
+.error-state h3 {
+  font-size: var(--fs-md);
+  font-weight: 700;
+  color: var(--fub-gray-800);
+  margin-bottom: var(--sp-2);
+}
+.error-state p {
+  font-size: var(--fs-sm);
+  color: var(--fub-gray-500);
+  max-width: 280px;
+  line-height: 1.5;
+  margin-bottom: var(--sp-5);
+}
+
+/* --- NLP Indicator --- */
+.nlp-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  margin: 0 var(--sp-5) var(--sp-3);
+  background: #F0E6FF;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: #7C3AED;
+}
+.nlp-indicator .dot-pulse {
+  display: flex;
+  gap: 3px;
+}
+.nlp-indicator .dot-pulse span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7C3AED;
+  animation: dotPulse .8s ease-in-out infinite;
+}
+.nlp-indicator .dot-pulse span:nth-child(2) { animation-delay: .15s; }
+.nlp-indicator .dot-pulse span:nth-child(3) { animation-delay: .3s; }
+@keyframes dotPulse { 0%, 100% { opacity: .3; transform: scale(.8); } 50% { opacity: 1; transform: scale(1); } }
+
+/* --- Document Checklist --- */
+.doc-checklist {
+  padding: 0 var(--sp-5);
+}
+.doc-item {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--fub-gray-100);
+  font-size: var(--fs-sm);
+}
+.doc-item .check-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.doc-item .check-circle.done { background: var(--fub-green-light); color: var(--fub-green); }
+.doc-item .check-circle.missing { background: var(--fub-gray-100); color: var(--fub-gray-400); }
+.doc-item .doc-name { flex: 1; color: var(--fub-gray-700); }
+.doc-item .doc-status { font-size: var(--fs-xs); font-weight: 700; }
+.doc-item .doc-status.done { color: var(--fub-green); }
+.doc-item .doc-status.missing { color: var(--fub-gray-400); }
+
+/* --- Notification Item --- */
+.notif-item {
+  display: flex;
+  gap: var(--sp-3);
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--fub-gray-100);
+}
+.notif-item.unread { background: #F0F4FF; }
+.notif-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.notif-icon.approval { background: var(--fub-green-light); color: var(--fub-green); }
+.notif-icon.submitted { background: #E0ECFF; color: var(--fub-blue); }
+.notif-icon.sla { background: var(--fub-amber-light); color: var(--fub-amber); }
+.notif-icon.condition { background: #F3E8FF; color: #7C3AED; }
+.notif-icon.doc { background: var(--fub-gray-100); color: var(--fub-gray-600); }
+.notif-body { flex: 1; }
+.notif-title { font-size: var(--fs-sm); font-weight: 700; color: var(--fub-gray-800); }
+.notif-desc { font-size: var(--fs-xs); color: var(--fub-gray-500); margin-top: 2px; }
+.notif-time { font-size: var(--fs-xs); color: var(--fub-gray-400); margin-top: var(--sp-1); }
+
+/* --- Settings --- */
+.settings-group {
+  padding: var(--sp-5);
+}
+.settings-group-title {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  color: var(--fub-gray-500);
+  margin-bottom: var(--sp-3);
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--fub-gray-100);
+}
+.settings-row .label { font-size: var(--fs-sm); color: var(--fub-gray-700); }
+.settings-row .value { font-size: var(--fs-sm); color: var(--fub-gray-500); }
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: var(--fub-gray-300);
+  border-radius: 12px;
+  position: relative;
+}
+.toggle-switch.on { background: var(--fub-green); }
+.toggle-switch::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px;
+  left: 2px;
+  transition: transform .15s;
+  box-shadow: var(--shadow-sm);
+}
+.toggle-switch.on::after { transform: translateX(20px); }
+
+/* --- Sync Conflict --- */
+.conflict-card {
+  margin: 0 var(--sp-5) var(--sp-4);
+  border: 2px solid var(--fub-amber);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.conflict-header {
+  background: var(--fub-amber-light);
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: #92400E;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+.conflict-sides {
+  display: flex;
+}
+.conflict-side {
+  flex: 1;
+  padding: var(--sp-3) var(--sp-4);
+  font-size: var(--fs-xs);
+}
+.conflict-side.local { background: #F0F4FF; border-right: 1px solid var(--fub-gray-200); }
+.conflict-side.server { background: #FFF5F5; }
+.conflict-side .side-label {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  margin-bottom: var(--sp-2);
+  font-size: 10px;
+}
+.conflict-side.local .side-label { color: var(--fub-blue); }
+.conflict-side.server .side-label { color: var(--fub-red); }
+
+/* --- Bottom Tab Bar --- */
+.tab-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid var(--fub-gray-200);
+  flex-shrink: 0;
+  padding-bottom: 2px;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--fub-gray-400);
+  font-weight: 700;
+  position: relative;
+}
+.tab-item i { font-size: 22px; }
+.tab-item.active { color: var(--fub-blue); }
+.tab-item .tab-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--fub-red);
+  color: #fff;
+  font-size: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Pull to Refresh --- */
+.ptr-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  font-size: var(--fs-xs);
+  color: var(--fub-gray-400);
+}
+.ptr-indicator i { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* --- Progress Steps --- */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--sp-3) var(--sp-5);
+  gap: var(--sp-2);
+}
+.progress-step {
+  flex: 1;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--fub-gray-200);
+}
+.progress-step.done { background: var(--fub-green); }
+.progress-step.current { background: var(--fub-blue); }
+
+/* ============================================================
+   7. ANIMATIONS
+   ============================================================ */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-in { animation: fadeIn .3s ease-out; }
+
+/* ============================================================
+   8. SCROLLBAR STYLING
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--fub-gray-300); border-radius: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,.2); }
+
+/* ============================================================
+   9. RESPONSIVE
+   ============================================================ */
+@media (max-width: 1200px) {
+  .spec-panel { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h1>FUB Lender</h1>
+    <div class="subtitle">Full UX Specification</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Core Screens</div>
+  </div>
+  <div class="nav-item active" data-screen="pipeline" onclick="showScreen('pipeline')">
+    <i class="ti ti-layout-dashboard"></i> Pipeline
+    <span class="badge">6</span>
+  </div>
+  <div class="nav-item" data-screen="new-deal" onclick="showScreen('new-deal')">
+    <i class="ti ti-plus"></i> New Deal
+    <span class="badge">7</span>
+  </div>
+  <div class="nav-item" data-screen="credit-memo" onclick="showScreen('credit-memo')">
+    <i class="ti ti-file-text"></i> Credit Memo
+    <span class="badge">5</span>
+  </div>
+  <div class="nav-item" data-screen="deal-detail" onclick="showScreen('deal-detail')">
+    <i class="ti ti-list-details"></i> Deal Detail
+    <span class="badge">5</span>
+  </div>
+  <div class="nav-item" data-screen="approver-queue" onclick="showScreen('approver-queue')">
+    <i class="ti ti-checkbox"></i> Approver Queue
+    <span class="badge">5</span>
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Supporting Screens</div>
+  </div>
+  <div class="nav-item" data-screen="notifications" onclick="showScreen('notifications')">
+    <i class="ti ti-bell"></i> Notifications
+  </div>
+  <div class="nav-item" data-screen="settings" onclick="showScreen('settings')">
+    <i class="ti ti-settings"></i> Settings / Profile
+  </div>
+  <div class="nav-item" data-screen="onboarding" onclick="showScreen('onboarding')">
+    <i class="ti ti-sparkles"></i> Onboarding
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">System States</div>
+  </div>
+  <div class="nav-item" data-screen="offline" onclick="showScreen('offline')">
+    <i class="ti ti-wifi-off"></i> Offline States
+  </div>
+  <div class="nav-item" data-screen="errors" onclick="showScreen('errors')">
+    <i class="ti ti-alert-triangle"></i> Error States
+  </div>
+  <div class="nav-item" data-screen="sync-conflict" onclick="showScreen('sync-conflict')">
+    <i class="ti ti-arrows-exchange"></i> Sync Conflict
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Flows</div>
+  </div>
+  <div class="nav-item" data-screen="flow-creation" onclick="showScreen('flow-creation')">
+    <i class="ti ti-route"></i> Deal Creation Flow
+  </div>
+  <div class="nav-item" data-screen="flow-approval" onclick="showScreen('flow-approval')">
+    <i class="ti ti-git-merge"></i> Approval Flow
+  </div>
+  <div class="nav-item" data-screen="flow-escalation" onclick="showScreen('flow-escalation')">
+    <i class="ti ti-arrow-up-right"></i> Escalation Flow
+  </div>
+  <div class="nav-item" data-screen="flow-document" onclick="showScreen('flow-document')">
+    <i class="ti ti-upload"></i> Document Upload
+  </div>
+
+  <div class="nav-divider"></div>
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Reference</div>
+  </div>
+  <div class="nav-item" data-screen="accessibility" onclick="showScreen('accessibility')">
+    <i class="ti ti-accessible"></i> Accessibility
+  </div>
+  <div class="nav-item" data-screen="interactions" onclick="showScreen('interactions')">
+    <i class="ti ti-hand-finger"></i> Interactions
+  </div>
+  <div class="nav-item" data-screen="gestures" onclick="showScreen('gestures')">
+    <i class="ti ti-swipe"></i> Gestures & Haptics
+  </div>
+</nav>
+
+<!-- ===================== MAIN ===================== -->
+<div class="main">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div>
+      <div class="toolbar-title" id="toolbar-title">Pipeline</div>
+      <div class="toolbar-meta" id="toolbar-meta">6 states · Core Screen</div>
+    </div>
+    <div class="state-toggles" id="state-toggles">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+  <!-- Content: Phone + Spec -->
+  <div class="content-area">
+    <div class="phone-panel">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-status-bar" id="phone-status-bar">
+          <span class="status-time">9:41</span>
+          <span class="status-icons">
+            <i class="ti ti-signal-4g" style="font-size:14px"></i>
+            <i class="ti ti-wifi" style="font-size:14px"></i>
+            <i class="ti ti-battery-3" style="font-size:14px"></i>
+          </span>
+        </div>
+        <div class="phone-content" id="phone-content">
+          <!-- Rendered by JS -->
+        </div>
+        <div class="phone-home-bar">
+          <div class="home-indicator"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Spec Panel -->
+    <div class="spec-panel" id="spec-panel">
+      <!-- Rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// APP DATA & STATE
+// ============================================================
+const SCREENS = {
+  // ─── PIPELINE ────────────────────────────────────────────
+  pipeline: {
+    title: 'Pipeline',
+    meta: '6 states · Core Screen',
+    states: ['populated','empty','loading','search','filter','error'],
+    defaultState: 'populated',
+    render: (state) => {
+      const header = `
+        <div class="app-header blue-bg">
+          <div class="app-header-title">Pipeline</div>
+          <div class="app-header-actions">
+            <i class="ti ti-search"></i>
+            <i class="ti ti-filter"></i>
+            <i class="ti ti-bell"></i>
+          </div>
+        </div>`;
+      const stats = state === 'loading' ? `
+        <div class="stat-row" style="background:var(--fub-blue);padding-top:var(--sp-3)">
+          <div class="skeleton skeleton-stat" style="background:rgba(255,255,255,.1)"></div>
+          <div class="skeleton skeleton-stat" style="background:rgba(255,255,255,.1)"></div>
+          <div class="skeleton skeleton-stat" style="background:rgba(255,255,255,.1)"></div>
+        </div>` : `
+        <div class="stat-row" style="background:var(--fub-blue);padding-top:var(--sp-3)">
+          <div class="stat-box on-blue">
+            <div class="stat-value">${state==='empty'?'0':'8'}</div>
+            <div class="stat-label">Active Deals</div>
+          </div>
+          <div class="stat-box on-blue">
+            <div class="stat-value">${state==='empty'?'$0':'$2.4M'}</div>
+            <div class="stat-label">Total Volume</div>
+          </div>
+          <div class="stat-box on-blue highlight">
+            <div class="stat-value" style="color:var(--fub-gold-light)">${state==='empty'?'0':'3'}</div>
+            <div class="stat-label">Need Action</div>
+          </div>
+        </div>`;
+
+      let content = '';
+      if (state === 'empty') {
+        content = `
+          <div class="empty-state" style="padding-top:60px">
+            <i class="ti ti-briefcase"></i>
+            <h3>No deals yet</h3>
+            <p>Start your first deal by tapping the button below. Your pipeline will show all active deals here.</p>
+            <div style="margin-top:var(--sp-5)">
+              <button class="btn btn-primary"><i class="ti ti-plus"></i> New Deal</button>
+            </div>
+          </div>`;
+      } else if (state === 'loading') {
+        content = `
+          <div style="padding-top:var(--sp-4)">
+            <div class="ptr-indicator"><i class="ti ti-loader-2"></i> Refreshing pipeline…</div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+            <div class="skeleton skeleton-card"></div>
+          </div>`;
+      } else if (state === 'search') {
+        content = `
+          <div class="search-bar active" style="margin-top:var(--sp-3)">
+            <i class="ti ti-search" style="font-size:16px;color:var(--fub-blue)"></i>
+            <span style="color:var(--fub-gray-800)">Parsons</span>
+          </div>
+          <div style="padding:var(--sp-2) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-500)">1 result for "Parsons"</div>
+          ${renderDealCard('Jackie Parsons','$110,000','Cattle Purchase','fast','Fast Lane','review','In Review')}
+        `;
+      } else if (state === 'filter') {
+        content = `
+          <div style="padding-top:var(--sp-3)">
+            <div class="search-bar" style="margin-bottom:var(--sp-3)"><i class="ti ti-search" style="font-size:16px"></i> Search deals…</div>
+            <div class="filter-row">
+              <div class="filter-pill active">Need Action (3)</div>
+              <div class="filter-pill">Fast Lane</div>
+              <div class="filter-pill">Standard</div>
+              <div class="filter-pill">Complex</div>
+              <div class="filter-pill">Approved</div>
+            </div>
+            ${renderDealCard('Jackie Parsons','$110,000','Cattle Purchase','fast','Fast Lane','review','In Review')}
+            ${renderDealCard('Martinez Ranch LLC','$450,000','Equipment Line','','Standard','pending','Pending Docs')}
+            ${renderDealCard('Clearwater Dev','$3.2M','CRE Construction','complex','Complex','draft','Draft')}
+          </div>`;
+      } else if (state === 'error') {
+        content = renderErrorState('network');
+      } else {
+        content = `
+          <div style="padding-top:var(--sp-3)">
+            <div class="search-bar"><i class="ti ti-search" style="font-size:16px"></i> Search deals…</div>
+            <div class="filter-row" style="margin-top:var(--sp-3)">
+              <div class="filter-pill active">All (8)</div>
+              <div class="filter-pill">Need Action (3)</div>
+              <div class="filter-pill">Fast Lane</div>
+              <div class="filter-pill">Standard</div>
+            </div>
+            ${renderDealCard('Jackie Parsons','$110,000','Cattle Purchase · Marble Falls','fast','Fast Lane','review','In Review')}
+            ${renderDealCard('Martinez Ranch LLC','$450,000','Equipment Line · Duncan','','Standard','pending','Pending Docs')}
+            ${renderDealCard('Henderson Farms','$85,000','Operating Line · Ardmore','fast','Fast Lane','approved','Approved')}
+            ${renderDealCard('Clearwater Dev Group','$3.2M','CRE Construction · Plano','complex','Complex','draft','Draft')}
+            ${renderDealCard('Blue Sky Cattle Co','$175,000','Livestock Purchase · Ada','','Standard','review','In Review')}
+          </div>`;
+      }
+      const tabBar = renderTabBar('pipeline');
+      return `<div style="background:var(--fub-blue)">${header}${stats}</div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;flex:1;margin-top:-8px;position:relative;z-index:1">${content}</div>${tabBar}`;
+    },
+    spec: (state) => specPipeline(state)
+  },
+
+  // ─── NEW DEAL ────────────────────────────────────────────
+  'new-deal': {
+    title: 'New Deal',
+    meta: '7 states · Core Screen',
+    states: ['initial','searching','found','not-found','autofill','validation','offline'],
+    defaultState: 'initial',
+    render: (state) => {
+      const backHeader = `
+        <div class="app-header">
+          <div style="display:flex;align-items:center;gap:var(--sp-2)">
+            <i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i>
+            <div class="app-header-title" style="color:var(--fub-blue)">New Deal</div>
+          </div>
+        </div>`;
+
+      if (state === 'initial') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div style="padding:var(--sp-2) var(--sp-5) var(--sp-4)"><div style="font-size:var(--fs-md);font-weight:700;color:var(--fub-gray-800)">Find Customer</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500);margin-top:2px">Search by name, TIN, or account number</div></div>
+          <div class="search-bar" style="margin-bottom:var(--sp-4)"><i class="ti ti-search" style="font-size:16px"></i> Search customers…</div>
+          <div style="padding:0 var(--sp-5);text-align:center;padding-top:var(--sp-10)">
+            <i class="ti ti-user-search" style="font-size:48px;color:var(--fub-gray-300)"></i>
+            <p style="font-size:var(--fs-sm);color:var(--fub-gray-500);margin-top:var(--sp-3)">Start typing to search for an existing customer or create a new one</p>
+          </div>
+          <div style="position:absolute;bottom:90px;left:0;right:0;padding:0 var(--sp-5)">
+            <button class="btn btn-outline" style="width:100%"><i class="ti ti-user-plus"></i> New Customer</button>
+          </div>${renderTabBar('new-deal')}`;
+      }
+      if (state === 'searching') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div class="search-bar active"><i class="ti ti-search" style="font-size:16px;color:var(--fub-blue)"></i> <span style="color:var(--fub-gray-800)">Parso</span></div>
+          <div style="padding:var(--sp-4) var(--sp-5)">
+            <div class="skeleton skeleton-text w80"></div>
+            <div class="skeleton skeleton-text w60"></div>
+            <div class="skeleton skeleton-text w80"></div>
+          </div>${renderTabBar('new-deal')}`;
+      }
+      if (state === 'found') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div class="search-bar active"><i class="ti ti-search" style="font-size:16px;color:var(--fub-blue)"></i> <span style="color:var(--fub-gray-800)">Parsons</span></div>
+          <div style="padding:var(--sp-3) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-500)">1 customer found</div>
+          <div class="deal-card" style="border-left-color:var(--fub-green);cursor:pointer">
+            <div style="display:flex;align-items:center;gap:var(--sp-3)">
+              <div style="width:40px;height:40px;border-radius:50%;background:var(--fub-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--fs-base)">JP</div>
+              <div>
+                <div style="font-weight:700;font-size:var(--fs-base)">Jackie Parsons</div>
+                <div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">7-year customer · Marble Falls</div>
+                <div style="font-size:var(--fs-xs);color:var(--fub-green);font-weight:700;margin-top:2px"><i class="ti ti-shield-check" style="font-size:12px"></i> JH Score: Excellent</div>
+              </div>
+              <i class="ti ti-chevron-right" style="margin-left:auto;color:var(--fub-gray-400)"></i>
+            </div>
+          </div>${renderTabBar('new-deal')}`;
+      }
+      if (state === 'not-found') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div class="search-bar active"><i class="ti ti-search" style="font-size:16px;color:var(--fub-blue)"></i> <span style="color:var(--fub-gray-800)">Xyzabc Corp</span></div>
+          <div class="empty-state" style="padding-top:var(--sp-10)">
+            <i class="ti ti-user-x" style="font-size:48px"></i>
+            <h3>No matches found</h3>
+            <p>No customer matches "Xyzabc Corp". You can create a new customer record.</p>
+            <div style="margin-top:var(--sp-4)"><button class="btn btn-primary"><i class="ti ti-user-plus"></i> Create New Customer</button></div>
+          </div>${renderTabBar('new-deal')}`;
+      }
+      if (state === 'autofill') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div class="autofill-card">
+            <div class="autofill-card-header"><i class="ti ti-sparkles" style="font-size:16px"></i> Auto-filled from Jack Henry</div>
+            <div class="autofill-field"><span class="label">Customer</span><span class="value">Jackie Parsons</span></div>
+            <div class="autofill-field"><span class="label">TIN</span><span class="value">***-**-4521</span></div>
+            <div class="autofill-field"><span class="label">Relationship</span><span class="value">7 years</span></div>
+            <div class="autofill-field"><span class="label">Existing Exposure</span><span class="value">$45,000</span></div>
+            <div class="autofill-field"><span class="label">JH Risk Score</span><span class="value" style="color:var(--fub-green)">Excellent</span></div>
+          </div>
+          <div class="lane-detect-banner fast">
+            <div class="lane-icon"><i class="ti ti-bolt"></i></div>
+            <div><div class="lane-text"><i class="ti ti-bolt" style="font-size:12px"></i> Fast Lane Eligible</div><div class="lane-sub">Under $250K · Single approver · Target: 15 min</div></div>
+          </div>
+          <div class="form-group"><div class="form-label">Loan Purpose</div><div class="form-input">Cattle Purchase — 50 head Black Angus</div></div>
+          <div class="form-group"><div class="form-label">Requested Amount</div><div class="form-input">$110,000</div></div>
+          <div style="padding:var(--sp-4) var(--sp-5)"><button class="btn btn-primary" style="width:100%">Continue to Credit Memo <i class="ti ti-arrow-right"></i></button></div>
+          ${renderTabBar('new-deal')}`;
+      }
+      if (state === 'validation') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div class="form-group"><div class="form-label">Loan Purpose <span class="spec-tag required">Required</span></div><div class="form-input error" style="color:var(--fub-gray-400)">Select purpose…</div><div class="form-error"><i class="ti ti-alert-circle" style="font-size:12px"></i> Loan purpose is required</div></div>
+          <div class="form-group"><div class="form-label">Requested Amount <span class="spec-tag required">Required</span></div><div class="form-input error"></div><div class="form-error"><i class="ti ti-alert-circle" style="font-size:12px"></i> Amount must be greater than $0</div></div>
+          <div class="form-group"><div class="form-label">Collateral Description</div><div class="form-input" style="color:var(--fub-gray-400)">Optional</div></div>
+          <div style="padding:var(--sp-4) var(--sp-5)"><button class="btn btn-primary" style="width:100%;opacity:.5">Continue to Credit Memo <i class="ti ti-arrow-right"></i></button></div>
+          ${renderTabBar('new-deal')}`;
+      }
+      if (state === 'offline') {
+        return `<div class="offline-banner"><i class="ti ti-wifi-off"></i> You're offline — changes will sync later <span class="sync-count">2</span></div>${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div><div class="progress-step"></div></div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--fub-amber-light);border-radius:var(--radius-sm);font-size:var(--fs-xs);color:#92400E;display:flex;align-items:center;gap:var(--sp-2)">
+            <i class="ti ti-alert-triangle" style="font-size:14px"></i> Customer data may be stale. Last synced 2h ago.
+          </div>
+          <div class="form-group"><div class="form-label">Loan Purpose</div><div class="form-input">Cattle Purchase</div></div>
+          <div class="form-group"><div class="form-label">Requested Amount</div><div class="form-input">$110,000</div></div>
+          <div style="padding:var(--sp-4) var(--sp-5)"><button class="btn btn-primary" style="width:100%"><i class="ti ti-cloud-off"></i> Save Draft (Offline)</button></div>
+          ${renderTabBar('new-deal')}`;
+      }
+      return '';
+    },
+    spec: (state) => specNewDeal(state)
+  },
+
+  // ─── CREDIT MEMO ─────────────────────────────────────────
+  'credit-memo': {
+    title: 'Credit Memo',
+    meta: '5 states · Core Screen',
+    states: ['blank','typing','extracted','history','autosave'],
+    defaultState: 'blank',
+    render: (state) => {
+      const backHeader = `
+        <div class="app-header">
+          <div style="display:flex;align-items:center;gap:var(--sp-2)">
+            <i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i>
+            <div class="app-header-title" style="color:var(--fub-blue)">Credit Memo</div>
+          </div>
+          <div class="app-header-actions" style="color:var(--fub-blue)">
+            <i class="ti ti-history"></i>
+            <i class="ti ti-dots-vertical"></i>
+          </div>
+        </div>`;
+
+      if (state === 'blank') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div></div>
+          <div style="padding:var(--sp-2) var(--sp-5) var(--sp-3)"><div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-700)">Jackie Parsons · $110,000</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Cattle Purchase — Fast Lane</div></div>
+          <div style="padding:0 var(--sp-5)">
+            <div style="font-size:var(--fs-xs);font-weight:700;color:var(--fub-gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--sp-2)">Narrative</div>
+            <div style="width:100%;min-height:200px;padding:var(--sp-3) var(--sp-4);border:1.5px dashed var(--fub-gray-300);border-radius:var(--radius-sm);font-size:var(--fs-sm);color:var(--fub-gray-400);line-height:1.6">Write your credit analysis here. Our AI will extract key data as you type…</div>
+          </div>
+          <div style="padding:var(--sp-3) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-400);display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-brain" style="font-size:14px"></i> NLP will auto-extract: amounts, collateral, terms, risk factors</div>`;
+      }
+      if (state === 'typing') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div></div>
+          <div class="nlp-indicator"><div class="dot-pulse"><span></span><span></span><span></span></div> NLP analyzing narrative…</div>
+          <div style="padding:0 var(--sp-5)">
+            <div style="font-size:var(--fs-xs);font-weight:700;color:var(--fub-gray-600);text-transform:uppercase;letter-spacing:.5px;margin-bottom:var(--sp-2)">Narrative</div>
+            <div style="width:100%;min-height:200px;padding:var(--sp-3) var(--sp-4);border:1.5px solid var(--fub-blue);border-radius:var(--radius-sm);font-size:var(--fs-sm);color:var(--fub-gray-800);line-height:1.6;box-shadow:0 0 0 3px rgba(0,45,114,.08)">Jackie Parsons is a 7-year customer at our Marble Falls Community Bank requesting $110,000 for the purchase of 50 head of Black Angus cattle. She has an existing operating line of $45,000 in good standing with no delinquency history. The cattle will serve as primary collateral with an estimated value of $132,000. Debt service coverage ratio is projected at 1.35x based on|</div>
+          </div>
+          <div style="padding:var(--sp-3) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-400);display:flex;justify-content:space-between"><span>Word count: 73</span><span style="color:var(--fub-green)"><i class="ti ti-cloud-check" style="font-size:12px"></i> Auto-saved</span></div>`;
+      }
+      if (state === 'extracted') {
+        return `${backHeader}
+          <div class="progress-bar"><div class="progress-step done"></div><div class="progress-step done"></div><div class="progress-step current"></div><div class="progress-step"></div></div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:#E8F5E9;border-radius:var(--radius-sm);font-size:var(--fs-xs);font-weight:700;color:var(--fub-green);display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-check" style="font-size:14px"></i> 8 fields extracted — review below</div>
+          <div style="padding:0 var(--sp-5);margin-bottom:var(--sp-3)">
+            <div style="font-size:var(--fs-xs);font-weight:700;color:var(--fub-gray-600);text-transform:uppercase;margin-bottom:var(--sp-2)">Extracted Fields</div>
+            <div style="display:flex;flex-wrap:wrap;gap:4px">
+              <span class="nlp-tag">Amount: $110K <span class="confidence">98%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">Purpose: Cattle <span class="confidence">95%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">Collateral: Livestock <span class="confidence">92%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">DSCR: 1.35x <span class="confidence">89%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">Term: 5yr <span class="confidence">87%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">LTV: 83% <span class="confidence">91%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">Existing Exp: $45K <span class="confidence">96%</span> <i class="ti ti-pencil edit-icon"></i></span>
+              <span class="nlp-tag">Relationship: 7yr <span class="confidence">99%</span> <i class="ti ti-pencil edit-icon"></i></span>
+            </div>
+          </div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--fub-warm-100);border-radius:var(--radius-sm)">
+            <div style="font-size:var(--fs-xs);font-weight:700;color:var(--fub-gray-600);text-transform:uppercase;margin-bottom:var(--sp-2)">Risk Assessment</div>
+            <div style="display:flex;align-items:center;gap:var(--sp-3)">
+              <div style="width:48px;height:48px;border-radius:50%;background:var(--fub-green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:var(--fs-md);font-weight:900">Low</div>
+              <div style="font-size:var(--fs-xs);color:var(--fub-gray-600);line-height:1.4">Strong DSCR, adequate collateral coverage, long-standing relationship. Fast Lane criteria met.</div>
+            </div>
+          </div>
+          <div style="padding:var(--sp-3) var(--sp-5)"><button class="btn btn-primary" style="width:100%">Submit for Approval <i class="ti ti-send"></i></button></div>`;
+      }
+      if (state === 'history') {
+        return `${backHeader}
+          <div style="padding:var(--sp-2) var(--sp-5) var(--sp-3)"><div style="font-size:var(--fs-md);font-weight:700;color:var(--fub-gray-800)">Version History</div></div>
+          <div style="padding:0 var(--sp-5)">
+            <div class="deal-card" style="border-left-color:var(--fub-green)"><div style="display:flex;justify-content:space-between"><div><div style="font-size:var(--fs-sm);font-weight:700">Current Version</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Today 9:38 AM · 73 words</div></div><span class="status-badge approved">Current</span></div></div>
+            <div class="deal-card" style="opacity:.7"><div style="display:flex;justify-content:space-between"><div><div style="font-size:var(--fs-sm);font-weight:700">Draft v2</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Today 9:25 AM · 45 words</div></div><span class="status-badge draft">Superseded</span></div></div>
+            <div class="deal-card" style="opacity:.5"><div style="display:flex;justify-content:space-between"><div><div style="font-size:var(--fs-sm);font-weight:700">Draft v1</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Today 9:12 AM · 18 words</div></div><span class="status-badge draft">Superseded</span></div></div>
+          </div>`;
+      }
+      if (state === 'autosave') {
+        return `${backHeader}
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-2) var(--sp-4);background:#E8F5E9;border-radius:var(--radius-sm);font-size:var(--fs-xs);font-weight:700;color:var(--fub-green);display:flex;align-items:center;gap:var(--sp-2);animation:fadeIn .3s ease-out"><i class="ti ti-cloud-check" style="font-size:14px"></i> All changes saved · Last saved 3 seconds ago</div>
+          <div style="padding:0 var(--sp-5)">
+            <div style="width:100%;min-height:140px;padding:var(--sp-3) var(--sp-4);border:1.5px solid var(--fub-gray-300);border-radius:var(--radius-sm);font-size:var(--fs-sm);color:var(--fub-gray-800);line-height:1.6">Jackie Parsons is a 7-year customer at our Marble Falls Community Bank requesting $110,000 for the purchase of 50 head of Black Angus cattle…</div>
+          </div>
+          <div style="padding:var(--sp-3) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-400);display:flex;justify-content:space-between"><span>Auto-save: every 30s or on pause</span><span>Draft v3</span></div>`;
+      }
+      return '';
+    },
+    spec: (state) => specCreditMemo(state)
+  },
+
+  // ─── DEAL DETAIL ─────────────────────────────────────────
+  'deal-detail': {
+    title: 'Deal Detail',
+    meta: '5 states · Core Screen',
+    states: ['active','approved','closed','documents','cached'],
+    defaultState: 'active',
+    render: (state) => {
+      const backHeader = `
+        <div class="app-header">
+          <div style="display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i><div class="app-header-title" style="color:var(--fub-blue)">Deal Detail</div></div>
+          <div class="app-header-actions" style="color:var(--fub-blue)"><i class="ti ti-share"></i><i class="ti ti-dots-vertical"></i></div>
+        </div>`;
+
+      const dealHeader = `
+        <div style="padding:0 var(--sp-5) var(--sp-4)">
+          <div style="display:flex;align-items:center;gap:var(--sp-3);margin-bottom:var(--sp-3)">
+            <div style="width:48px;height:48px;border-radius:50%;background:var(--fub-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--fs-lg)">JP</div>
+            <div><div style="font-size:var(--fs-md);font-weight:700">Jackie Parsons</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Cattle Purchase · $110,000</div></div>
+          </div>
+          <div class="stat-row" style="padding:0">
+            <div class="stat-box"><div class="stat-value" style="font-size:var(--fs-md)">1.35x</div><div class="stat-label">DSCR</div></div>
+            <div class="stat-box"><div class="stat-value" style="font-size:var(--fs-md)">83%</div><div class="stat-label">LTV</div></div>
+            <div class="stat-box"><div class="stat-value" style="font-size:var(--fs-md);color:var(--fub-green)">Low</div><div class="stat-label">Risk</div></div>
+          </div>
+        </div>`;
+
+      if (state === 'active') {
+        return `${backHeader}${dealHeader}
+          <div style="padding:0 var(--sp-5) var(--sp-3)"><div style="display:flex;gap:var(--sp-2)"><span class="lane-badge fast">Fast Lane</span><span class="status-badge review">In Review</span></div></div>
+          <div style="padding:var(--sp-2) var(--sp-5) var(--sp-2)"><div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-700)">Timeline</div></div>
+          <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Deal Created</div><div class="timeline-time">Today 9:12 AM · Tom White</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Credit Memo Submitted</div><div class="timeline-time">Today 9:38 AM · Tom White</div><div class="timeline-desc">NLP extracted 8 fields · Risk: Low</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-clock" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Pending Approval</div><div class="timeline-time">Assigned to Sarah Chen</div><div class="timeline-desc">SLA: 2h 14m remaining</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot pending"><i class="ti ti-lock" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Documentation</div><div class="timeline-time">Awaiting approval</div></div></div>
+          </div>`;
+      }
+      if (state === 'approved') {
+        return `${backHeader}${dealHeader}
+          <div style="padding:0 var(--sp-5) var(--sp-3)"><div style="display:flex;gap:var(--sp-2)"><span class="lane-badge fast">Fast Lane</span><span class="status-badge approved">Approved</span></div></div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--fub-green-light);border:1px solid var(--fub-green);border-radius:var(--radius-sm);display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-sm);font-weight:700;color:var(--fub-green)"><i class="ti ti-circle-check" style="font-size:18px"></i> Approved by Sarah Chen · 11 minutes</div>
+          <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Deal Created</div><div class="timeline-time">Today 9:12 AM</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Credit Memo Submitted</div><div class="timeline-time">Today 9:38 AM</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Approved</div><div class="timeline-time">Today 9:49 AM · Sarah Chen</div><div class="timeline-desc">No conditions · Fast Lane SLA met</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot"><i class="ti ti-file" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Documentation Pending</div><div class="timeline-time">2 of 4 documents uploaded</div></div></div>
+          </div>`;
+      }
+      if (state === 'closed') {
+        return `${backHeader}${dealHeader}
+          <div style="padding:0 var(--sp-5) var(--sp-3)"><div style="display:flex;gap:var(--sp-2)"><span class="lane-badge fast">Fast Lane</span><span class="status-badge" style="background:var(--fub-gray-800);color:#fff">Closed</span></div></div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--fub-warm-100);border-radius:var(--radius-sm);font-size:var(--fs-xs);color:var(--fub-gray-600)"><strong>Closed:</strong> May 10, 2026 · Total time: 4h 22m · Booked to core system</div>
+          <div class="timeline">
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Deal Created</div><div class="timeline-time">Today 9:12 AM</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Approved</div><div class="timeline-time">Today 9:49 AM</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Docs Complete</div><div class="timeline-time">Today 11:30 AM</div></div></div>
+            <div class="timeline-item"><div class="timeline-dot success"><i class="ti ti-check" style="font-size:14px"></i></div><div class="timeline-content"><div class="timeline-title">Closed & Booked</div><div class="timeline-time">Today 1:34 PM</div></div></div>
+          </div>`;
+      }
+      if (state === 'documents') {
+        return `${backHeader}
+          <div style="padding:var(--sp-2) var(--sp-5) var(--sp-3)"><div style="font-size:var(--fs-md);font-weight:700;color:var(--fub-gray-800)">Document Checklist</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Jackie Parsons · $110,000 Cattle Purchase</div></div>
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:#E0ECFF;border-radius:var(--radius-sm);font-size:var(--fs-xs);font-weight:700;color:var(--fub-blue)">2 of 4 documents uploaded</div>
+          <div class="doc-checklist">
+            <div class="doc-item"><div class="check-circle done"><i class="ti ti-check" style="font-size:14px"></i></div><div class="doc-name">Loan Application</div><div class="doc-status done">Uploaded</div></div>
+            <div class="doc-item"><div class="check-circle done"><i class="ti ti-check" style="font-size:14px"></i></div><div class="doc-name">Financial Statements</div><div class="doc-status done">Uploaded</div></div>
+            <div class="doc-item"><div class="check-circle missing"><i class="ti ti-plus" style="font-size:14px"></i></div><div class="doc-name">Bill of Sale</div><div class="doc-status missing">Missing</div></div>
+            <div class="doc-item"><div class="check-circle missing"><i class="ti ti-plus" style="font-size:14px"></i></div><div class="doc-name">Insurance Certificate</div><div class="doc-status missing">Missing</div></div>
+          </div>
+          <div style="padding:var(--sp-4) var(--sp-5)"><button class="btn btn-primary" style="width:100%"><i class="ti ti-upload"></i> Upload Document</button></div>`;
+      }
+      if (state === 'cached') {
+        return `<div class="offline-banner"><i class="ti ti-wifi-off"></i> Offline — viewing cached data</div>${backHeader}
+          <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-2) var(--sp-4);background:var(--fub-amber-light);border-radius:var(--radius-sm);font-size:var(--fs-xs);color:#92400E;display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-clock" style="font-size:12px"></i> Data from 45 min ago — may not reflect latest changes</div>
+          ${dealHeader}
+          <div style="padding:0 var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-500);text-align:center;padding-top:var(--sp-4)"><i class="ti ti-cloud-off" style="font-size:14px"></i> Timeline updates paused until online</div>`;
+      }
+      return '';
+    },
+    spec: (state) => specDealDetail(state)
+  },
+
+  // ─── APPROVER QUEUE ──────────────────────────────────────
+  'approver-queue': {
+    title: 'Approver Queue',
+    meta: '5 states · Core Screen',
+    states: ['populated','empty','sla-warning','sla-critical','error'],
+    defaultState: 'populated',
+    render: (state) => {
+      const header = `
+        <div class="app-header blue-bg">
+          <div class="app-header-title">Approvals</div>
+          <div class="app-header-actions"><i class="ti ti-filter"></i></div>
+        </div>`;
+
+      if (state === 'empty') {
+        return `<div style="background:var(--fub-blue)">${header}</div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;position:relative;z-index:1">
+          <div class="empty-state" style="padding-top:80px">
+            <i class="ti ti-mood-happy" style="color:var(--fub-green)"></i>
+            <h3>All caught up!</h3>
+            <p>No deals waiting for your approval. Enjoy the calm before the next wave.</p>
+          </div>
+        </div>${renderTabBar('approvals')}`;
+      }
+      if (state === 'sla-warning') {
+        return `<div style="background:var(--fub-blue)">${header}
+          <div class="stat-row" style="padding-top:var(--sp-3)">
+            <div class="stat-box on-blue"><div class="stat-value">3</div><div class="stat-label">Pending</div></div>
+            <div class="stat-box on-blue"><div class="stat-value" style="color:var(--fub-amber)">1</div><div class="stat-label">SLA Warning</div></div>
+          </div>
+        </div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;position:relative;z-index:1;padding-top:var(--sp-4)">
+          <div class="deal-card" style="border-left-color:var(--fub-amber)">
+            <div class="deal-card-header"><div class="deal-card-name">Martinez Ranch LLC</div><div class="sla-timer amber"><i class="ti ti-clock" style="font-size:14px"></i> 0:42 left</div></div>
+            <div class="deal-card-meta"><span>$450,000 · Equipment</span></div>
+            <div class="deal-card-badges"><span class="lane-badge standard">Standard</span><span class="status-badge" style="background:var(--fub-amber-light);color:#92400E">SLA Warning</span></div>
+          </div>
+          ${renderDealCard('Jackie Parsons','$110,000','Cattle Purchase','fast','Fast Lane','pending','Pending')}
+          <div class="approval-actions"><button class="btn btn-success"><i class="ti ti-check"></i> Approve</button><button class="btn btn-outline"><i class="ti ti-list-check"></i> Conditions</button><button class="btn btn-danger"><i class="ti ti-x"></i> Decline</button></div>
+        </div>${renderTabBar('approvals')}`;
+      }
+      if (state === 'sla-critical') {
+        return `<div style="background:var(--fub-blue)">${header}
+          <div class="stat-row" style="padding-top:var(--sp-3)">
+            <div class="stat-box on-blue"><div class="stat-value">2</div><div class="stat-label">Pending</div></div>
+            <div class="stat-box on-blue"><div class="stat-value" style="color:var(--fub-red)">1</div><div class="stat-label">SLA Breached</div></div>
+          </div>
+        </div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;position:relative;z-index:1;padding-top:var(--sp-4)">
+          <div class="deal-card" style="border-left-color:var(--fub-red);border-left-width:6px">
+            <div style="position:absolute;top:0;right:0;padding:4px 10px;background:var(--fub-red);color:#fff;font-size:10px;font-weight:700;border-radius:0 0 0 var(--radius-sm);text-transform:uppercase;letter-spacing:.5px">SLA Breached</div>
+            <div class="deal-card-header"><div class="deal-card-name">Henderson Farms</div><div class="sla-timer flash"><i class="ti ti-alert-triangle" style="font-size:14px"></i> OVERDUE</div></div>
+            <div class="deal-card-meta"><span>$85,000 · Operating Line</span></div>
+            <div class="deal-card-badges"><span class="lane-badge fast">Fast Lane</span></div>
+            <div style="margin-top:var(--sp-2);font-size:var(--fs-xs);color:var(--fub-red)">Exceeded 4-hour SLA by 1h 23m — escalation triggered</div>
+          </div>
+          <div class="approval-actions"><button class="btn btn-success"><i class="ti ti-check"></i> Approve</button><button class="btn btn-outline"><i class="ti ti-list-check"></i> Conditions</button><button class="btn btn-danger"><i class="ti ti-x"></i> Decline</button></div>
+        </div>${renderTabBar('approvals')}`;
+      }
+      if (state === 'error') {
+        return `<div style="background:var(--fub-blue)">${header}</div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;position:relative;z-index:1">
+          ${renderErrorState('auth')}
+        </div>${renderTabBar('approvals')}`;
+      }
+      // populated
+      return `<div style="background:var(--fub-blue)">${header}
+        <div class="stat-row" style="padding-top:var(--sp-3)">
+          <div class="stat-box on-blue"><div class="stat-value">3</div><div class="stat-label">Pending</div></div>
+          <div class="stat-box on-blue"><div class="stat-value" style="color:var(--fub-green)">0</div><div class="stat-label">SLA Risk</div></div>
+        </div>
+      </div><div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;position:relative;z-index:1;padding-top:var(--sp-4)">
+        <div class="deal-card fast-lane">
+          <div class="deal-card-header"><div class="deal-card-name">Jackie Parsons</div><div class="sla-timer green"><i class="ti ti-clock" style="font-size:14px"></i> 2h 14m</div></div>
+          <div class="deal-card-meta"><span>$110,000 · Cattle Purchase</span><span>Tom White · Marble Falls</span></div>
+          <div class="deal-card-badges"><span class="lane-badge fast">Fast Lane</span></div>
+        </div>
+        <div class="approval-actions"><button class="btn btn-success"><i class="ti ti-check"></i> Approve</button><button class="btn btn-outline"><i class="ti ti-list-check"></i> Conditions</button><button class="btn btn-danger"><i class="ti ti-x"></i> Decline</button></div>
+        ${renderDealCard('Martinez Ranch LLC','$450,000','Equipment Line · Duncan','','Standard','pending','Pending')}
+        ${renderDealCard('Blue Sky Cattle Co','$175,000','Livestock · Ada','','Standard','pending','Pending')}
+      </div>${renderTabBar('approvals')}`;
+    },
+    spec: (state) => specApproverQueue(state)
+  },
+
+  // ─── NOTIFICATIONS ───────────────────────────────────────
+  notifications: {
+    title: 'Notifications',
+    meta: '5 types · Supporting Screen',
+    states: ['all','unread'],
+    defaultState: 'all',
+    render: (state) => {
+      const header = `<div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Notifications</div><div style="font-size:var(--fs-xs);color:var(--fub-blue);font-weight:700;cursor:pointer">Mark all read</div></div>`;
+      return `${header}
+        <div class="notif-item unread"><div class="notif-icon submitted"><i class="ti ti-send"></i></div><div class="notif-body"><div class="notif-title">Deal submitted for your approval</div><div class="notif-desc">Jackie Parsons · $110K Cattle Purchase from Tom White</div><div class="notif-time">2 minutes ago</div></div></div>
+        <div class="notif-item unread"><div class="notif-icon sla"><i class="ti ti-clock"></i></div><div class="notif-body"><div class="notif-title">SLA Warning</div><div class="notif-desc">Martinez Ranch LLC — 42 min remaining on 4-hour SLA</div><div class="notif-time">18 minutes ago</div></div></div>
+        <div class="notif-item"><div class="notif-icon approval"><i class="ti ti-circle-check"></i></div><div class="notif-body"><div class="notif-title">Deal approved</div><div class="notif-desc">Henderson Farms $85K approved by Sarah Chen</div><div class="notif-time">1 hour ago</div></div></div>
+        <div class="notif-item"><div class="notif-icon condition"><i class="ti ti-list-check"></i></div><div class="notif-body"><div class="notif-title">Condition added</div><div class="notif-desc">Clearwater Dev — "Updated appraisal required before closing"</div><div class="notif-time">3 hours ago</div></div></div>
+        <div class="notif-item"><div class="notif-icon doc"><i class="ti ti-file-upload"></i></div><div class="notif-body"><div class="notif-title">Document uploaded</div><div class="notif-desc">Blue Sky Cattle Co — Financial statements received</div><div class="notif-time">Yesterday</div></div></div>
+        ${renderTabBar('notifications')}`;
+    },
+    spec: (state) => specNotifications()
+  },
+
+  // ─── SETTINGS ────────────────────────────────────────────
+  settings: {
+    title: 'Settings / Profile',
+    meta: '1 state · Supporting Screen',
+    states: ['default'],
+    defaultState: 'default',
+    render: () => {
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Settings</div></div>
+        <div style="display:flex;align-items:center;gap:var(--sp-4);padding:var(--sp-4) var(--sp-5)">
+          <div style="width:56px;height:56px;border-radius:50%;background:var(--fub-blue);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:var(--fs-xl)">TW</div>
+          <div><div style="font-size:var(--fs-md);font-weight:700">Tom White</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Senior Lender · Marble Falls Community Bank</div><div style="font-size:var(--fs-xs);color:var(--fub-blue);font-weight:700;margin-top:2px">Authority Level: 3 (up to $500K)</div></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">Notifications</div>
+          <div class="settings-row"><span class="label">Deal submitted to me</span><div class="toggle-switch on"></div></div>
+          <div class="settings-row"><span class="label">Approval received</span><div class="toggle-switch on"></div></div>
+          <div class="settings-row"><span class="label">SLA warnings</span><div class="toggle-switch on"></div></div>
+          <div class="settings-row"><span class="label">Document uploads</span><div class="toggle-switch"></div></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">Offline & Sync</div>
+          <div class="settings-row"><span class="label">Sync status</span><span class="value" style="color:var(--fub-green);font-weight:700"><i class="ti ti-cloud-check" style="font-size:14px"></i> Synced</span></div>
+          <div class="settings-row"><span class="label">Last sync</span><span class="value">2 min ago</span></div>
+          <div class="settings-row"><span class="label">Cached deals</span><span class="value">8 deals</span></div>
+          <div class="settings-row"><span class="label">Pending uploads</span><span class="value">0</span></div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">Account</div>
+          <div class="settings-row"><span class="label">Okta SSO</span><span class="value" style="color:var(--fub-green)">Connected</span></div>
+          <div class="settings-row"><span class="label">App version</span><span class="value">1.0.0 (Build 42)</span></div>
+        </div>
+        ${renderTabBar('settings')}`;
+    },
+    spec: () => specSettings()
+  },
+
+  // ─── ONBOARDING ──────────────────────────────────────────
+  onboarding: {
+    title: 'Onboarding',
+    meta: '3 steps · First-time UX',
+    states: ['welcome','feature-1','feature-2'],
+    defaultState: 'welcome',
+    render: (state) => {
+      if (state === 'welcome') {
+        return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:var(--sp-8);text-align:center;background:linear-gradient(180deg,var(--fub-blue) 0%,var(--fub-blue-light) 100%)">
+          <div style="width:80px;height:80px;border-radius:20px;background:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:var(--sp-6);box-shadow:var(--shadow-lg)">
+            <div style="font-size:32px;font-weight:900;color:var(--fub-blue)">FUB</div>
+          </div>
+          <div style="font-size:var(--fs-2xl);font-weight:900;color:#fff;margin-bottom:var(--sp-3)">Welcome to FUB Lender</div>
+          <div style="font-size:var(--fs-sm);color:rgba(255,255,255,.75);line-height:1.5;max-width:280px;margin-bottom:var(--sp-8)">The fastest way to originate and approve loans. Write narratives, not forms.</div>
+          <div style="display:flex;gap:8px;margin-bottom:var(--sp-6)"><div style="width:24px;height:6px;border-radius:3px;background:#fff"></div><div style="width:8px;height:6px;border-radius:3px;background:rgba(255,255,255,.35)"></div><div style="width:8px;height:6px;border-radius:3px;background:rgba(255,255,255,.35)"></div></div>
+          <button class="btn" style="background:#fff;color:var(--fub-blue);width:200px">Get Started <i class="ti ti-arrow-right"></i></button>
+        </div>`;
+      }
+      if (state === 'feature-1') {
+        return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:var(--sp-8);text-align:center;background:var(--fub-warm-white)">
+          <div style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,#E0ECFF,#F0E6FF);display:flex;align-items:center;justify-content:center;margin-bottom:var(--sp-6)"><i class="ti ti-file-text" style="font-size:72px;color:var(--fub-blue)"></i></div>
+          <div style="font-size:var(--fs-xl);font-weight:900;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Credit Memo First</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5;max-width:280px;margin-bottom:var(--sp-8)">Write your credit analysis as a narrative. Our AI extracts the data points automatically — no more filling out 50 form fields.</div>
+          <div style="display:flex;gap:8px;margin-bottom:var(--sp-6)"><div style="width:8px;height:6px;border-radius:3px;background:var(--fub-gray-300)"></div><div style="width:24px;height:6px;border-radius:3px;background:var(--fub-blue)"></div><div style="width:8px;height:6px;border-radius:3px;background:var(--fub-gray-300)"></div></div>
+          <button class="btn btn-primary" style="width:200px">Next <i class="ti ti-arrow-right"></i></button>
+        </div>`;
+      }
+      if (state === 'feature-2') {
+        return `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:var(--sp-8);text-align:center;background:var(--fub-warm-white)">
+          <div style="width:200px;height:200px;border-radius:50%;background:linear-gradient(135deg,var(--fub-green-light),#E8F5E9);display:flex;align-items:center;justify-content:center;margin-bottom:var(--sp-6)"><i class="ti ti-bolt" style="font-size:72px;color:var(--fub-green)"></i></div>
+          <div style="font-size:var(--fs-xl);font-weight:900;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Three Speed Lanes</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5;max-width:280px;margin-bottom:var(--sp-8)">Deals under $250K? Fast Lane — single approver, 15-minute target. Bigger deals route automatically to the right authority level.</div>
+          <div style="display:flex;gap:8px;margin-bottom:var(--sp-6)"><div style="width:8px;height:6px;border-radius:3px;background:var(--fub-gray-300)"></div><div style="width:8px;height:6px;border-radius:3px;background:var(--fub-gray-300)"></div><div style="width:24px;height:6px;border-radius:3px;background:var(--fub-blue)"></div></div>
+          <button class="btn btn-primary" style="width:200px">Start Using FUB Lender</button>
+        </div>`;
+      }
+      return '';
+    },
+    spec: () => specOnboarding()
+  },
+
+  // ─── OFFLINE STATES ──────────────────────────────────────
+  offline: {
+    title: 'Offline States',
+    meta: '4 states · System',
+    states: ['banner','queued','syncing','72h-warning'],
+    defaultState: 'banner',
+    render: (state) => {
+      if (state === 'banner') {
+        return `<div class="offline-banner"><i class="ti ti-wifi-off"></i> No connection — working offline</div>
+          <div class="app-header blue-bg"><div class="app-header-title">Pipeline</div></div>
+          <div style="background:var(--fub-blue)"><div class="stat-row" style="padding-top:var(--sp-3)"><div class="stat-box on-blue"><div class="stat-value">8</div><div class="stat-label">Cached Deals</div></div><div class="stat-box on-blue"><div class="stat-value" style="color:var(--fub-amber)">2</div><div class="stat-label">Queued</div></div></div></div>
+          <div style="background:var(--fub-warm-white);border-radius:var(--radius-lg) var(--radius-lg) 0 0;margin-top:-8px;padding-top:var(--sp-4)">
+            <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-2) var(--sp-4);background:var(--fub-amber-light);border-radius:var(--radius-sm);font-size:var(--fs-xs);color:#92400E;display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-clock" style="font-size:12px"></i> Last synced: 45 min ago</div>
+            ${renderDealCard('Jackie Parsons','$110,000','Cattle Purchase','fast','Fast Lane','review','In Review')}
+          </div>${renderTabBar('pipeline')}`;
+      }
+      if (state === 'queued') {
+        return `<div class="offline-banner"><i class="ti ti-wifi-off"></i> Offline <span class="sync-count">3 pending</span></div>
+          <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Pending Actions</div></div>
+          <div style="padding:var(--sp-3) var(--sp-5);font-size:var(--fs-xs);color:var(--fub-gray-500)">These actions will sync when you reconnect:</div>
+          <div class="deal-card" style="border-left-color:var(--fub-amber)"><div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2)"><i class="ti ti-cloud-upload" style="color:var(--fub-amber);font-size:16px"></i><span style="font-size:var(--fs-sm);font-weight:700">Credit memo saved</span></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Jackie Parsons · Queued 10 min ago</div></div>
+          <div class="deal-card" style="border-left-color:var(--fub-amber)"><div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2)"><i class="ti ti-cloud-upload" style="color:var(--fub-amber);font-size:16px"></i><span style="font-size:var(--fs-sm);font-weight:700">New deal created</span></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Draft deal · Queued 25 min ago</div></div>
+          <div class="deal-card" style="border-left-color:var(--fub-amber)"><div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2)"><i class="ti ti-cloud-upload" style="color:var(--fub-amber);font-size:16px"></i><span style="font-size:var(--fs-sm);font-weight:700">Document queued</span></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Bill of Sale · Queued 30 min ago</div></div>`;
+      }
+      if (state === 'syncing') {
+        return `<div style="background:var(--fub-green);color:#fff;padding:6px var(--sp-4);font-size:var(--fs-xs);font-weight:700;display:flex;align-items:center;gap:var(--sp-2);justify-content:center"><i class="ti ti-loader-2" style="font-size:14px;animation:spin 1s linear infinite"></i> Syncing 3 actions…</div>
+          <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Syncing</div></div>
+          <div class="deal-card" style="border-left-color:var(--fub-green)"><div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2)"><i class="ti ti-check" style="color:var(--fub-green);font-size:16px"></i><span style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-green)">Credit memo synced</span></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Jackie Parsons · Just now</div></div>
+          <div class="deal-card" style="border-left-color:var(--fub-amber)"><div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-2)"><i class="ti ti-loader-2" style="color:var(--fub-amber);font-size:16px;animation:spin 1s linear infinite"></i><span style="font-size:var(--fs-sm);font-weight:700">Uploading deal…</span></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Draft deal · In progress</div><div style="margin-top:var(--sp-2);height:4px;background:var(--fub-gray-200);border-radius:2px;overflow:hidden"><div style="width:60%;height:100%;background:var(--fub-green);border-radius:2px"></div></div></div>
+          <div class="deal-card" style="border-left-color:var(--fub-gray-300);opacity:.6"><div style="display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-clock" style="color:var(--fub-gray-400);font-size:16px"></i><span style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-500)">Document queued</span></div></div>`;
+      }
+      if (state === '72h-warning') {
+        return `<div class="offline-banner" style="background:var(--fub-red)"><i class="ti ti-alert-triangle"></i> Offline for 68 hours — data may be outdated</div>
+          <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Pipeline</div></div>
+          <div style="margin:var(--sp-3) var(--sp-5);padding:var(--sp-4);background:#FDE8E7;border:1.5px solid var(--fub-red);border-radius:var(--radius-md)">
+            <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-red);margin-bottom:var(--sp-2)"><i class="ti ti-alert-triangle" style="font-size:16px"></i> Extended Offline Warning</div>
+            <div style="font-size:var(--fs-xs);color:var(--fub-gray-700);line-height:1.4">You've been offline for 68 hours. Cached deal data may not reflect current status. SLA timers and approval statuses could be inaccurate. Connect to Wi-Fi or cellular to sync.</div>
+            <div style="margin-top:var(--sp-3);font-size:var(--fs-xs);font-weight:700;color:var(--fub-red)">4 hours until read-only mode</div>
+          </div>`;
+      }
+      return '';
+    },
+    spec: () => specOffline()
+  },
+
+  // ─── ERROR STATES ────────────────────────────────────────
+  errors: {
+    title: 'Error States',
+    meta: '6 types · System',
+    states: ['network','api-500','auth','permission','validation','sync-fail'],
+    defaultState: 'network',
+    render: (state) => renderErrorState(state),
+    spec: () => specErrors()
+  },
+
+  // ─── SYNC CONFLICT ───────────────────────────────────────
+  'sync-conflict': {
+    title: 'Sync Conflict',
+    meta: '1 state · System',
+    states: ['conflict'],
+    defaultState: 'conflict',
+    render: () => {
+      return `
+        <div class="app-header"><div style="display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i><div class="app-header-title" style="color:var(--fub-blue)">Sync Conflict</div></div></div>
+        <div style="margin:0 var(--sp-5) var(--sp-3);padding:var(--sp-3) var(--sp-4);background:var(--fub-amber-light);border-radius:var(--radius-sm);font-size:var(--fs-sm);font-weight:700;color:#92400E;display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-alert-triangle" style="font-size:16px"></i> 1 conflict found during sync</div>
+        <div style="padding:0 var(--sp-5) var(--sp-3)"><div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800)">Jackie Parsons — Credit Memo</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Both your local draft and the server version were modified</div></div>
+        <div class="conflict-card">
+          <div class="conflict-header"><i class="ti ti-arrows-exchange" style="font-size:16px"></i> Field Differences</div>
+          <div class="conflict-sides">
+            <div class="conflict-side local"><div class="side-label"><i class="ti ti-device-mobile" style="font-size:10px"></i> Your Version</div><div style="font-size:var(--fs-xs);margin-bottom:var(--sp-2)"><strong>Amount:</strong> $110,000</div><div style="font-size:var(--fs-xs);margin-bottom:var(--sp-2)"><strong>Term:</strong> 5 years</div><div style="font-size:var(--fs-xs)"><strong>Collateral:</strong> 50 head Black Angus</div></div>
+            <div class="conflict-side server"><div class="side-label"><i class="ti ti-cloud" style="font-size:10px"></i> Server Version</div><div style="font-size:var(--fs-xs);margin-bottom:var(--sp-2)"><strong>Amount:</strong> $125,000</div><div style="font-size:var(--fs-xs);margin-bottom:var(--sp-2)"><strong>Term:</strong> 7 years</div><div style="font-size:var(--fs-xs)"><strong>Collateral:</strong> 60 head Black Angus</div></div>
+          </div>
+        </div>
+        <div class="approval-actions">
+          <button class="btn btn-primary" style="flex:1"><i class="ti ti-device-mobile"></i> Keep Mine</button>
+          <button class="btn btn-outline" style="flex:1"><i class="ti ti-cloud"></i> Use Server</button>
+        </div>
+        <div style="padding:0 var(--sp-5);text-align:center"><button class="btn btn-outline" style="width:100%;margin-top:var(--sp-2);border-color:var(--fub-gray-300);color:var(--fub-gray-600)"><i class="ti ti-arrows-exchange"></i> Merge Manually</button></div>`;
+    },
+    spec: () => specSyncConflict()
+  },
+
+  // ─── FLOW: DEAL CREATION ─────────────────────────────────
+  'flow-creation': {
+    title: 'Deal Creation Flow',
+    meta: '6 steps · User Flow',
+    states: ['step-1','step-2','step-3','step-4','step-5','step-6'],
+    defaultState: 'step-1',
+    render: (state) => {
+      const stepNum = parseInt(state.split('-')[1]);
+      const steps = ['Search Customer','Auto-fill','Lane Detection','Deal Form','Credit Memo','Submit'];
+      return `
+        <div class="app-header"><div style="display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i><div class="app-header-title" style="color:var(--fub-blue)">New Deal</div></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Step ${stepNum} of 6</div></div>
+        <div class="progress-bar">${steps.map((s,i) => `<div class="progress-step ${i<stepNum-1?'done':''} ${i===stepNum-1?'current':''}"></div>`).join('')}</div>
+        <div style="padding:var(--sp-4) var(--sp-5)">
+          <div style="font-size:var(--fs-lg);font-weight:900;color:var(--fub-blue);margin-bottom:var(--sp-2)">${steps[stepNum-1]}</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5;margin-bottom:var(--sp-4)">${getFlowStepDesc(stepNum)}</div>
+          <div style="padding:var(--sp-6);background:var(--fub-warm-100);border-radius:var(--radius-md);text-align:center">
+            <i class="ti ti-${getFlowStepIcon(stepNum)}" style="font-size:48px;color:var(--fub-blue-muted)"></i>
+            <div style="font-size:var(--fs-xs);color:var(--fub-gray-500);margin-top:var(--sp-3)">${getFlowStepDetail(stepNum)}</div>
+          </div>
+        </div>
+        <div style="position:absolute;bottom:34px;left:0;right:0;padding:0 var(--sp-5)">
+          <button class="btn btn-primary" style="width:100%">${stepNum < 6 ? 'Next Step →' : 'Submit Deal ✓'}</button>
+        </div>`;
+    },
+    spec: () => specFlowCreation()
+  },
+
+  // ─── FLOW: APPROVAL ──────────────────────────────────────
+  'flow-approval': {
+    title: 'Approval Flow',
+    meta: '5 steps · User Flow',
+    states: ['queue','review','decide','confirm','notify'],
+    defaultState: 'queue',
+    render: (state) => {
+      const steps = {queue:'Queue View',review:'Deal Review',decide:'Approve/Decline',confirm:'Confirmation',notify:'Notification Sent'};
+      const stepNames = Object.keys(steps);
+      const stepIdx = stepNames.indexOf(state);
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Approval Flow</div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500)">Step ${stepIdx+1} of 5</div></div>
+        <div class="progress-bar">${stepNames.map((s,i) => `<div class="progress-step ${i<stepIdx?'done':''} ${i===stepIdx?'current':''}"></div>`).join('')}</div>
+        <div style="padding:var(--sp-4) var(--sp-5)">
+          <div style="font-size:var(--fs-lg);font-weight:900;color:var(--fub-blue);margin-bottom:var(--sp-2)">${steps[state]}</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5;margin-bottom:var(--sp-4)">${getApprovalFlowDesc(state)}</div>
+          <div style="padding:var(--sp-6);background:var(--fub-warm-100);border-radius:var(--radius-md);text-align:center">
+            <i class="ti ti-${getApprovalFlowIcon(state)}" style="font-size:48px;color:var(--fub-blue-muted)"></i>
+          </div>
+        </div>`;
+    },
+    spec: () => specFlowApproval()
+  },
+
+  // ─── FLOW: ESCALATION ────────────────────────────────────
+  'flow-escalation': {
+    title: 'Escalation Flow',
+    meta: '3 steps · User Flow',
+    states: ['insufficient','auto-route','committee'],
+    defaultState: 'insufficient',
+    render: (state) => {
+      const msgs = {
+        insufficient: {title:'Insufficient Authority',desc:'The approver\'s authority level ($500K) is below the deal amount ($3.2M). The system automatically detects this and prevents unauthorized approval.',icon:'shield-off',color:'var(--fub-red)'},
+        'auto-route': {title:'Auto-Route to Next Level',desc:'The deal is automatically routed up the authority chain to the next qualified approver. No manual intervention needed.',icon:'arrow-up-right',color:'var(--fub-amber)'},
+        committee: {title:'Committee Routing',desc:'Deals above $5M or SBA deals are routed to the loan committee. Multiple approvers review simultaneously with a shared decision timeline.',icon:'users',color:'var(--fub-blue)'}
+      };
+      const m = msgs[state];
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Escalation</div></div>
+        <div style="padding:var(--sp-4) var(--sp-5);text-align:center">
+          <div style="width:80px;height:80px;border-radius:50%;background:${m.color}22;display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-4)"><i class="ti ti-${m.icon}" style="font-size:36px;color:${m.color}"></i></div>
+          <div style="font-size:var(--fs-lg);font-weight:900;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">${m.title}</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5">${m.desc}</div>
+        </div>`;
+    },
+    spec: () => specFlowEscalation()
+  },
+
+  // ─── FLOW: DOCUMENT UPLOAD ───────────────────────────────
+  'flow-document': {
+    title: 'Document Upload',
+    meta: '4 steps · User Flow',
+    states: ['picker','classify','progress','complete'],
+    defaultState: 'picker',
+    render: (state) => {
+      const msgs = {
+        picker: {title:'Select Source',desc:'Choose camera to photograph documents, or files to pick from device storage. Supported: PDF, JPG, PNG, HEIC.',icon:'file-upload'},
+        classify: {title:'Auto-Classify',desc:'The system analyzes the document and suggests a classification (Loan Application, Financial Statement, Bill of Sale, Insurance, etc). The banker confirms or overrides.',icon:'brain'},
+        progress: {title:'Uploading',desc:'Document uploads show a progress bar. On slow connections, the upload is queued and completed in the background. A notification confirms when complete.',icon:'cloud-upload'},
+        complete: {title:'Upload Complete',desc:'The document is added to the deal\'s checklist. The system updates the completion percentage and notifies relevant parties.',icon:'circle-check'}
+      };
+      const m = msgs[state];
+      return `
+        <div class="app-header"><div style="display:flex;align-items:center;gap:var(--sp-2)"><i class="ti ti-arrow-left" style="font-size:22px;color:var(--fub-blue)"></i><div class="app-header-title" style="color:var(--fub-blue)">Upload Document</div></div></div>
+        <div style="padding:var(--sp-4) var(--sp-5);text-align:center">
+          <div style="width:80px;height:80px;border-radius:50%;background:#E0ECFF;display:flex;align-items:center;justify-content:center;margin:0 auto var(--sp-4)"><i class="ti ti-${m.icon}" style="font-size:36px;color:var(--fub-blue)"></i></div>
+          <div style="font-size:var(--fs-lg);font-weight:900;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">${m.title}</div>
+          <div style="font-size:var(--fs-sm);color:var(--fub-gray-600);line-height:1.5;margin-bottom:var(--sp-5)">${m.desc}</div>
+          ${state === 'picker' ? '<div style="display:flex;gap:var(--sp-3);justify-content:center"><button class="btn btn-primary"><i class="ti ti-camera"></i> Camera</button><button class="btn btn-outline"><i class="ti ti-folder"></i> Files</button></div>' : ''}
+          ${state === 'progress' ? '<div style="margin:0 auto;max-width:260px"><div style="height:6px;background:var(--fub-gray-200);border-radius:3px;overflow:hidden"><div style="width:67%;height:100%;background:var(--fub-blue);border-radius:3px;animation:shimmer 1.5s infinite"></div></div><div style="font-size:var(--fs-xs);color:var(--fub-gray-500);margin-top:var(--sp-2)">67% · 1.2 MB of 1.8 MB</div></div>' : ''}
+          ${state === 'complete' ? '<div style="color:var(--fub-green);font-weight:700;font-size:var(--fs-sm)"><i class="ti ti-check"></i> Bill of Sale uploaded successfully</div>' : ''}
+        </div>`;
+    },
+    spec: () => specFlowDocument()
+  },
+
+  // ─── ACCESSIBILITY ───────────────────────────────────────
+  accessibility: {
+    title: 'Accessibility',
+    meta: 'Reference · All Screens',
+    states: ['overview'],
+    defaultState: 'overview',
+    render: () => {
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Accessibility Spec</div></div>
+        <div style="padding:var(--sp-4) var(--sp-5)">
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Touch Targets</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin-bottom:var(--sp-5)">
+            <div style="background:var(--fub-warm-100);border-radius:var(--radius-sm);padding:var(--sp-3);text-align:center">
+              <div style="width:44px;height:44px;border:2px dashed var(--fub-green);border-radius:var(--radius-sm);margin:0 auto var(--sp-2);display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:700;color:var(--fub-green)">44pt</div>
+              <div style="font-size:10px;color:var(--fub-gray-600)">Min touch target</div>
+            </div>
+            <div style="background:var(--fub-warm-100);border-radius:var(--radius-sm);padding:var(--sp-3);text-align:center">
+              <div style="width:44px;height:44px;border-radius:var(--radius-sm);margin:0 auto var(--sp-2);display:flex;align-items:center;justify-content:center;font-size:var(--fs-xs);font-weight:700;background:var(--fub-blue);color:#fff">4.5:1</div>
+              <div style="font-size:10px;color:var(--fub-gray-600)">Min contrast (AA)</div>
+            </div>
+          </div>
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Color Contrast Checks</div>
+          <div style="font-size:var(--fs-xs);line-height:2;color:var(--fub-gray-600)">
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>Blue #002D72 on White</span><span style="color:var(--fub-green);font-weight:700">12.6:1 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>Red #DA291C on White</span><span style="color:var(--fub-green);font-weight:700">4.6:1 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>White on Blue #002D72</span><span style="color:var(--fub-green);font-weight:700">12.6:1 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>Gray #737373 on White</span><span style="color:var(--fub-green);font-weight:700">4.9:1 ✓</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center"><span>Gold #C4A035 on White</span><span style="color:var(--fub-red);font-weight:700">2.4:1 ✗ (decorative only)</span></div>
+          </div>
+        </div>`;
+    },
+    spec: () => specAccessibility()
+  },
+
+  // ─── INTERACTIONS ────────────────────────────────────────
+  interactions: {
+    title: 'Interactions',
+    meta: 'Reference · All Screens',
+    states: ['overview'],
+    defaultState: 'overview',
+    render: () => {
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Interaction Spec</div></div>
+        <div style="padding:var(--sp-4) var(--sp-5)">
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Pull to Refresh</div>
+          <div style="background:var(--fub-warm-100);border-radius:var(--radius-md);padding:var(--sp-4);margin-bottom:var(--sp-4)">
+            <div style="text-align:center;margin-bottom:var(--sp-3)"><i class="ti ti-arrow-down" style="font-size:32px;color:var(--fub-blue-muted)"></i></div>
+            <div style="font-size:var(--fs-xs);color:var(--fub-gray-600);text-align:center">Pull down 60px → release → spinner → fetch → fade in updated content</div>
+          </div>
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Keyboard Avoidance</div>
+          <div style="background:var(--fub-warm-100);border-radius:var(--radius-md);padding:var(--sp-4);margin-bottom:var(--sp-4)">
+            <div style="font-size:var(--fs-xs);color:var(--fub-gray-600)">KeyboardAvoidingView wraps all form screens. Behavior: "padding" on iOS, "height" on Android. Extra bottom offset: 16px.</div>
+          </div>
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Swipe Gestures (Approver Only)</div>
+          <div style="display:flex;gap:var(--sp-3);margin-bottom:var(--sp-4)">
+            <div style="flex:1;background:var(--fub-green-light);border-radius:var(--radius-sm);padding:var(--sp-3);text-align:center"><i class="ti ti-arrow-right" style="font-size:24px;color:var(--fub-green)"></i><div style="font-size:10px;color:var(--fub-green);font-weight:700;margin-top:4px">Swipe → Approve</div></div>
+            <div style="flex:1;background:#FDE8E7;border-radius:var(--radius-sm);padding:var(--sp-3);text-align:center"><i class="ti ti-arrow-left" style="font-size:24px;color:var(--fub-red)"></i><div style="font-size:10px;color:var(--fub-red);font-weight:700;margin-top:4px">← Swipe Decline</div></div>
+          </div>
+        </div>`;
+    },
+    spec: () => specInteractions()
+  },
+
+  // ─── GESTURES & HAPTICS ──────────────────────────────────
+  gestures: {
+    title: 'Gestures & Haptics',
+    meta: 'Reference · All Screens',
+    states: ['overview'],
+    defaultState: 'overview',
+    render: () => {
+      return `
+        <div class="app-header"><div class="app-header-title" style="color:var(--fub-blue)">Gestures & Haptics</div></div>
+        <div style="padding:var(--sp-4) var(--sp-5)">
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin-bottom:var(--sp-3)">Haptic Feedback Map</div>
+          ${[
+            {event:'Approval confirmed',type:'Success',ios:'notificationSuccess'},
+            {event:'Deal submitted',type:'Medium Impact',ios:'impactMedium'},
+            {event:'SLA warning',type:'Warning',ios:'notificationWarning'},
+            {event:'Validation error',type:'Error',ios:'notificationError'},
+            {event:'Pull-to-refresh',type:'Light Impact',ios:'impactLight'},
+            {event:'Long press menu',type:'Rigid',ios:'impactRigid'},
+            {event:'Swipe approve/decline',type:'Heavy Impact',ios:'impactHeavy'}
+          ].map(h => `
+            <div style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-2) 0;border-bottom:1px solid var(--fub-gray-100);font-size:var(--fs-xs)">
+              <div style="flex:1;color:var(--fub-gray-700)">${h.event}</div>
+              <div style="color:var(--fub-blue);font-weight:700">${h.type}</div>
+            </div>`).join('')}
+
+          <div style="font-size:var(--fs-sm);font-weight:700;color:var(--fub-gray-800);margin:var(--sp-5) 0 var(--sp-3)">Long Press Actions</div>
+          <div style="background:var(--fub-warm-100);border-radius:var(--radius-md);padding:var(--sp-4)">
+            <div style="font-size:var(--fs-xs);color:var(--fub-gray-600);margin-bottom:var(--sp-3)">Long press (500ms) on deal card reveals:</div>
+            ${['View deal details','Edit credit memo','Share with colleague','Add to watchlist'].map(a => `
+              <div style="display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-2) 0;font-size:var(--fs-sm);color:var(--fub-gray-700)"><i class="ti ti-chevron-right" style="font-size:12px;color:var(--fub-gray-400)"></i> ${a}</div>`).join('')}
+          </div>
+        </div>`;
+    },
+    spec: () => specGestures()
+  }
+};
+
+// ============================================================
+// HELPER RENDERERS
+// ============================================================
+function renderDealCard(name, amount, meta, laneClass, laneName, statusClass, statusName) {
+  return `<div class="deal-card ${laneClass?laneClass+'-lane':''}">
+    <div class="deal-card-header"><div class="deal-card-name">${name}</div><div class="deal-card-amount">${amount}</div></div>
+    <div class="deal-card-meta"><span>${meta}</span></div>
+    <div class="deal-card-badges"><span class="lane-badge ${laneClass||'standard'}">${laneName}</span><span class="status-badge ${statusClass}">${statusName}</span></div>
+  </div>`;
+}
+
+function renderTabBar(active) {
+  const tabs = [
+    {id:'pipeline', icon:'layout-dashboard', label:'Pipeline'},
+    {id:'new-deal', icon:'plus-circle', label:'New Deal'},
+    {id:'approvals', icon:'checkbox', label:'Approvals'},
+    {id:'notifications', icon:'bell', label:'Alerts'},
+    {id:'settings', icon:'settings', label:'Settings'}
+  ];
+  return `<div class="tab-bar">${tabs.map(t => `
+    <div class="tab-item ${t.id===active?'active':''}">
+      <i class="ti ti-${t.icon}"></i><span>${t.label}</span>
+      ${t.id==='approvals'?'<span class="tab-badge">3</span>':''}
+      ${t.id==='notifications'?'<span class="tab-badge">2</span>':''}
+    </div>`).join('')}</div>`;
+}
+
+function renderErrorState(type) {
+  const errors = {
+    network: { icon:'wifi-off', title:'No Connection', desc:'Check your Wi-Fi or cellular connection and try again. Your unsaved work is stored locally.', btn:'Retry Connection', color:'var(--fub-gray-600)' },
+    'api-500': { icon:'server-off', title:'Server Error', desc:'Something went wrong on our end. Our team has been notified. Please try again in a few minutes.', btn:'Try Again', color:'var(--fub-red)' },
+    auth: { icon:'lock', title:'Session Expired', desc:'Your Okta session has expired. Please sign in again to continue. Your draft work is saved locally.', btn:'Sign In', color:'var(--fub-amber)' },
+    permission: { icon:'shield-off', title:'Insufficient Authority', desc:'Your authority level (Level 3, up to $500K) does not permit approval of this $3.2M deal. It has been escalated to the next authority level.', btn:'Return to Queue', color:'var(--fub-red)' },
+    validation: { icon:'alert-circle', title:'Missing Information', desc:'Some required fields are incomplete. Please review the highlighted fields and try again.', btn:'Review Fields', color:'var(--fub-amber)' },
+    'sync-fail': { icon:'cloud-off', title:'Sync Failed', desc:'3 actions could not be synced. This may be due to server changes conflicting with your offline edits.', btn:'Resolve Conflicts', color:'var(--fub-red)' }
+  };
+  const e = errors[type] || errors.network;
+  return `<div class="error-state" style="padding-top:60px">
+    <div class="error-icon" style="background:${e.color}15"><i class="ti ti-${e.icon}" style="color:${e.color}"></i></div>
+    <h3>${e.title}</h3>
+    <p>${e.desc}</p>
+    <button class="btn btn-primary">${e.btn}</button>
+  </div>`;
+}
+
+function getFlowStepDesc(n) {
+  const d = ['','Search by name, TIN, or account number. Auto-complete kicks in at 2 characters. Core system lookup is real-time when online, cached when offline.','Jack Henry data auto-populates: name, TIN, relationship length, existing exposure, risk score. The banker reviews and confirms — no manual entry.','The system analyzes loan amount, purpose, and customer profile to assign Fast Lane (<$250K), Standard (CRE/C&I), or Complex (multi-entity/SBA). Displayed as a colored banner.','Remaining fields: loan purpose, requested amount, collateral description, term. Pre-populated where possible from auto-fill step.','Write your credit analysis as a narrative. NLP extracts structured data in real-time: amounts, collateral, terms, risk factors, DSCR, LTV.','Review extracted fields, confirm risk assessment, and submit to the appropriate approver based on authority matrix.'];
+  return d[n] || '';
+}
+function getFlowStepIcon(n) {
+  return ['','user-search','sparkles','bolt','forms','file-text','send'][n] || 'circle';
+}
+function getFlowStepDetail(n) {
+  const d = ['','Type ≥ 2 chars → debounced search → results list → tap to select','JH auto-fill animation: fields populate top-to-bottom with 80ms stagger','Lane badge animates in with scale-up + color fade','Pre-filled fields shown with green border, empty fields with standard border','NLP indicator pulses while typing, tags appear as fields are extracted','Final review: all extracted fields + risk score + approver assignment'];
+  return d[n] || '';
+}
+function getApprovalFlowDesc(state) {
+  const d = {queue:'Approver sees deals sorted by SLA urgency. Red/flashing items appear first. Badge count on the tab bar shows pending total.',review:'Tap a deal card to see full credit memo, extracted fields, risk assessment, timeline, and documents. Swipe or use buttons.',decide:'Three actions: Approve (green), Add Conditions (blue outline), Decline (red). Each triggers a confirmation dialog.',confirm:'Success animation (checkmark + green pulse). Haptic feedback: notificationSuccess. Deal moves out of queue with slide-left animation.',notify:'Push notification sent to originating banker. Deal status updates in their pipeline in real-time via WebSocket.'};
+  return d[state] || '';
+}
+function getApprovalFlowIcon(state) {
+  return {queue:'list-check',review:'file-search',decide:'thumb-up',confirm:'circle-check',notify:'bell-ringing'}[state] || 'circle';
+}
+
+// ============================================================
+// SPEC PANEL RENDERERS
+// ============================================================
+function specPipeline(state) {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-layout-dashboard"></i> Pipeline — ${state}</h3>
+      <h4>Screen Reader Labels</h4>
+      <table class="spec-table">
+        <tr><th>Element</th><th>Label</th><th>Role</th></tr>
+        <tr><td>Stat box — Active Deals</td><td>"Active deals: 8"</td><td>status</td></tr>
+        <tr><td>Stat box — Total Volume</td><td>"Total volume: 2.4 million dollars"</td><td>status</td></tr>
+        <tr><td>Stat box — Need Action</td><td>"Deals needing action: 3"</td><td>status</td></tr>
+        <tr><td>Deal card</td><td>"{name}, {amount}, {lane}, {status}"</td><td>button</td></tr>
+        <tr><td>Search bar</td><td>"Search deals"</td><td>searchbox</td></tr>
+        <tr><td>Filter pill</td><td>"{filter name}, {selected/not}"</td><td>tab</td></tr>
+      </table>
+      <h4>Focus Order</h4>
+      <div class="focus-order">
+        <div class="focus-step"><div class="focus-num">1</div>Search</div>
+        <div class="focus-step"><div class="focus-num">2</div>Filters</div>
+        <div class="focus-step"><div class="focus-num">3</div>Stats</div>
+        <div class="focus-step"><div class="focus-num">4</div>Deals (top→bottom)</div>
+        <div class="focus-step"><div class="focus-num">5</div>Tab bar</div>
+      </div>
+      <h4>Touch Targets</h4>
+      <div class="spec-note">All deal cards: min 80px height, full width tap area. Filter pills: 36px height, 8px gap. Search bar: 44px height. Tab bar items: 44×44px minimum.</div>
+      <h4>State-Specific Behavior</h4>
+      <table class="spec-table">
+        <tr><th>State</th><th>Trigger</th><th>Behavior</th></tr>
+        <tr><td>Empty</td><td>0 deals in pipeline</td><td>Show illustration + CTA button. Hide stat row numbers (show 0).</td></tr>
+        <tr><td>Loading</td><td>Initial load or pull-to-refresh</td><td>3 skeleton cards + shimmer animation. Stat boxes show skeleton.</td></tr>
+        <tr><td>Search active</td><td>Tap search bar</td><td>Keyboard opens, filter row hides, results update as user types (300ms debounce).</td></tr>
+        <tr><td>Filter active</td><td>Tap a filter pill</td><td>Active pill fills blue. Deals filter with 200ms fade. Count updates in pill label.</td></tr>
+        <tr><td>Error</td><td>Network/API failure</td><td>Full-screen error state with retry button. Cached data shown if available.</td></tr>
+        <tr><td>Pull-to-refresh</td><td>Pull down ≥60px</td><td>Spinner appears. Haptic: impactLight. Data refetches.</td></tr>
+      </table>
+      <h4>Gestures</h4>
+      <div class="spec-note"><span class="spec-tag gesture">Gesture</span> Pull-to-refresh: 60px threshold, spinner shows at 40px. <span class="spec-tag haptic">Haptic</span> impactLight on threshold reached.</div>
+    </div>`;
+}
+
+function specNewDeal(state) {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-plus"></i> New Deal — ${state}</h3>
+      <h4>Screen Reader Labels</h4>
+      <table class="spec-table">
+        <tr><th>Element</th><th>Label</th><th>Role</th></tr>
+        <tr><td>Back button</td><td>"Go back"</td><td>button</td></tr>
+        <tr><td>Progress bar</td><td>"Step {n} of 4: {step name}"</td><td>progressbar</td></tr>
+        <tr><td>Customer search</td><td>"Search customers by name, TIN, or account"</td><td>searchbox</td></tr>
+        <tr><td>Customer card</td><td>"{name}, {relationship}, {risk score}"</td><td>button</td></tr>
+        <tr><td>Auto-fill card</td><td>"Auto-filled data from Jack Henry"</td><td>region</td></tr>
+        <tr><td>Lane detection</td><td>"Fast Lane eligible, under 250K"</td><td>alert</td></tr>
+        <tr><td>Form input</td><td>"{label}, {required/optional}"</td><td>textbox</td></tr>
+        <tr><td>Validation error</td><td>"{field} error: {message}"</td><td>alert</td></tr>
+      </table>
+      <h4>Auto-fill Animation</h4>
+      <div class="spec-note">Fields populate top-to-bottom with 80ms stagger delay. Each field fades in (opacity 0→1) and slides up (translateY 4px→0). Green border pulses once on each field. Total animation: ~500ms for 5 fields. <span class="spec-tag haptic">Haptic</span> impactLight on completion.</div>
+      <h4>Lane Detection Logic</h4>
+      <table class="spec-table">
+        <tr><th>Lane</th><th>Criteria</th><th>Visual</th></tr>
+        <tr><td><span class="lane-badge fast">Fast</span></td><td>Amount &lt; $250K, existing customer, standard collateral</td><td>Green banner, bolt icon</td></tr>
+        <tr><td><span class="lane-badge standard">Standard</span></td><td>$250K–$5M, CRE/C&I, full credit memo required</td><td>Blue banner, default</td></tr>
+        <tr><td><span class="lane-badge complex">Complex</span></td><td>&gt;$5M, multi-entity, SBA, construction</td><td>Red banner, warning</td></tr>
+      </table>
+      <h4>Offline Behavior</h4>
+      <div class="spec-note warning"><span class="spec-tag offline">Offline</span> Customer search uses WatermelonDB local cache (last-synced data). Stale data warning shown if cache &gt; 2h old. New deals saved locally with "pending sync" badge. Lane detection runs client-side against cached authority matrix.</div>
+    </div>`;
+}
+
+function specCreditMemo(state) {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-file-text"></i> Credit Memo — ${state}</h3>
+      <h4>NLP Processing Pipeline</h4>
+      <table class="spec-table">
+        <tr><th>Phase</th><th>Trigger</th><th>UI</th></tr>
+        <tr><td>Idle</td><td>No typing for 2s</td><td>No indicator</td></tr>
+        <tr><td>Processing</td><td>Typing detected</td><td>Purple pulse dots + "NLP analyzing…"</td></tr>
+        <tr><td>Extracting</td><td>Entity recognized</td><td>New tag slides in from right (200ms)</td></tr>
+        <tr><td>Complete</td><td>All entities found</td><td>Green banner + tag count</td></tr>
+      </table>
+      <h4>Extracted Field Tags</h4>
+      <div class="spec-note">Each tag shows: field name, extracted value, confidence % (small text), and an edit icon. Tapping a tag opens an inline editor to correct the value. Tags below 80% confidence show an amber border. Tags below 60% show a red border and require manual review.</div>
+      <h4>Auto-save Behavior</h4>
+      <table class="spec-table">
+        <tr><th>Trigger</th><th>Action</th><th>Indicator</th></tr>
+        <tr><td>Every 30 seconds</td><td>Save to WatermelonDB</td><td>Cloud-check icon + "Auto-saved"</td></tr>
+        <tr><td>Typing pause (2s)</td><td>Save to WatermelonDB</td><td>Same</td></tr>
+        <tr><td>App background</td><td>Immediate save</td><td>None (background)</td></tr>
+        <tr><td>Online + dirty data</td><td>Sync to server</td><td>"Syncing…" then "Synced"</td></tr>
+      </table>
+      <h4>Version History</h4>
+      <div class="spec-note">Every save creates a version. History accessible via clock icon in header. Shows: version number, timestamp, word count, diff indicator. Tapping a version shows a read-only view. "Restore" button reverts to that version (with confirmation dialog).</div>
+      <h4>Screen Reader Labels</h4>
+      <table class="spec-table">
+        <tr><th>Element</th><th>Label</th></tr>
+        <tr><td>Narrative textarea</td><td>"Credit memo narrative, {word count} words"</td></tr>
+        <tr><td>NLP indicator</td><td>"AI analyzing your narrative"</td></tr>
+        <tr><td>Extracted tag</td><td>"{field}: {value}, confidence {n}%, tap to edit"</td></tr>
+        <tr><td>Risk badge</td><td>"Risk assessment: {level}"</td></tr>
+        <tr><td>Submit button</td><td>"Submit for approval"</td></tr>
+      </table>
+    </div>`;
+}
+
+function specDealDetail(state) {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-list-details"></i> Deal Detail — ${state}</h3>
+      <h4>Timeline Rendering</h4>
+      <div class="spec-note">Timeline items are rendered chronologically. Completed steps show green check dots. Current step shows blue clock dot. Future steps show gray lock dots. New timeline items animate in with slideUp (300ms). On real-time update (WebSocket), a subtle pulse highlights the new entry.</div>
+      <h4>Status Transitions</h4>
+      <table class="spec-table">
+        <tr><th>From</th><th>To</th><th>Visual Transition</th></tr>
+        <tr><td>Draft</td><td>Submitted</td><td>Badge color: gray→blue. Timeline adds "Submitted" entry.</td></tr>
+        <tr><td>Submitted</td><td>In Review</td><td>Badge: blue→amber. SLA timer appears.</td></tr>
+        <tr><td>In Review</td><td>Approved</td><td>Badge: amber→green. Confetti micro-animation. <span class="spec-tag haptic">Haptic</span> notificationSuccess.</td></tr>
+        <tr><td>In Review</td><td>Conditions</td><td>Badge: amber→purple. Conditions list appears.</td></tr>
+        <tr><td>In Review</td><td>Declined</td><td>Badge: amber→red. Reason required field appears.</td></tr>
+        <tr><td>Approved</td><td>Closed</td><td>Badge: green→dark gray. Full timeline shown.</td></tr>
+      </table>
+      <h4>Document Checklist</h4>
+      <div class="spec-note">Required documents determined by loan type. Each shows: green check (uploaded) or gray plus (missing). Progress bar at top: "2 of 4 documents uploaded". Upload button uses native file picker or camera. <span class="spec-tag a11y">A11y</span> Each item announces status: "Loan Application, uploaded" or "Bill of Sale, missing, tap to upload".</div>
+      <h4>Cached/Offline Indicator</h4>
+      <div class="spec-note warning"><span class="spec-tag offline">Offline</span> When viewing cached data: amber banner shows last sync time. Timeline updates are paused. Document uploads are queued. A "stale data" watermark appears on stat values older than 1 hour.</div>
+    </div>`;
+}
+
+function specApproverQueue(state) {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-checkbox"></i> Approver Queue — ${state}</h3>
+      <h4>SLA Timer States</h4>
+      <table class="spec-table">
+        <tr><th>Time Remaining</th><th>Color</th><th>Behavior</th></tr>
+        <tr><td>&gt; 1 hour</td><td><span class="sla-timer green">Green</span></td><td>Static display, updates every minute</td></tr>
+        <tr><td>15–60 min</td><td><span class="sla-timer amber">Amber</span></td><td>Updates every 30s. <span class="spec-tag haptic">Haptic</span> notificationWarning at 30min mark.</td></tr>
+        <tr><td>1–15 min</td><td><span class="sla-timer red">Red</span></td><td>Updates every 15s. Push notification sent.</td></tr>
+        <tr><td>Overdue</td><td><span class="sla-timer flash">Flashing Red</span></td><td>0.5s flash animation. "OVERDUE" label. Escalation auto-triggered.</td></tr>
+      </table>
+      <h4>Swipe Actions (Approver Only)</h4>
+      <div class="spec-note"><span class="spec-tag gesture">Gesture</span> Swipe right (>120px): reveals green "Approve" action. Swipe left (>120px): reveals red "Decline" action. Mid-swipe shows preview with scaled icon. Full swipe triggers confirmation dialog. <span class="spec-tag haptic">Haptic</span> impactMedium at threshold, impactHeavy on release.</div>
+      <h4>Approval Actions</h4>
+      <table class="spec-table">
+        <tr><th>Action</th><th>Confirmation</th><th>Post-Action</th></tr>
+        <tr><td>Approve</td><td>Modal: "Approve {name} for {amount}?"</td><td>Green pulse → card slides left → removal animation. Push to banker.</td></tr>
+        <tr><td>Conditions</td><td>Text input: enter conditions</td><td>Card remains with "Conditions" badge. Banker notified.</td></tr>
+        <tr><td>Decline</td><td>Modal with required reason field</td><td>Red pulse → card slides right → removal animation. Push to banker.</td></tr>
+      </table>
+      <h4>Sort Order</h4>
+      <div class="spec-note">Queue sorted by SLA urgency: overdue first (flashing), then red, amber, green. Within same tier, sorted by time remaining (ascending). Fast Lane deals get a subtle bolt icon on the SLA timer.</div>
+    </div>`;
+}
+
+function specNotifications() {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-bell"></i> Notifications</h3>
+      <h4>Notification Types</h4>
+      <table class="spec-table">
+        <tr><th>Type</th><th>Icon</th><th>Color</th><th>Push?</th></tr>
+        <tr><td>Deal submitted to you</td><td>ti-send</td><td>Blue</td><td>Yes + badge</td></tr>
+        <tr><td>Approval received</td><td>ti-circle-check</td><td>Green</td><td>Yes</td></tr>
+        <tr><td>SLA warning</td><td>ti-clock</td><td>Amber</td><td>Yes + sound</td></tr>
+        <tr><td>Condition added</td><td>ti-list-check</td><td>Purple</td><td>Yes</td></tr>
+        <tr><td>Document uploaded</td><td>ti-file-upload</td><td>Gray</td><td>No (in-app only)</td></tr>
+      </table>
+      <h4>Screen Reader</h4>
+      <div class="spec-note"><span class="spec-tag a11y">A11y</span> Each notification: "{type}, {description}, {time}. {unread/read}". Unread items have role="alert". "Mark all read" announces: "All notifications marked as read".</div>
+    </div>`;
+}
+
+function specSettings() {
+  return `
+    <div class="spec-section">
+      <h3><i class="ti ti-settings"></i> Settings</h3>
+      <h4>User Profile</h4>
+      <div class="spec-note">Displays: name, title, Community Bank location, authority level (with max amount). Authority level not editable — set by admin in backend. Okta SSO connection status shown with green/red indicator.</div>
+      <h4>Notification Preferences</h4>
+      <div class="spec-note">Toggle switches for each notification type. Changes saved immediately (optimistic update). <span class="spec-tag a11y">A11y</span> Each toggle: "{setting name}, {on/off}, switch". Double-tap to toggle.</div>
+      <h4>Offline & Sync Status</h4>
+      <div class="spec-note">Shows: current sync status (green check or red X), last sync timestamp, number of cached deals, pending upload count. Manual "Sync Now" button available when online.</div>
+    </div>`;
+}
+
+function specOnboarding() {
+  return `<div class="spec-section"><h3><i class="ti ti-sparkles"></i> Onboarding</h3>
+    <div class="spec-note">3-screen carousel. Horizontal swipe or button navigation. Progress dots at bottom. Skip button available on all screens. On completion, navigates to Pipeline with data pre-loaded. <span class="spec-tag a11y">A11y</span> VoiceOver reads each screen's heading and description. Swipe gestures mapped to next/previous. Skip button always in focus order.</div>
+    <h4>Screens</h4>
+    <table class="spec-table"><tr><th>#</th><th>Title</th><th>Message</th></tr>
+    <tr><td>1</td><td>Welcome</td><td>Brand intro, FUB logo, tagline</td></tr>
+    <tr><td>2</td><td>Credit Memo First</td><td>Explain narrative-driven approach</td></tr>
+    <tr><td>3</td><td>Three Speed Lanes</td><td>Fast/Standard/Complex overview</td></tr></table></div>`;
+}
+
+function specOffline() {
+  return `<div class="spec-section"><h3><i class="ti ti-wifi-off"></i> Offline States</h3>
+    <h4>Offline Architecture</h4>
+    <table class="spec-table"><tr><th>Component</th><th>Offline Capability</th></tr>
+    <tr><td>WatermelonDB</td><td>Full local persistence. Syncs via pull/push when online.</td></tr>
+    <tr><td>TanStack Query</td><td>Cache-first strategy. Stale-while-revalidate when online.</td></tr>
+    <tr><td>NetInfo</td><td>Monitors connection. Triggers offline banner at 0 connectivity.</td></tr>
+    <tr><td>Zustand</td><td>Queued actions stored in persisted store. Replayed on reconnect.</td></tr></table>
+    <h4>72-Hour Policy</h4>
+    <div class="spec-note error">After 72 hours offline, the app enters read-only mode. No new deals or edits. Warning banner escalates: amber at 48h, red at 64h, read-only at 72h. Rationale: data staleness makes approvals unsafe.</div>
+    <h4>Sync Queue</h4>
+    <div class="spec-note">Each queued action shows: type (create/update/upload), target (deal name), queued timestamp. Actions replay in chronological order. Conflicts trigger the Sync Conflict screen. Failed replays retry 3× with exponential backoff, then flag for manual resolution.</div></div>`;
+}
+
+function specErrors() {
+  return `<div class="spec-section"><h3><i class="ti ti-alert-triangle"></i> Error States</h3>
+    <h4>Error Taxonomy</h4>
+    <table class="spec-table"><tr><th>Type</th><th>HTTP</th><th>Recovery</th><th>User Message</th></tr>
+    <tr><td>Network</td><td>—</td><td>Auto-retry 3×, then manual</td><td>"Check your connection"</td></tr>
+    <tr><td>API 500</td><td>500</td><td>Retry in 30s</td><td>"Something went wrong on our end"</td></tr>
+    <tr><td>Auth expired</td><td>401</td><td>Redirect to Okta login</td><td>"Session expired, please sign in"</td></tr>
+    <tr><td>Permission</td><td>403</td><td>Auto-escalate to next level</td><td>"Insufficient authority"</td></tr>
+    <tr><td>Validation</td><td>422</td><td>Highlight fields</td><td>"Missing required information"</td></tr>
+    <tr><td>Sync fail</td><td>409</td><td>Conflict resolution screen</td><td>"Changes conflict with server"</td></tr></table>
+    <h4>Screen Reader Announcements</h4>
+    <div class="spec-note"><span class="spec-tag a11y">A11y</span> Error states use role="alert" + aria-live="assertive". Screen reader announces: "{error title}. {description}. {action button available}". Focus moves to retry/action button. <span class="spec-tag haptic">Haptic</span> notificationError on error display.</div></div>`;
+}
+
+function specSyncConflict() {
+  return `<div class="spec-section"><h3><i class="ti ti-arrows-exchange"></i> Sync Conflict Resolution</h3>
+    <h4>Conflict Detection</h4>
+    <div class="spec-note">Conflicts detected during sync when server version_number > local version_number AND local has dirty changes. WatermelonDB tracks dirty flags per record. Conflict screen shows side-by-side comparison of changed fields only.</div>
+    <h4>Resolution Options</h4>
+    <table class="spec-table"><tr><th>Option</th><th>Behavior</th></tr>
+    <tr><td>Keep Mine</td><td>Local changes overwrite server. Server version archived in history.</td></tr>
+    <tr><td>Use Server</td><td>Server version applied. Local changes discarded (backed up in history).</td></tr>
+    <tr><td>Merge Manually</td><td>Field-by-field picker. Each field can be chosen from either version.</td></tr></table>
+    <h4>Screen Reader</h4>
+    <div class="spec-note"><span class="spec-tag a11y">A11y</span> Conflict announced as alert. Each field difference read: "{field}: your version is {value}, server version is {value}". Resolution buttons clearly labeled with outcome description.</div></div>`;
+}
+
+function specFlowCreation() {
+  return `<div class="spec-section"><h3><i class="ti ti-route"></i> Deal Creation Flow</h3>
+    <h4>6-Step Flow</h4>
+    <table class="spec-table"><tr><th>Step</th><th>Screen</th><th>Required?</th><th>Can Skip?</th></tr>
+    <tr><td>1</td><td>Customer Search</td><td>Yes</td><td>No</td></tr>
+    <tr><td>2</td><td>Auto-fill Review</td><td>Yes</td><td>No (but can edit)</td></tr>
+    <tr><td>3</td><td>Lane Detection</td><td>Auto</td><td>Display only</td></tr>
+    <tr><td>4</td><td>Deal Form</td><td>Yes</td><td>No</td></tr>
+    <tr><td>5</td><td>Credit Memo</td><td>Yes (Fast Lane: min 50 words)</td><td>No</td></tr>
+    <tr><td>6</td><td>Submit</td><td>Yes</td><td>No</td></tr></table>
+    <h4>Progress Bar</h4>
+    <div class="spec-note">6 segments. Completed: green fill. Current: blue fill. Future: gray. Tapping a completed step navigates back (with confirmation if current step has unsaved data). Progress bar announced by screen reader: "Step {n} of 6, {step name}".</div>
+    <h4>Draft Persistence</h4>
+    <div class="spec-note warning"><span class="spec-tag offline">Offline</span> Partial drafts saved at every step transition. If the user exits mid-flow, they can resume from the last completed step. Drafts older than 7 days prompt: "Continue draft or start over?"</div></div>`;
+}
+
+function specFlowApproval() {
+  return `<div class="spec-section"><h3><i class="ti ti-git-merge"></i> Approval Flow</h3>
+    <h4>Authority Matrix</h4>
+    <table class="spec-table"><tr><th>Level</th><th>Title</th><th>Max Amount</th></tr>
+    <tr><td>1</td><td>Loan Officer</td><td>$100K</td></tr>
+    <tr><td>2</td><td>Senior Lender</td><td>$250K</td></tr>
+    <tr><td>3</td><td>SVP Lending</td><td>$500K</td></tr>
+    <tr><td>4</td><td>Chief Credit Officer</td><td>$2M</td></tr>
+    <tr><td>5</td><td>Executive Committee</td><td>$5M</td></tr>
+    <tr><td>6</td><td>Board Loan Committee</td><td>Unlimited</td></tr></table>
+    <h4>SLA Targets</h4>
+    <table class="spec-table"><tr><th>Lane</th><th>SLA</th><th>Escalation</th></tr>
+    <tr><td>Fast Lane</td><td>4 hours</td><td>Auto-route after breach</td></tr>
+    <tr><td>Standard</td><td>24 hours</td><td>Notify manager at breach</td></tr>
+    <tr><td>Complex</td><td>48 hours</td><td>CCO notified at breach</td></tr></table></div>`;
+}
+
+function specFlowEscalation() {
+  return `<div class="spec-section"><h3><i class="ti ti-arrow-up-right"></i> Escalation Flow</h3>
+    <div class="spec-note">Escalation is fully automatic. The system checks the approver's authority level against the deal amount. If insufficient, the deal routes to the next level without any manual intervention. The originating banker sees "Escalated to Level {n}" in their timeline.</div>
+    <h4>Committee Routing</h4>
+    <div class="spec-note">Deals routed to committee (Level 5–6) show a multi-approver view. Each committee member can vote independently. Majority required for approval. Dissenting votes are recorded with reasons. Meeting scheduling integrates with calendar if connected.</div></div>`;
+}
+
+function specFlowDocument() {
+  return `<div class="spec-section"><h3><i class="ti ti-upload"></i> Document Upload Flow</h3>
+    <h4>Supported Formats</h4>
+    <div class="spec-note">PDF, JPG, PNG, HEIC. Max file size: 25MB. Camera capture: auto-crops to document edges, converts to PDF. Multiple pages supported via sequential capture.</div>
+    <h4>Auto-Classification</h4>
+    <table class="spec-table"><tr><th>Document Type</th><th>Required For</th></tr>
+    <tr><td>Loan Application</td><td>All deals</td></tr>
+    <tr><td>Financial Statements</td><td>Standard, Complex</td></tr>
+    <tr><td>Appraisal</td><td>CRE deals</td></tr>
+    <tr><td>Bill of Sale</td><td>Equipment/Livestock</td></tr>
+    <tr><td>Insurance Certificate</td><td>All collateralized deals</td></tr>
+    <tr><td>Environmental Report</td><td>CRE (Phase I minimum)</td></tr></table></div>`;
+}
+
+function specAccessibility() {
+  return `<div class="spec-section"><h3><i class="ti ti-accessible"></i> Accessibility Requirements</h3>
+    <h4>WCAG 2.1 AA Compliance</h4>
+    <table class="spec-table"><tr><th>Criterion</th><th>Requirement</th><th>Implementation</th></tr>
+    <tr><td>1.1.1</td><td>Non-text Content</td><td>All icons have aria-labels. Decorative icons marked aria-hidden.</td></tr>
+    <tr><td>1.3.1</td><td>Info & Relationships</td><td>Headings properly nested. Lists use correct semantic roles.</td></tr>
+    <tr><td>1.4.3</td><td>Contrast (AA)</td><td>All text/bg combos verified. Gold used decoratively only.</td></tr>
+    <tr><td>1.4.4</td><td>Resize Text</td><td>Dynamic Type supported on iOS. All text scales up to 200%.</td></tr>
+    <tr><td>2.1.1</td><td>Keyboard</td><td>All functions accessible via keyboard/switch control.</td></tr>
+    <tr><td>2.4.3</td><td>Focus Order</td><td>Logical top-to-bottom, left-to-right. Focus trapped in modals.</td></tr>
+    <tr><td>2.5.5</td><td>Target Size</td><td>All interactive elements minimum 44×44pt.</td></tr>
+    <tr><td>4.1.2</td><td>Name, Role, Value</td><td>All custom components have accessible names and roles.</td></tr></table>
+    <h4>Screen Reader Testing Matrix</h4>
+    <div class="spec-note"><span class="spec-tag a11y">A11y</span> Test with: VoiceOver (iOS), TalkBack (Android). Every screen must pass a full VoiceOver walkthrough with all interactive elements reachable and correctly labeled. Dynamic content uses aria-live regions.</div></div>`;
+}
+
+function specInteractions() {
+  return `<div class="spec-section"><h3><i class="ti ti-hand-finger"></i> Interaction Specifications</h3>
+    <h4>Animation Timing</h4>
+    <table class="spec-table"><tr><th>Animation</th><th>Duration</th><th>Easing</th></tr>
+    <tr><td>Card appear</td><td>200ms</td><td>ease-out</td></tr>
+    <tr><td>Card removal</td><td>300ms</td><td>ease-in</td></tr>
+    <tr><td>Modal open</td><td>250ms</td><td>spring (damping: 0.8)</td></tr>
+    <tr><td>NLP tag appear</td><td>200ms</td><td>ease-out + slide-right</td></tr>
+    <tr><td>Auto-fill field</td><td>80ms stagger</td><td>ease-out</td></tr>
+    <tr><td>Skeleton shimmer</td><td>1.5s loop</td><td>linear</td></tr>
+    <tr><td>Pull-to-refresh</td><td>1s loop (spinner)</td><td>linear</td></tr></table>
+    <h4>Keyboard Avoidance</h4>
+    <div class="spec-note">React Native KeyboardAvoidingView wraps all form screens. iOS: behavior="padding". Android: behavior="height". Extra bottomOffset: 16px. Credit Memo textarea: scroll-into-view when keyboard appears, maintain cursor visibility.</div>
+    <h4>Reduced Motion</h4>
+    <div class="spec-note"><span class="spec-tag a11y">A11y</span> When "Reduce Motion" is enabled in system settings: all animations replaced with simple opacity fades (150ms). Skeleton shimmer replaced with static gray. SLA flash replaced with solid red. Pull-to-refresh spinner replaced with static arrow.</div></div>`;
+}
+
+function specGestures() {
+  return `<div class="spec-section"><h3><i class="ti ti-swipe"></i> Gestures & Haptics Reference</h3>
+    <h4>Gesture Map</h4>
+    <table class="spec-table"><tr><th>Gesture</th><th>Screen</th><th>Action</th><th>Threshold</th></tr>
+    <tr><td>Pull down</td><td>Pipeline, Queue</td><td>Refresh</td><td>60px</td></tr>
+    <tr><td>Swipe right</td><td>Approver Queue</td><td>Approve</td><td>120px</td></tr>
+    <tr><td>Swipe left</td><td>Approver Queue</td><td>Decline</td><td>120px</td></tr>
+    <tr><td>Long press</td><td>Deal cards</td><td>Quick actions</td><td>500ms</td></tr>
+    <tr><td>Horizontal swipe</td><td>Onboarding</td><td>Next/prev screen</td><td>80px</td></tr>
+    <tr><td>Pinch</td><td>Document viewer</td><td>Zoom</td><td>Native</td></tr></table>
+    <h4>React Native Implementation</h4>
+    <div class="spec-note">Swipe: react-native-gesture-handler PanGestureHandler with translationX threshold. Long press: LongPressGestureHandler with minDurationMs=500. Haptics: expo-haptics API. Pull-to-refresh: RefreshControl component with custom tintColor matching brand blue.</div></div>`;
+}
+
+// ============================================================
+// NAVIGATION & STATE MANAGEMENT
+// ============================================================
+let currentScreen = 'pipeline';
+let currentState = 'populated';
+
+function showScreen(screenId) {
+  const screen = SCREENS[screenId];
+  if (!screen) return;
+
+  currentScreen = screenId;
+  currentState = screen.defaultState;
+
+  // Update sidebar
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navItem = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
+  if (navItem) navItem.classList.add('active');
+
+  // Update toolbar
+  document.getElementById('toolbar-title').textContent = screen.title;
+  document.getElementById('toolbar-meta').textContent = screen.meta;
+
+  // Render state toggles
+  const togglesEl = document.getElementById('state-toggles');
+  togglesEl.innerHTML = screen.states.map((s, i) =>
+    `<button class="state-btn ${s === currentState ? 'active' : ''}" onclick="setState('${s}')">${s}</button>`
+  ).join('');
+
+  // Render phone content
+  renderPhone();
+  renderSpec();
+}
+
+function setState(state) {
+  currentState = state;
+
+  // Update toggles
+  document.querySelectorAll('.state-btn').forEach(el => {
+    el.classList.toggle('active', el.textContent === state);
+  });
+
+  renderPhone();
+  renderSpec();
+}
+
+function renderPhone() {
+  const screen = SCREENS[currentScreen];
+  const phoneContent = document.getElementById('phone-content');
+  phoneContent.innerHTML = screen.render(currentState);
+  phoneContent.scrollTop = 0;
+
+  // Update status bar style
+  const statusBar = document.getElementById('phone-status-bar');
+  const needsDark = ['pipeline','approver-queue'].includes(currentScreen) &&
+    ['populated','loading','filter','sla-warning','sla-critical','populated'].includes(currentState);
+  statusBar.classList.toggle('dark', needsDark);
+}
+
+function renderSpec() {
+  const screen = SCREENS[currentScreen];
+  const specPanel = document.getElementById('spec-panel');
+  if (screen.spec) {
+    specPanel.innerHTML = screen.spec(currentState);
+  }
+}
+
+// Initialize
+showScreen('pipeline');
+</script>
+</body>
+</html>

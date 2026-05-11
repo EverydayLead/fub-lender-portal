@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender – Banker Experience</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --primary: #004B87;
+  --primary-light: #E8F4FD;
+  --success: #008759;
+  --warning: #D97706;
+  --danger: #D32F2F;
+  --gray-50: #F8F9FA;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-400: #9CA3B8;
+  --gray-600: #6C757D;
+  --gray-800: #343A40;
+  --white: #FFFFFF;
+  --radius: 12px;
+  --shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #4DA8DA;
+    --primary-light: #1A2E3B;
+    --success: #34D399;
+    --warning: #FFB740;
+    --danger: #FF6B6B;
+    --gray-50: #1A1D21;
+    --gray-100: #22262A;
+    --gray-200: #2E3338;
+    --gray-400: #6C757D;
+    --gray-600: #9CA3B8;
+    --gray-800: #E5E7EB;
+    --white: #14171A;
+    --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: var(--gray-100); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; color: var(--gray-800); }
+
+.phone {
+  width: 390px; height: 844px; background: var(--white);
+  border-radius: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  overflow: hidden; position: relative; display: flex; flex-direction: column;
+}
+
+.status-bar {
+  height: 44px; background: var(--primary); color: white; display: flex;
+  align-items: center; justify-content: space-between; padding: 0 20px;
+  font-size: 12px; font-weight: 600;
+}
+
+.content { flex: 1; overflow-y: auto; padding: 16px; }
+
+.screen { display: none; }
+.screen.active { display: block; }
+
+.bottom-nav {
+  height: 80px; background: var(--white); border-top: 1px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: space-around;
+  padding-bottom: 20px;
+}
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 10px; color: var(--gray-400); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--primary); }
+.nav-item i { font-size: 24px; }
+
+.card {
+  background: var(--gray-50); border-radius: var(--radius); padding: 16px;
+  margin-bottom: 12px; border: 1px solid var(--gray-200);
+}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.card-title { font-weight: 600; font-size: 15px; }
+
+.badge {
+  display: inline-block; padding: 2px 8px; border-radius: 6px;
+  font-size: 11px; font-weight: 600;
+}
+.badge.green { background: #E0F5EE; color: #008759; }
+.badge.blue { background: var(--primary-light); color: var(--primary); }
+.badge.orange { background: #FEFAE0; color: #D97706; }
+.badge.red { background: #FDECEC; color: #D32F2F; }
+
+.screen-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+
+.stat-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.stat-box {
+  flex: 1; background: var(--primary-light); border-radius: var(--radius); padding: 12px;
+  text-align: center;
+}
+.stat-num { font-size: 24px; font-weight: 700; color: var(--primary); }
+.stat-label { font-size: 11px; color: var(--gray-600); }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%; padding: 10px 12px; border: 1px solid var(--gray-200); border-radius: 8px;
+  font-size: 14px; background: var(--white); color: var(--gray-800);
+}
+.form-group textarea { min-height: 80px; resize: vertical; }
+
+.auto-fill { background: #FFFDE7; }
+
+.btn {
+  width: 100%; padding: 12px; border: none; border-radius: var(--radius);
+  font-size: 15px; font-weight: 600; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; gap: 8px;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+.btn-sm { padding: 8px 12px; font-size: 12px; width: auto; border-radius: 8px; }
+
+.timeline { padding-left: 20px; border-left: 2px solid var(--primary); }
+.timeline-item { position: relative; padding-bottom: 16px; }
+.timeline-item::before {
+  content: ''; position: absolute; left: -25px; top: 4px;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--primary);
+}
+.timeline-time { font-size: 11px; color: var(--gray-400); }
+.timeline-text { font-size: 13px; }
+
+.nlp-tag {
+  display: inline-block; background: var(--primary-light); color: var(--primary);
+  padding: 2px 8px; border-radius: 4px; font-size: 11px; margin: 2px 4px 2px 0;
+}
+
+.approval-btns { display: flex; gap: 8px; margin-top: 12px; }
+.approval-btns.btn { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="status-bar">
+    <span>9:41 AM</span>
+    <span style="font-size:14px; font-weight:700">FUB Lender</span>
+    <span><i class="ti ti-bell" style="font-size:16px"></i></span>
+  </div>
+
+  <div class="content">
+
+    <!-- Screen 0: Pipeline -->
+    <div class="screen active">
+      <div class="screen-title">My Pipeline</div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num">12</div><div class="stat-label">Active Deals</div></div>
+        <div class="stat-box"><div class="stat-num">$4.2M</div><div class="stat-label">Total Volume</div></div>
+        <div class="stat-box"><div class="stat-num">3</div><div class="stat-label">Need Action</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Jackie Parsons &mdash; Cattle Loan</div>
+          <span class="badge blue">In Review</span>
+        </div>
+        <div style="font-size:13px;color:var(--gray-600)">$110K &bull; Fast Lane &bull; Submitted 11 min ago</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Marcus Wells &mdash; Equipment</div>
+          <span class="badge green">Approved</span>
+        </div>
+        <div style="font-size:13px;color:var(--gray-600)">$85K &bull; Fast Lane &bull; Ready to close</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Dave McAllister &mdash; CRE</div>
+          <span class="badge orange">Needs Info</span>
+        </div>
+        <div style="font-size:13px;color:var(--gray-600)">$750K &bull; Standard &bull; Awaiting appraisal</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Sunflower Holdings &mdash; SBA 504</div>
+          <span class="badge red">SLA Alert</span>
+        </div>
+        <div style="font-size:13px;color:var(--gray-600)">$1.2M &bull; Complex &bull; Pending committee</div>
+      </div>
+    </div>
+
+    <!-- Screen 1: New Deal -->
+    <div class="screen">
+      <div class="screen-title">New Deal</div>
+      
+      <div class="form-group">
+        <label>Customer</label>
+        <input type="text" value="Jackie Parsons" class="auto-fill">
+      </div>
+
+      <div class="card" style="background:#FFFDE7;border-color:#FFD600">
+        <div style="font-size:11px;font-weight:600;color:#986D00;margin-bottom:4px">
+          <i class="ti ti-bolt" style="font-size:12px"></i> Jack Henry Auto-Fill
+        </div>
+        <div style="font-size:12px;color:var(--gray-600);line-height:1.5">
+          Acct: **2347 &middot; Customer >5yrs &middot; Ag Rel &middot; Avg Balance: $345K<br>
+          Last Loan: 2023 Equip (85K) &middot; Payment History: Perfect
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Loan Purpose</label>
+        <select>
+          <option>Livestock Purchase</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Requested Amount</label>
+        <input type="text" value="$110,000">
+      </div>
+
+      <div class="card" style="background:var(--primary-light)">
+        <div style="font-size:11px;font-weight:600;color:var(--primary);margin-bottom:4px">
+          <i class="ti ti-route" style="font-size:12px"></i> Lane Detection
+        </div>
+        <div style="font-size:13px;font-weight:600">Fast Lane &mdash; 5 Fields Required</div>
+        <div style="font-size:11px;color:var(--gray-600)">$lt; $250K &bull; Single entity &bull; Standard collateral</div>
+      </div>
+
+      <div class="form-group">
+        <label>Collateral</label>
+        <input type="text" placeholder="50 head Black Angus, Market Value">
+      </div>
+
+      <button class="btn btn-primary" style="margin-top:12px" onclick="show(2)">
+        <i class="ti ti-arrow-right"></i> Continue to Credit Memo
+      </button>
+    </div>
+
+    <!-- Screen 2: Credit Memo -->
+    <div class="screen">
+      <div class="screen-title">Credit Memo</div>
+      
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-edit"></i> Narrative Entry</div>
+          <span class="badge green">NLP Active</span>
+        </div>
+        <textarea style="min-height:120px;border:none;background:transparent;font-size:13px;line-height:1.6;width:100%;color:var(--gray-800)">Jackie Parsons is requesting $110K to purchase 50 head of Black Angus cattle. Jackie has been banking with FUB for 7 years, maintains a perfect payment history on her prior loan, and operates a profitable 200-acre operation. Collateral includes the livestock itself plus a 1st lien on pasture land valued at $220K.</textarea>
+      </div>
+
+      <div style="margin-bottom:12px;font-size:12px;font-weight:600;color:var(--gray-600)">NLP Extracted Fields</div>
+      <div style="margin-bottom:16px">
+        <span class="nlp-tag">Amount: $110K</span>
+        <span class="nlp-tag">Purpose: Livestock</span>
+        <span class="nlp-tag">Term: Not Specified</span>
+        <span class="nlp-tag">Collateral: Livestock + Land</span>
+        <span class="nlp-tag">Land Value: $220K</span>
+        <span class="nlp-tag">LTV Est: 50%</span>
+      </div>
+
+      <div class="card" style="background:#E0F5EE;border-color:#008759">
+        <div style="font-size:13px;font-weight:600;color:#008759">
+          <i class="ti ti-circle-check"></i> Risk Assessment: Low
+        </div>
+        <div style="font-size:11px;color:var(--gray-600);margin-top:4px">
+          LTV 50% &bull; Existing relationship &bull; Perfect history &bull; Strong collateral
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="show(3)">
+        <i class="ti ti-send"></i> Submit for Approval
+      </button>
+    </div>
+
+    <!-- Screen 3: Deal Detail -->
+    <div class="screen">
+      <div class="screen-title">Jackie Parsons &mdash; $110K</div>
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <span class="badge blue">Fast Lane</span>
+        <span class="badge green">In Review</span>
+      </div>
+
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px">Deal Timeline</div>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-time">9:30 AM</div>
+            <div class="timeline-text">Deal created &mdash; JH auto-filled 4 fields</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">9:33 AM</div>
+            <div class="timeline-text">Credit memo drafted &mdash; NLP extracted 6 fields</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">9:36 AM</div>
+            <div class="timeline-text">Risk scoring complete &mdash; Low risk</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">9:38 AM</div>
+            <div class="timeline-text">Submitted for approval &mdash; Routed to Vinki</div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-time">9:41 AM &mdash; Now</div>
+            <div class="timeline-text"><i class="ti ti-clock" style="color:var(--warning)"></i> Awaiting approval &mdash; SLA: 3hr 59min remaining</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-num" style="color:var(--success)">11m</div><div class="stat-label">Time to Submit</div></div>
+        <div class="stat-box"><div class="stat-num">50%</div><div class="stat-label">LTV</div></div>
+        <div class="stat-box"><div class="stat-num" style="color:var(--success)">Low</div><div class="stat-label">Risk</div></div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Approver Queue -->
+    <div class="screen">
+      <div class="screen-title">Approver Queue</div>
+      <div style="font-size:13px;color:var(--gray-600);margin-bottom:16px">Vinki Sreekharan &mdash; Authority: $250K</div>
+
+      <div class="card" style="border-left:3px solid var(--warning)">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Jackie Parsons &mdash; $110K</div>
+            <div style="font-size:11px;color:var(--gray-600)">Cattle Purchase &bull; Fast Lane &bull; Ag</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:13px;font-weight:700;color:var(--warning)">3hr59m</div>
+            <div style="font-size:10px;color:var(--gray-400)">SLA Remaining</div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-200)">
+          <div style="font-size:11px;font-weight:600;margin-bottom:6px">Quick Summary</div>
+          <div style="font-size:12px;line-height:1.5;color:var(--gray-600)">
+            7-yr customer, perfect payment history. 50 hd Black Angus purchase.
+            LTV 50%. Collateral: livestock + 200-acre pasture land ($220K).
+          </div>
+        </div>
+
+        <div class="approval-btns">
+          <button class="btn btn-sm" style="background:var(--success);color:white;flex:1">
+            <i class="ti ti-check"></i> Approve
+          </button>
+          <button class="btn btn-sm" style="background:var(--warning);color:white;flex:1">
+            <i class="ti ti-message"></i> Conditions
+          </button>
+          <button class="btn btn-sm" style="background:var(--danger);color:white;flex:1">
+            <i class="ti ti-x"></i> Decline
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="opacity:0.5">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Marcus Wells &mdash; $85K</div>
+            <div style="font-size:11px;color:var(--gray-600)">Equipment &bull; Fast Lane</div>
+          </div>
+          <span class="badge green">Approved</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="show(0)"><i class="ti ti-layout-list"></i><span>Pipeline</span></div>
+    <div class="nav-item" onclick="show(1)"><i class="ti ti-plus"></i><span>New Deal</span></div>
+    <div class="nav-item" onclick="show(2)"><i class="ti ti-file-text"></i><span>Memo</span></div>
+    <div class="nav-item" onclick="show(3)"><i class="ti ti-search"></i><span>Detail</span></div>
+    <div class="nav-item" onclick="show(4)"><i class="ti ti-checks"></i><span>Approve</span></div>
+  </div>
+</div>
+
+<script>
+function show(i) {
+  document.querySelectorAll('.screen').forEach(function(s, idx) {
+    if (idx === i) { s.classList.add('active'); } else { s.classList.remove('active'); }
+  });
+  document.querySelectorAll('.nav-item').forEach(function(n, idx) {
+    if (idx === i) { n.classList.add('active'); } else { n.classList.remove('active'); }
+  });
+}
+</script>
+
+</body>
+</html>

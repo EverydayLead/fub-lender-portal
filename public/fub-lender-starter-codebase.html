@@ -1,0 +1,2575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Starter Codebase Playbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   FUB DESIGN TOKENS
+   ═══════════════════════════════════════════ */
+:root {
+  --blue-900: #001A42;
+  --blue-800: #002D72;
+  --blue-700: #003D99;
+  --blue-600: #1A5BC4;
+  --blue-100: #E8F0FE;
+  --blue-50:  #F0F5FF;
+  --red-600:  #DA291C;
+  --red-100:  #FDE8E6;
+  --gold-500: #C5A352;
+  --gold-100: #FBF5E6;
+  --green-600:#1B7A3D;
+  --green-100:#E6F4EC;
+  --warm-white:#FAF9F5;
+  --gray-900: #1A1A1A;
+  --gray-700: #4A4A4A;
+  --gray-500: #7A7A7A;
+  --gray-300: #B8B8B8;
+  --gray-100: #EDEDED;
+  --gray-50:  #F5F5F5;
+  --font-sans: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+  --sp-12: 48px; --sp-16: 64px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(0,45,114,0.08);
+  --shadow-md: 0 4px 12px rgba(0,45,114,0.1);
+  --shadow-lg: 0 8px 32px rgba(0,45,114,0.12);
+}
+
+/* ═══════════════════════════════════════════
+   RESET & BASE
+   ═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-sans);
+  background: var(--warm-white);
+  color: var(--gray-900);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-800) 50%, var(--blue-700) 100%);
+  color: white;
+  padding: var(--sp-16) var(--sp-8) var(--sp-12);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(197,163,82,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -30%; left: -10%;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(26,91,196,0.2) 0%, transparent 70%);
+  border-radius: 50%;
+}
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px;
+  padding: var(--sp-1) var(--sp-4);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--sp-6);
+  backdrop-filter: blur(8px);
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  background: var(--gold-500);
+  border-radius: 50%;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  font-weight: 900;
+  line-height: 1.15;
+  margin-bottom: var(--sp-4);
+}
+.hero h1 span { color: var(--gold-500); }
+.hero-sub {
+  font-size: 1.15rem;
+  font-weight: 300;
+  opacity: 0.85;
+  max-width: 640px;
+  margin-bottom: var(--sp-8);
+}
+.hero-meta {
+  display: flex;
+  gap: var(--sp-8);
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  opacity: 0.7;
+}
+.hero-meta div { display: flex; align-items: center; gap: var(--sp-2); }
+
+/* ═══════════════════════════════════════════
+   TAB NAVIGATION
+   ═══════════════════════════════════════════ */
+.tab-bar {
+  background: white;
+  border-bottom: 1px solid var(--gray-100);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+.tab-bar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.tab-bar-inner::-webkit-scrollbar { display: none; }
+.tab-btn {
+  padding: var(--sp-4) var(--sp-5);
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.tab-btn:hover { color: var(--blue-800); background: var(--blue-50); }
+.tab-btn.active {
+  color: var(--blue-800);
+  border-bottom-color: var(--blue-800);
+}
+
+/* ═══════════════════════════════════════════
+   MAIN CONTENT
+   ═══════════════════════════════════════════ */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--sp-8);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* SECTION HEADERS */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--blue-600);
+  margin-bottom: var(--sp-2);
+}
+.section-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--blue-900);
+  margin-bottom: var(--sp-2);
+}
+.section-desc {
+  color: var(--gray-700);
+  font-size: 1rem;
+  margin-bottom: var(--sp-8);
+  max-width: 720px;
+}
+
+/* ═══════════════════════════════════════════
+   FILE TREE
+   ═══════════════════════════════════════════ */
+.file-tree {
+  background: var(--blue-900);
+  color: #E0E8F0;
+  border-radius: var(--radius-lg);
+  padding: var(--sp-6);
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.9;
+  overflow-x: auto;
+  margin-bottom: var(--sp-8);
+  box-shadow: var(--shadow-lg);
+}
+.file-tree .dir { color: var(--gold-500); font-weight: 700; }
+.file-tree .file { color: #93B5E0; }
+.file-tree .comment { color: #5A7A9A; font-style: italic; }
+.file-tree .highlight { color: #7DDFB0; font-weight: 500; }
+
+/* ═══════════════════════════════════════════
+   CODE BLOCKS
+   ═══════════════════════════════════════════ */
+.code-section {
+  margin-bottom: var(--sp-10);
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--blue-900);
+  color: white;
+  padding: var(--sp-3) var(--sp-5);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.code-header .filepath {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  font-weight: 500;
+}
+.code-header .lang-tag {
+  background: rgba(255,255,255,0.12);
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.code-block {
+  background: #0D1B2A;
+  color: #D4DDE8;
+  padding: var(--sp-5);
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  tab-size: 2;
+  border: 1px solid rgba(0,45,114,0.2);
+  border-top: none;
+}
+.code-block .kw { color: #7EB6FF; }         /* keywords */
+.code-block .str { color: #A8D8A8; }        /* strings */
+.code-block .num { color: #F0C674; }        /* numbers */
+.code-block .cm { color: #5A7A9A; }         /* comments */
+.code-block .fn { color: #D4A0FF; }         /* functions */
+.code-block .type { color: #7DDFB0; }       /* types */
+.code-block .prop { color: #E8C97A; }       /* properties */
+.code-block .op { color: #93B5E0; }         /* operators */
+.code-block .tag { color: #F07178; }        /* JSX tags */
+.code-block .attr { color: #FFCB6B; }       /* attributes */
+.code-block .imp { color: #C792EA; }        /* import */
+
+/* ═══════════════════════════════════════════
+   INFO CARDS / CALLOUTS
+   ═══════════════════════════════════════════ */
+.callout {
+  border-radius: var(--radius-md);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-6);
+  display: flex;
+  gap: var(--sp-4);
+}
+.callout-icon {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 900;
+}
+.callout-blue { background: var(--blue-100); border-left: 4px solid var(--blue-800); }
+.callout-blue .callout-icon { background: var(--blue-800); color: white; }
+.callout-gold { background: var(--gold-100); border-left: 4px solid var(--gold-500); }
+.callout-gold .callout-icon { background: var(--gold-500); color: white; }
+.callout-green { background: var(--green-100); border-left: 4px solid var(--green-600); }
+.callout-green .callout-icon { background: var(--green-600); color: white; }
+.callout-red { background: var(--red-100); border-left: 4px solid var(--red-600); }
+.callout-red .callout-icon { background: var(--red-600); color: white; }
+.callout h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: var(--sp-1);
+}
+.callout p, .callout ul {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  line-height: 1.6;
+}
+.callout ul { padding-left: var(--sp-5); margin-top: var(--sp-2); }
+.callout li { margin-bottom: var(--sp-1); }
+
+/* ═══════════════════════════════════════════
+   QUICK START CARDS
+   ═══════════════════════════════════════════ */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--sp-5);
+  margin-bottom: var(--sp-8);
+}
+.step-card {
+  background: white;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-md);
+  padding: var(--sp-6);
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.step-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+.step-num {
+  position: absolute;
+  top: var(--sp-4);
+  right: var(--sp-4);
+  width: 32px; height: 32px;
+  background: var(--blue-100);
+  color: var(--blue-800);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+.step-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--blue-900);
+  margin-bottom: var(--sp-2);
+}
+.step-card p {
+  font-size: 0.85rem;
+  color: var(--gray-700);
+  margin-bottom: var(--sp-3);
+}
+.step-cmd {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-2) var(--sp-3);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--blue-800);
+  display: block;
+  margin-top: var(--sp-2);
+}
+
+/* ═══════════════════════════════════════════
+   ARCHITECTURE DIAGRAM (CSS-only)
+   ═══════════════════════════════════════════ */
+.arch-diagram {
+  background: white;
+  border: 1px solid var(--gray-100);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-8);
+  margin-bottom: var(--sp-8);
+  overflow-x: auto;
+}
+.arch-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  flex-wrap: wrap;
+}
+.arch-box {
+  border-radius: var(--radius-md);
+  padding: var(--sp-3) var(--sp-5);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  min-width: 120px;
+  border: 2px solid;
+}
+.arch-box.blue { background: var(--blue-100); border-color: var(--blue-800); color: var(--blue-800); }
+.arch-box.gold { background: var(--gold-100); border-color: var(--gold-500); color: #7A5F20; }
+.arch-box.green { background: var(--green-100); border-color: var(--green-600); color: var(--green-600); }
+.arch-box.red { background: var(--red-100); border-color: var(--red-600); color: var(--red-600); }
+.arch-box small { display: block; font-weight: 400; font-size: 0.7rem; opacity: 0.8; }
+.arch-connector {
+  text-align: center;
+  color: var(--gray-300);
+  font-size: 1.2rem;
+  margin-bottom: var(--sp-4);
+}
+.arch-layer-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  text-align: center;
+  margin-bottom: var(--sp-2);
+}
+
+/* ═══════════════════════════════════════════
+   TABLE
+   ═══════════════════════════════════════════ */
+.spec-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--sp-8);
+  font-size: 0.85rem;
+}
+.spec-table th {
+  background: var(--blue-900);
+  color: white;
+  padding: var(--sp-3) var(--sp-4);
+  text-align: left;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+}
+.spec-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+.spec-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+.spec-table td {
+  padding: var(--sp-3) var(--sp-4);
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: top;
+}
+.spec-table tr:nth-child(even) { background: var(--gray-50); }
+.spec-table code {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: var(--blue-50);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--blue-800);
+}
+
+/* ═══════════════════════════════════════════
+   ENV BLOCK
+   ═══════════════════════════════════════════ */
+.env-block {
+  background: #1a1a2e;
+  color: #A8D8A8;
+  border-radius: var(--radius-md);
+  padding: var(--sp-5);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.8;
+  margin-bottom: var(--sp-6);
+}
+.env-block .env-key { color: #F0C674; }
+.env-block .env-val { color: #A8D8A8; }
+.env-block .env-cm { color: #5A7A9A; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════ */
+.footer {
+  background: var(--blue-900);
+  color: rgba(255,255,255,0.5);
+  padding: var(--sp-8);
+  text-align: center;
+  font-size: 0.8rem;
+}
+.footer strong { color: var(--gold-500); }
+
+/* ═══════════════════════════════════════════
+   UTILITIES
+   ═══════════════════════════════════════════ */
+.mono { font-family: var(--font-mono); }
+.mt-4 { margin-top: var(--sp-4); }
+.mt-6 { margin-top: var(--sp-6); }
+.mt-8 { margin-top: var(--sp-8); }
+.mb-4 { margin-bottom: var(--sp-4); }
+.mb-6 { margin-bottom: var(--sp-6); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-5); }
+@media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+.inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: var(--blue-50);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--blue-800);
+}
+hr.divider {
+  border: none;
+  border-top: 1px solid var(--gray-100);
+  margin: var(--sp-8) 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════════════════════════════ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge"><span class="dot"></span> Prompt 7 of 7 — Lender Build Playbook</div>
+    <h1>FUB Lender<br><span>Starter Codebase</span></h1>
+    <p class="hero-sub">
+      The complete developer starter kit for First United Bank's mobile lending platform.
+      Clone it, configure it, run it in under ten minutes.
+    </p>
+    <div class="hero-meta">
+      <div>React Native + Expo</div>
+      <div>TypeScript</div>
+      <div>WatermelonDB</div>
+      <div>Okta OIDC</div>
+      <div>Offline-First</div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB BAR
+     ════════════════════════════════════════════════════════════════ -->
+<nav class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="showTab('quick-start')">Quick Start</button>
+    <button class="tab-btn" onclick="showTab('structure')">Project Structure</button>
+    <button class="tab-btn" onclick="showTab('theme')">Theme &amp; Tokens</button>
+    <button class="tab-btn" onclick="showTab('database')">Database</button>
+    <button class="tab-btn" onclick="showTab('api')">API &amp; Sync</button>
+    <button class="tab-btn" onclick="showTab('components')">Components</button>
+    <button class="tab-btn" onclick="showTab('navigation')">Navigation</button>
+    <button class="tab-btn" onclick="showTab('screens')">Screens</button>
+    <button class="tab-btn" onclick="showTab('auth')">Auth &amp; Store</button>
+    <button class="tab-btn" onclick="showTab('workflow')">Dev Workflow</button>
+    <button class="tab-btn" onclick="showTab('demo')">Demo Mode</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 1: QUICK START
+     ════════════════════════════════════════════════════════════════ -->
+<div class="container">
+<div id="quick-start" class="tab-panel active">
+
+  <div class="section-label">Getting Started</div>
+  <div class="section-title">Up and Running in 10 Minutes</div>
+  <div class="section-desc">
+    Everything you need to go from zero to a running FUB Lender app on your local machine, including a built-in demo mode that works without any backend connection.
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-icon">i</div>
+    <div>
+      <h4>Prerequisites</h4>
+      <ul>
+        <li>Node.js 18+ and npm 9+</li>
+        <li>Expo CLI (<code>npm install -g expo-cli</code>)</li>
+        <li>EAS CLI (<code>npm install -g eas-cli</code>)</li>
+        <li>Xcode 15+ with iOS Simulator (for iOS development)</li>
+        <li>Android Studio + Android SDK 34 (for Android development)</li>
+        <li>CocoaPods (<code>sudo gem install cocoapods</code>)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h4>Clone &amp; Install</h4>
+      <p>Pull the repo and install all dependencies.</p>
+      <code class="step-cmd">git clone git@github.com:first-united/fub-lender.git</code>
+      <code class="step-cmd">cd fub-lender && npm install</code>
+      <code class="step-cmd">cd ios && pod install && cd ..</code>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h4>Configure Environment</h4>
+      <p>Copy the env template and fill in your values.</p>
+      <code class="step-cmd">cp .env.example .env.local</code>
+      <code class="step-cmd"># Edit .env.local with your Okta + API values</code>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h4>Run in Demo Mode</h4>
+      <p>Start the app with mock data — no backend needed.</p>
+      <code class="step-cmd">DEMO_MODE=true npx expo run:ios</code>
+      <code class="step-cmd"># or: DEMO_MODE=true npx expo run:android</code>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <h4>Run Against Backend</h4>
+      <p>Point at a real or staging API server.</p>
+      <code class="step-cmd">npx expo run:ios</code>
+      <code class="step-cmd"># Ensure API_BASE_URL is set in .env.local</code>
+    </div>
+  </div>
+
+  <div class="section-label">Environment Template</div>
+  <div class="env-block">
+<span class="env-cm"># ── FUB Lender Environment Configuration ──</span>
+<span class="env-cm"># Copy to .env.local and fill in real values</span>
+
+<span class="env-cm"># API</span>
+<span class="env-key">API_BASE_URL</span>=<span class="env-val">https://lender-api.firstunitedbank.com/api</span>
+<span class="env-key">API_TIMEOUT_MS</span>=<span class="env-val">15000</span>
+
+<span class="env-cm"># Okta OIDC</span>
+<span class="env-key">OKTA_DOMAIN</span>=<span class="env-val">https://firstunited.okta.com</span>
+<span class="env-key">OKTA_CLIENT_ID</span>=<span class="env-val">0oa_your_client_id_here</span>
+<span class="env-key">OKTA_REDIRECT_URI</span>=<span class="env-val">com.firstunited.lender:/callback</span>
+<span class="env-key">OKTA_LOGOUT_URI</span>=<span class="env-val">com.firstunited.lender:/logout</span>
+
+<span class="env-cm"># Feature Flags</span>
+<span class="env-key">DEMO_MODE</span>=<span class="env-val">false</span>
+<span class="env-key">ENABLE_OFFLINE_SYNC</span>=<span class="env-val">true</span>
+<span class="env-key">SYNC_INTERVAL_MS</span>=<span class="env-val">30000</span>
+
+<span class="env-cm"># Document Storage</span>
+<span class="env-key">DOC_UPLOAD_MAX_MB</span>=<span class="env-val">25</span>
+<span class="env-key">DOC_STORAGE_URL</span>=<span class="env-val">https://docs.firstunitedbank.com</span>
+
+<span class="env-cm"># Logging</span>
+<span class="env-key">LOG_LEVEL</span>=<span class="env-val">debug</span>
+<span class="env-key">SENTRY_DSN</span>=<span class="env-val">https://your-sentry-dsn-here</span>
+  </div>
+
+  <!-- Architecture Diagram -->
+  <div class="section-label">Architecture Overview</div>
+  <div class="arch-diagram">
+    <div class="arch-layer-label">Presentation Layer</div>
+    <div class="arch-row">
+      <div class="arch-box blue">React Native<small>Expo Custom Dev Client</small></div>
+      <div class="arch-box blue">React Navigation<small>Tabs + Stacks</small></div>
+      <div class="arch-box blue">Design System<small>15 Components</small></div>
+    </div>
+    <div class="arch-connector">&#x25BC; &#x25BC; &#x25BC;</div>
+    <div class="arch-layer-label">State &amp; Data Layer</div>
+    <div class="arch-row">
+      <div class="arch-box gold">Zustand<small>UI + Auth State</small></div>
+      <div class="arch-box gold">TanStack Query<small>Server State + Cache</small></div>
+      <div class="arch-box gold">WatermelonDB<small>SQLite Offline DB</small></div>
+    </div>
+    <div class="arch-connector">&#x25BC; &#x25BC; &#x25BC;</div>
+    <div class="arch-layer-label">Network &amp; Sync Layer</div>
+    <div class="arch-row">
+      <div class="arch-box green">Axios Client<small>Interceptors + Retry</small></div>
+      <div class="arch-box green">Sync Manager<small>Offline Queue</small></div>
+      <div class="arch-box green">Conflict Resolver<small>Last-Write-Wins</small></div>
+    </div>
+    <div class="arch-connector">&#x25BC; &#x25BC; &#x25BC;</div>
+    <div class="arch-layer-label">Backend Services</div>
+    <div class="arch-row">
+      <div class="arch-box red">REST API<small>Node + Express</small></div>
+      <div class="arch-box red">PostgreSQL<small>9 Tables</small></div>
+      <div class="arch-box red">n8n<small>Workflow Engine</small></div>
+      <div class="arch-box red">Okta<small>OIDC PKCE</small></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 2: PROJECT STRUCTURE
+     ════════════════════════════════════════════════════════════════ -->
+<div id="structure" class="tab-panel">
+
+  <div class="section-label">File Tree</div>
+  <div class="section-title">Project Structure</div>
+  <div class="section-desc">
+    Every file in the repository, organized by concern. Navigation, components, data, API, auth, sync, and utilities each live in their own directory under <span class="inline-code">src/</span>.
+  </div>
+
+  <div class="file-tree"><span class="dir">fub-lender/</span>
+├── <span class="file">app.json</span>                        <span class="comment">// Expo config — bundle ID, splash, icons</span>
+├── <span class="file">babel.config.js</span>                  <span class="comment">// Babel with reanimated + watermelondb decorators</span>
+├── <span class="file">tsconfig.json</span>                    <span class="comment">// Strict TS with path aliases</span>
+├── <span class="file">package.json</span>                     <span class="comment">// Dependencies with pinned versions</span>
+├── <span class="file">.env.example</span>                     <span class="comment">// Environment variable template</span>
+├── <span class="file">metro.config.js</span>                  <span class="comment">// Metro bundler customization</span>
+├── <span class="file">jest.config.ts</span>                   <span class="comment">// Test runner configuration</span>
+├── <span class="file">eas.json</span>                         <span class="comment">// EAS Build profiles (dev, staging, prod)</span>
+│
+├── <span class="dir">src/</span>
+│   ├── <span class="dir">app/</span>                         <span class="comment">// Navigation &amp; routing</span>
+│   │   ├── <span class="highlight">RootNavigator.tsx</span>        <span class="comment">// Auth gate → Main or Login</span>
+│   │   ├── <span class="highlight">AuthNavigator.tsx</span>        <span class="comment">// Login + Okta callback stack</span>
+│   │   ├── <span class="highlight">MainTabs.tsx</span>             <span class="comment">// Bottom tab navigator</span>
+│   │   └── <span class="dir">screens/</span>
+│   │       ├── <span class="file">PipelineScreen.tsx</span>    <span class="comment">// Deal pipeline (home screen)</span>
+│   │       ├── <span class="file">DealDetailScreen.tsx</span>  <span class="comment">// Single deal view</span>
+│   │       ├── <span class="file">NewDealScreen.tsx</span>     <span class="comment">// Deal creation wizard</span>
+│   │       ├── <span class="file">CreditMemoScreen.tsx</span> <span class="comment">// Auto-generated credit memo</span>
+│   │       ├── <span class="file">ApprovalScreen.tsx</span>   <span class="comment">// Approval queue for managers</span>
+│   │       ├── <span class="file">SearchScreen.tsx</span>     <span class="comment">// Core search + borrower lookup</span>
+│   │       ├── <span class="file">DocumentsScreen.tsx</span>  <span class="comment">// Document upload &amp; checklist</span>
+│   │       ├── <span class="file">SettingsScreen.tsx</span>   <span class="comment">// Profile, sync status, logout</span>
+│   │       └── <span class="file">LoginScreen.tsx</span>      <span class="comment">// Okta PKCE login</span>
+│   │
+│   ├── <span class="dir">components/</span>                  <span class="comment">// Design system (15 components)</span>
+│   │   ├── <span class="highlight">DealCard.tsx</span>             <span class="comment">// Pipeline card with lane badge</span>
+│   │   ├── <span class="highlight">StatusBadge.tsx</span>          <span class="comment">// Deal status pill</span>
+│   │   ├── <span class="highlight">LaneBadge.tsx</span>            <span class="comment">// Fast / Standard / Complex</span>
+│   │   ├── <span class="file">StatBox.tsx</span>              <span class="comment">// KPI metric card</span>
+│   │   ├── <span class="file">AutoFillCard.tsx</span>         <span class="comment">// Core-to-app data preview</span>
+│   │   ├── <span class="file">NLPTag.tsx</span>               <span class="comment">// NLP extracted entity chip</span>
+│   │   ├── <span class="file">RiskCard.tsx</span>             <span class="comment">// Risk factor display</span>
+│   │   ├── <span class="file">TimelineItem.tsx</span>         <span class="comment">// Activity timeline entry</span>
+│   │   ├── <span class="highlight">SLACountdown.tsx</span>         <span class="comment">// SLA timer with color states</span>
+│   │   ├── <span class="file">ApprovalButtonGroup.tsx</span>  <span class="comment">// Approve / Decline / Condition</span>
+│   │   ├── <span class="file">DocChecklistItem.tsx</span>     <span class="comment">// Document checklist row</span>
+│   │   ├── <span class="file">BottomSheet.tsx</span>          <span class="comment">// Reusable bottom sheet modal</span>
+│   │   ├── <span class="file">EmptyState.tsx</span>           <span class="comment">// Empty pipeline placeholder</span>
+│   │   ├── <span class="file">SyncIndicator.tsx</span>        <span class="comment">// Online/offline status bar</span>
+│   │   └── <span class="file">LoadingSkeleton.tsx</span>      <span class="comment">// Content loading placeholder</span>
+│   │
+│   ├── <span class="dir">db/</span>                          <span class="comment">// WatermelonDB offline database</span>
+│   │   ├── <span class="highlight">schema.ts</span>                <span class="comment">// Table schemas matching PG DDL</span>
+│   │   ├── <span class="file">migrations.ts</span>            <span class="comment">// Schema migration definitions</span>
+│   │   ├── <span class="file">database.ts</span>              <span class="comment">// Database initialization</span>
+│   │   └── <span class="dir">models/</span>
+│   │       ├── <span class="file">Deal.ts</span>              <span class="comment">// Deal model with relations</span>
+│   │       ├── <span class="file">Borrower.ts</span>          <span class="comment">// Borrower model</span>
+│   │       ├── <span class="file">CreditMemo.ts</span>        <span class="comment">// Credit memo model</span>
+│   │       ├── <span class="file">ApprovalAction.ts</span>    <span class="comment">// Approval action model</span>
+│   │       ├── <span class="file">Document.ts</span>          <span class="comment">// Document model</span>
+│   │       ├── <span class="file">Collateral.ts</span>        <span class="comment">// Collateral model</span>
+│   │       └── <span class="file">AuditEvent.ts</span>        <span class="comment">// Audit event model</span>
+│   │
+│   ├── <span class="dir">api/</span>                         <span class="comment">// Network layer</span>
+│   │   ├── <span class="highlight">client.ts</span>                <span class="comment">// Axios instance + interceptors</span>
+│   │   ├── <span class="file">types.ts</span>                 <span class="comment">// API response types</span>
+│   │   └── <span class="dir">hooks/</span>
+│   │       ├── <span class="file">useDeals.ts</span>          <span class="comment">// TanStack Query deal hooks</span>
+│   │       ├── <span class="file">useBorrowers.ts</span>      <span class="comment">// Borrower search hook</span>
+│   │       ├── <span class="file">useCreditMemo.ts</span>     <span class="comment">// Memo generation hook</span>
+│   │       ├── <span class="file">useApprovals.ts</span>      <span class="comment">// Approval queue hooks</span>
+│   │       └── <span class="file">useDocuments.ts</span>      <span class="comment">// Document upload hooks</span>
+│   │
+│   ├── <span class="dir">store/</span>                       <span class="comment">// Zustand state management</span>
+│   │   ├── <span class="highlight">authStore.ts</span>             <span class="comment">// Auth state + user profile</span>
+│   │   ├── <span class="file">syncStore.ts</span>             <span class="comment">// Sync queue state</span>
+│   │   └── <span class="file">uiStore.ts</span>               <span class="comment">// UI preferences + filters</span>
+│   │
+│   ├── <span class="dir">auth/</span>                        <span class="comment">// Okta integration</span>
+│   │   ├── <span class="file">oktaConfig.ts</span>            <span class="comment">// OIDC configuration</span>
+│   │   └── <span class="highlight">AuthProvider.tsx</span>         <span class="comment">// Auth context + token refresh</span>
+│   │
+│   ├── <span class="dir">sync/</span>                        <span class="comment">// Offline sync engine</span>
+│   │   ├── <span class="highlight">SyncManager.ts</span>           <span class="comment">// Queue processing + push/pull</span>
+│   │   ├── <span class="file">ConflictResolver.ts</span>      <span class="comment">// Server-wins merge strategy</span>
+│   │   └── <span class="file">QueueProcessor.ts</span>        <span class="comment">// Batch retry with backoff</span>
+│   │
+│   ├── <span class="dir">theme/</span>                       <span class="comment">// Design tokens</span>
+│   │   ├── <span class="highlight">colors.ts</span>                <span class="comment">// FUB brand palette</span>
+│   │   ├── <span class="highlight">typography.ts</span>            <span class="comment">// Lato type scale</span>
+│   │   ├── <span class="highlight">spacing.ts</span>               <span class="comment">// 4px-based spacing scale</span>
+│   │   └── <span class="file">index.ts</span>                 <span class="comment">// Unified theme export</span>
+│   │
+│   ├── <span class="dir">utils/</span>                       <span class="comment">// Shared utilities</span>
+│   │   ├── <span class="highlight">authority.ts</span>             <span class="comment">// Lending authority checks</span>
+│   │   ├── <span class="file">sla.ts</span>                   <span class="comment">// SLA timer calculations</span>
+│   │   ├── <span class="file">formatters.ts</span>            <span class="comment">// Currency, date, percentage</span>
+│   │   └── <span class="file">featureFlags.ts</span>          <span class="comment">// Demo mode + feature toggles</span>
+│   │
+│   └── <span class="dir">demo/</span>                        <span class="comment">// Demo mode fixtures</span>
+│       ├── <span class="file">mockDeals.ts</span>             <span class="comment">// Jackie Parsons + sample deals</span>
+│       ├── <span class="file">mockBorrowers.ts</span>         <span class="comment">// Pre-loaded borrower data</span>
+│       └── <span class="file">mockApiHandlers.ts</span>       <span class="comment">// Interceptors for demo mode</span>
+│
+├── <span class="dir">ios/</span>                             <span class="comment">// iOS native project (Xcode)</span>
+├── <span class="dir">android/</span>                         <span class="comment">// Android native project (Gradle)</span>
+└── <span class="dir">__tests__/</span>                       <span class="comment">// Test files mirroring src/</span>
+</div>
+
+  <div class="callout callout-gold">
+    <div class="callout-icon">!</div>
+    <div>
+      <h4>Why Expo Custom Dev Client (not Expo Go)?</h4>
+      <p>WatermelonDB requires native SQLite bindings, and the Okta React Native SDK uses native OIDC flows. Both need custom native modules that Expo Go cannot load. The project uses <span class="inline-code">expo prebuild</span> to generate the <span class="inline-code">ios/</span> and <span class="inline-code">android/</span> directories with the correct native linking.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 3: THEME & TOKENS
+     ════════════════════════════════════════════════════════════════ -->
+<div id="theme" class="tab-panel">
+
+  <div class="section-label">Design System</div>
+  <div class="section-title">Theme &amp; Design Tokens</div>
+  <div class="section-desc">
+    All visual values — colors, typography, spacing — defined once and consumed throughout the app. These tokens match the FUB Design System specification exactly.
+  </div>
+
+  <!-- package.json -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F4E6; package.json</span>
+      <span class="lang-tag">JSON</span>
+    </div>
+    <div class="code-block">{
+  <span class="prop">"name"</span>: <span class="str">"fub-lender"</span>,
+  <span class="prop">"version"</span>: <span class="str">"1.0.0"</span>,
+  <span class="prop">"private"</span>: <span class="kw">true</span>,
+  <span class="prop">"main"</span>: <span class="str">"expo-router/entry"</span>,
+  <span class="prop">"scripts"</span>: {
+    <span class="prop">"start"</span>: <span class="str">"expo start --dev-client"</span>,
+    <span class="prop">"ios"</span>: <span class="str">"expo run:ios"</span>,
+    <span class="prop">"android"</span>: <span class="str">"expo run:android"</span>,
+    <span class="prop">"test"</span>: <span class="str">"jest"</span>,
+    <span class="prop">"lint"</span>: <span class="str">"eslint src/ --ext .ts,.tsx"</span>,
+    <span class="prop">"typecheck"</span>: <span class="str">"tsc --noEmit"</span>,
+    <span class="prop">"prebuild"</span>: <span class="str">"expo prebuild --clean"</span>,
+    <span class="prop">"demo"</span>: <span class="str">"DEMO_MODE=true expo run:ios"</span>
+  },
+  <span class="prop">"dependencies"</span>: {
+    <span class="prop">"expo"</span>: <span class="str">"~52.0.0"</span>,
+    <span class="prop">"react"</span>: <span class="str">"18.3.1"</span>,
+    <span class="prop">"react-native"</span>: <span class="str">"0.76.3"</span>,
+    <span class="prop">"@react-navigation/native"</span>: <span class="str">"^7.0.0"</span>,
+    <span class="prop">"@react-navigation/bottom-tabs"</span>: <span class="str">"^7.0.0"</span>,
+    <span class="prop">"@react-navigation/native-stack"</span>: <span class="str">"^7.0.0"</span>,
+    <span class="prop">"react-native-screens"</span>: <span class="str">"~4.4.0"</span>,
+    <span class="prop">"react-native-safe-area-context"</span>: <span class="str">"~4.12.0"</span>,
+    <span class="prop">"@nozbe/watermelondb"</span>: <span class="str">"^0.27.1"</span>,
+    <span class="prop">"@nozbe/with-observables"</span>: <span class="str">"^1.6.0"</span>,
+    <span class="prop">"zustand"</span>: <span class="str">"^5.0.0"</span>,
+    <span class="prop">"@tanstack/react-query"</span>: <span class="str">"^5.60.0"</span>,
+    <span class="prop">"axios"</span>: <span class="str">"^1.7.9"</span>,
+    <span class="prop">"@okta/okta-react-native"</span>: <span class="str">"^2.14.0"</span>,
+    <span class="prop">"@react-native-async-storage/async-storage"</span>: <span class="str">"~2.1.0"</span>,
+    <span class="prop">"react-native-reanimated"</span>: <span class="str">"~3.16.0"</span>,
+    <span class="prop">"react-native-gesture-handler"</span>: <span class="str">"~2.20.0"</span>,
+    <span class="prop">"expo-document-picker"</span>: <span class="str">"~13.0.0"</span>,
+    <span class="prop">"expo-file-system"</span>: <span class="str">"~18.0.0"</span>,
+    <span class="prop">"expo-secure-store"</span>: <span class="str">"~14.0.0"</span>,
+    <span class="prop">"expo-network"</span>: <span class="str">"~7.0.0"</span>,
+    <span class="prop">"react-native-svg"</span>: <span class="str">"~15.8.0"</span>,
+    <span class="prop">"date-fns"</span>: <span class="str">"^4.1.0"</span>,
+    <span class="prop">"uuid"</span>: <span class="str">"^11.0.0"</span>,
+    <span class="prop">"@sentry/react-native"</span>: <span class="str">"^6.4.0"</span>
+  },
+  <span class="prop">"devDependencies"</span>: {
+    <span class="prop">"typescript"</span>: <span class="str">"^5.6.0"</span>,
+    <span class="prop">"@types/react"</span>: <span class="str">"~18.3.0"</span>,
+    <span class="prop">"jest"</span>: <span class="str">"^29.7.0"</span>,
+    <span class="prop">"@testing-library/react-native"</span>: <span class="str">"^12.8.0"</span>,
+    <span class="prop">"eslint"</span>: <span class="str">"^9.15.0"</span>,
+    <span class="prop">"@babel/plugin-proposal-decorators"</span>: <span class="str">"^7.25.0"</span>,
+    <span class="prop">"react-native-dotenv"</span>: <span class="str">"^3.4.0"</span>
+  }
+}</div>
+  </div>
+
+  <!-- colors.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3A8; src/theme/colors.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="cm">/**
+ * FUB Brand Color Palette
+ * Source: First United Bank Brand Guidelines + Prompt 6 Design System
+ */</span>
+
+<span class="kw">export const</span> colors = {
+  <span class="cm">// ── Primary Brand ──</span>
+  <span class="prop">primary</span>: {
+    <span class="prop">blue</span>:     <span class="str">'#002D72'</span>,  <span class="cm">// FUB Navy — primary actions, headers</span>
+    <span class="prop">red</span>:      <span class="str">'#DA291C'</span>,  <span class="cm">// FUB Red — destructive, alerts, SLA critical</span>
+    <span class="prop">white</span>:    <span class="str">'#FFFFFF'</span>,
+  },
+
+  <span class="cm">// ── Extended Palette ──</span>
+  <span class="prop">blue</span>: {
+    <span class="prop">900</span>: <span class="str">'#001A42'</span>,  <span class="cm">// Deepest navy — headers, text on light bg</span>
+    <span class="prop">800</span>: <span class="str">'#002D72'</span>,  <span class="cm">// Brand primary</span>
+    <span class="prop">700</span>: <span class="str">'#003D99'</span>,  <span class="cm">// Hover states</span>
+    <span class="prop">600</span>: <span class="str">'#1A5BC4'</span>,  <span class="cm">// Active states</span>
+    <span class="prop">100</span>: <span class="str">'#E8F0FE'</span>,  <span class="cm">// Light tint — card backgrounds</span>
+    <span class="prop">50</span>:  <span class="str">'#F0F5FF'</span>,  <span class="cm">// Subtle tint — page sections</span>
+  },
+
+  <span class="prop">gold</span>: {
+    <span class="prop">500</span>: <span class="str">'#C5A352'</span>,  <span class="cm">// Accent — badges, highlights</span>
+    <span class="prop">100</span>: <span class="str">'#FBF5E6'</span>,  <span class="cm">// Gold tint background</span>
+  },
+
+  <span class="cm">// ── Semantic ──</span>
+  <span class="prop">semantic</span>: {
+    <span class="prop">success</span>:    <span class="str">'#1B7A3D'</span>,  <span class="cm">// Approved, synced, complete</span>
+    <span class="prop">successBg</span>:  <span class="str">'#E6F4EC'</span>,
+    <span class="prop">warning</span>:    <span class="str">'#C5A352'</span>,  <span class="cm">// SLA nearing, attention needed</span>
+    <span class="prop">warningBg</span>:  <span class="str">'#FBF5E6'</span>,
+    <span class="prop">error</span>:      <span class="str">'#DA291C'</span>,  <span class="cm">// Declined, SLA breached, error</span>
+    <span class="prop">errorBg</span>:    <span class="str">'#FDE8E6'</span>,
+    <span class="prop">info</span>:       <span class="str">'#1A5BC4'</span>,  <span class="cm">// Informational badges</span>
+    <span class="prop">infoBg</span>:     <span class="str">'#E8F0FE'</span>,
+  },
+
+  <span class="cm">// ── Lane Colors ──</span>
+  <span class="prop">lane</span>: {
+    <span class="prop">fast</span>:     <span class="str">'#1B7A3D'</span>,  <span class="cm">// Fast Lane &lt;$250K</span>
+    <span class="prop">standard</span>: <span class="str">'#1A5BC4'</span>,  <span class="cm">// Standard CRE/C&amp;I</span>
+    <span class="prop">complex</span>:  <span class="str">'#C5A352'</span>,  <span class="cm">// Complex multi-entity/SBA</span>
+  },
+
+  <span class="cm">// ── Neutral ──</span>
+  <span class="prop">neutral</span>: {
+    <span class="prop">900</span>: <span class="str">'#1A1A1A'</span>,  <span class="cm">// Primary text</span>
+    <span class="prop">700</span>: <span class="str">'#4A4A4A'</span>,  <span class="cm">// Secondary text</span>
+    <span class="prop">500</span>: <span class="str">'#7A7A7A'</span>,  <span class="cm">// Placeholder, disabled</span>
+    <span class="prop">300</span>: <span class="str">'#B8B8B8'</span>,  <span class="cm">// Borders</span>
+    <span class="prop">100</span>: <span class="str">'#EDEDED'</span>,  <span class="cm">// Dividers</span>
+    <span class="prop">50</span>:  <span class="str">'#F5F5F5'</span>,  <span class="cm">// Background alternate</span>
+  },
+
+  <span class="prop">background</span>: {
+    <span class="prop">primary</span>:   <span class="str">'#FAF9F5'</span>,  <span class="cm">// Warm off-white — main bg</span>
+    <span class="prop">card</span>:      <span class="str">'#FFFFFF'</span>,  <span class="cm">// Card surfaces</span>
+    <span class="prop">elevated</span>:  <span class="str">'#FFFFFF'</span>,  <span class="cm">// Modals, sheets</span>
+  },
+} <span class="kw">as const</span>;
+
+<span class="kw">export type</span> <span class="type">ColorToken</span> = <span class="kw">typeof</span> colors;</div>
+  </div>
+
+  <!-- typography.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F524; src/theme/typography.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> { Platform } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="cm">/**
+ * Typography Scale — Lato
+ * Matches Prompt 6 Design System specifications exactly.
+ */</span>
+
+<span class="kw">const</span> fontFamily = Platform.<span class="fn">select</span>({
+  <span class="prop">ios</span>: <span class="str">'Lato'</span>,
+  <span class="prop">android</span>: <span class="str">'Lato'</span>,
+  <span class="prop">default</span>: <span class="str">'Lato, sans-serif'</span>,
+});
+
+<span class="kw">export const</span> typography = {
+  <span class="prop">fontFamily</span>,
+
+  <span class="cm">// ── Weight Map ──</span>
+  <span class="prop">weight</span>: {
+    <span class="prop">light</span>:    <span class="str">'300'</span> <span class="kw">as const</span>,
+    <span class="prop">regular</span>:  <span class="str">'400'</span> <span class="kw">as const</span>,
+    <span class="prop">bold</span>:     <span class="str">'700'</span> <span class="kw">as const</span>,
+    <span class="prop">black</span>:    <span class="str">'900'</span> <span class="kw">as const</span>,
+  },
+
+  <span class="cm">// ── Pre-composed Text Styles ──</span>
+  <span class="prop">heading1</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">28</span>,
+    <span class="prop">lineHeight</span>: <span class="num">34</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'900'</span> <span class="kw">as const</span>,
+    <span class="prop">letterSpacing</span>: <span class="num">-0.3</span>,
+  },
+  <span class="prop">heading2</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">22</span>,
+    <span class="prop">lineHeight</span>: <span class="num">28</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'700'</span> <span class="kw">as const</span>,
+    <span class="prop">letterSpacing</span>: <span class="num">-0.2</span>,
+  },
+  <span class="prop">heading3</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">18</span>,
+    <span class="prop">lineHeight</span>: <span class="num">24</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'700'</span> <span class="kw">as const</span>,
+  },
+  <span class="prop">body</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">15</span>,
+    <span class="prop">lineHeight</span>: <span class="num">22</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'400'</span> <span class="kw">as const</span>,
+  },
+  <span class="prop">bodyBold</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">15</span>,
+    <span class="prop">lineHeight</span>: <span class="num">22</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'700'</span> <span class="kw">as const</span>,
+  },
+  <span class="prop">caption</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">12</span>,
+    <span class="prop">lineHeight</span>: <span class="num">16</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'400'</span> <span class="kw">as const</span>,
+  },
+  <span class="prop">label</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">11</span>,
+    <span class="prop">lineHeight</span>: <span class="num">14</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'700'</span> <span class="kw">as const</span>,
+    <span class="prop">letterSpacing</span>: <span class="num">0.8</span>,
+    <span class="prop">textTransform</span>: <span class="str">'uppercase'</span> <span class="kw">as const</span>,
+  },
+  <span class="prop">metric</span>: {
+    <span class="prop">fontFamily</span>,
+    <span class="prop">fontSize</span>: <span class="num">32</span>,
+    <span class="prop">lineHeight</span>: <span class="num">38</span>,
+    <span class="prop">fontWeight</span>: <span class="str">'900'</span> <span class="kw">as const</span>,
+    <span class="prop">letterSpacing</span>: <span class="num">-0.5</span>,
+  },
+} <span class="kw">as const</span>;</div>
+  </div>
+
+  <!-- spacing.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F4CF; src/theme/spacing.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="cm">/**
+ * Spacing Scale — 4px base unit
+ * Usage: spacing[4] = 16, spacing.cardPadding = 16, etc.
+ */</span>
+
+<span class="kw">export const</span> spacing = {
+  <span class="cm">// ── Numeric Scale ──</span>
+  <span class="num">1</span>:  <span class="num">4</span>,
+  <span class="num">2</span>:  <span class="num">8</span>,
+  <span class="num">3</span>:  <span class="num">12</span>,
+  <span class="num">4</span>:  <span class="num">16</span>,
+  <span class="num">5</span>:  <span class="num">20</span>,
+  <span class="num">6</span>:  <span class="num">24</span>,
+  <span class="num">8</span>:  <span class="num">32</span>,
+  <span class="num">10</span>: <span class="num">40</span>,
+  <span class="num">12</span>: <span class="num">48</span>,
+  <span class="num">16</span>: <span class="num">64</span>,
+
+  <span class="cm">// ── Semantic Aliases ──</span>
+  <span class="prop">screenPadding</span>:  <span class="num">20</span>,
+  <span class="prop">cardPadding</span>:    <span class="num">16</span>,
+  <span class="prop">cardGap</span>:        <span class="num">12</span>,
+  <span class="prop">sectionGap</span>:     <span class="num">24</span>,
+  <span class="prop">inputHeight</span>:    <span class="num">48</span>,
+  <span class="prop">buttonHeight</span>:   <span class="num">48</span>,
+  <span class="prop">tabBarHeight</span>:   <span class="num">64</span>,
+  <span class="prop">headerHeight</span>:   <span class="num">56</span>,
+} <span class="kw">as const</span>;
+
+<span class="kw">export const</span> radius = {
+  <span class="prop">sm</span>:   <span class="num">6</span>,
+  <span class="prop">md</span>:   <span class="num">10</span>,
+  <span class="prop">lg</span>:   <span class="num">16</span>,
+  <span class="prop">full</span>: <span class="num">9999</span>,
+} <span class="kw">as const</span>;
+
+<span class="kw">export const</span> shadow = {
+  <span class="prop">sm</span>: {
+    <span class="prop">shadowColor</span>: <span class="str">'#002D72'</span>,
+    <span class="prop">shadowOffset</span>: { <span class="prop">width</span>: <span class="num">0</span>, <span class="prop">height</span>: <span class="num">1</span> },
+    <span class="prop">shadowOpacity</span>: <span class="num">0.08</span>,
+    <span class="prop">shadowRadius</span>: <span class="num">3</span>,
+    <span class="prop">elevation</span>: <span class="num">2</span>,
+  },
+  <span class="prop">md</span>: {
+    <span class="prop">shadowColor</span>: <span class="str">'#002D72'</span>,
+    <span class="prop">shadowOffset</span>: { <span class="prop">width</span>: <span class="num">0</span>, <span class="prop">height</span>: <span class="num">4</span> },
+    <span class="prop">shadowOpacity</span>: <span class="num">0.1</span>,
+    <span class="prop">shadowRadius</span>: <span class="num">12</span>,
+    <span class="prop">elevation</span>: <span class="num">4</span>,
+  },
+} <span class="kw">as const</span>;</div>
+  </div>
+
+  <!-- theme/index.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3AF; src/theme/index.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">export</span> { colors } <span class="kw">from</span> <span class="str">'./colors'</span>;
+<span class="kw">export</span> { typography } <span class="kw">from</span> <span class="str">'./typography'</span>;
+<span class="kw">export</span> { spacing, radius, shadow } <span class="kw">from</span> <span class="str">'./spacing'</span>;
+
+<span class="cm">// Convenience re-export for use in StyleSheet.create</span>
+<span class="kw">export</span> { colors <span class="kw">as</span> c, typography <span class="kw">as</span> t, spacing <span class="kw">as</span> s } <span class="kw">from</span> <span class="str">'./colors'</span>;</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 4: DATABASE
+     ════════════════════════════════════════════════════════════════ -->
+<div id="database" class="tab-panel">
+
+  <div class="section-label">Offline-First</div>
+  <div class="section-title">WatermelonDB Schema</div>
+  <div class="section-desc">
+    The local SQLite schema mirrors the PostgreSQL DDL from Prompt 5. WatermelonDB handles lazy loading, observable queries, and offline mutations — all synced when connectivity returns.
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F4BE; src/db/schema.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> { appSchema, tableSchema } <span class="kw">from</span> <span class="str">'@nozbe/watermelondb'</span>;
+
+<span class="kw">export const</span> schema = <span class="fn">appSchema</span>({
+  <span class="prop">version</span>: <span class="num">1</span>,
+  <span class="prop">tables</span>: [
+    <span class="cm">// ── Deals ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'deals'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,          <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'borrower_id'</span>,        <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'loan_type'</span>,           <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// ag_operating | cre_term | ...</span>
+        { <span class="prop">name</span>: <span class="str">'requested_amount'</span>,    <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'lane'</span>,                <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// fast | standard | complex</span>
+        { <span class="prop">name</span>: <span class="str">'status'</span>,              <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// draft | submitted | in_review | ...</span>
+        { <span class="prop">name</span>: <span class="str">'purpose'</span>,             <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'term_months'</span>,         <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'proposed_rate'</span>,       <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'originator_id'</span>,      <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'community_bank_id'</span>,   <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'sla_deadline_at'</span>,     <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'nlp_extracted_json'</span>,   <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'is_synced'</span>,           <span class="prop">type</span>: <span class="str">'boolean'</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,          <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'updated_at'</span>,          <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Borrowers ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'borrowers'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,      <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'core_cif'</span>,       <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'legal_name'</span>,     <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'entity_type'</span>,    <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// individual | llc | corp | ...</span>
+        { <span class="prop">name</span>: <span class="str">'tax_id_last4'</span>,   <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'naics_code'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'risk_rating'</span>,    <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,     <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'updated_at'</span>,     <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Credit Memos ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'credit_memos'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,          <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'deal_id'</span>,             <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'version'</span>,             <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'executive_summary'</span>,   <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'risk_assessment_json'</span>, <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'financials_json'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'recommendation'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'generated_by'</span>,       <span class="prop">type</span>: <span class="str">'string'</span> }, <span class="cm">// 'auto' | user_id</span>
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,          <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'updated_at'</span>,          <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Approval Actions ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'approval_actions'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'deal_id'</span>,        <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'approver_id'</span>,    <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'action'</span>,         <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// approve | decline | condition</span>
+        { <span class="prop">name</span>: <span class="str">'authority_level'</span>, <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'conditions'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'comments'</span>,       <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'acted_at'</span>,       <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,     <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Documents ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'documents'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,     <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'deal_id'</span>,        <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'doc_type'</span>,       <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'filename'</span>,       <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'mime_type'</span>,      <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'size_bytes'</span>,     <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'storage_url'</span>,    <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'local_uri'</span>,      <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'is_uploaded'</span>,    <span class="prop">type</span>: <span class="str">'boolean'</span> },
+        { <span class="prop">name</span>: <span class="str">'uploaded_by'</span>,    <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,     <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Collateral ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'collateral'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,       <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'deal_id'</span>,          <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'collateral_type'</span>,  <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'description'</span>,      <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'appraised_value'</span>,  <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'lien_position'</span>,    <span class="prop">type</span>: <span class="str">'number'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,       <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Audit Events ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'audit_events'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'server_id'</span>,  <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'deal_id'</span>,     <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'actor_id'</span>,    <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'event_type'</span>,  <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'detail_json'</span>, <span class="prop">type</span>: <span class="str">'string'</span>,  <span class="prop">isOptional</span>: <span class="kw">true</span> },
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,  <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+
+    <span class="cm">// ── Sync Queue (local-only, tracks pending mutations) ──</span>
+    <span class="fn">tableSchema</span>({
+      <span class="prop">name</span>: <span class="str">'sync_queue'</span>,
+      <span class="prop">columns</span>: [
+        { <span class="prop">name</span>: <span class="str">'table_name'</span>,   <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'record_id'</span>,    <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'operation'</span>,     <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// create | update | delete</span>
+        { <span class="prop">name</span>: <span class="str">'payload_json'</span>,  <span class="prop">type</span>: <span class="str">'string'</span> },
+        { <span class="prop">name</span>: <span class="str">'retry_count'</span>,   <span class="prop">type</span>: <span class="str">'number'</span> },
+        { <span class="prop">name</span>: <span class="str">'status'</span>,        <span class="prop">type</span>: <span class="str">'string'</span> },  <span class="cm">// pending | in_flight | failed</span>
+        { <span class="prop">name</span>: <span class="str">'created_at'</span>,    <span class="prop">type</span>: <span class="str">'number'</span> },
+      ],
+    }),
+  ],
+});</div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="callout-icon">&#x2713;</div>
+    <div>
+      <h4>Schema ↔ PostgreSQL Alignment</h4>
+      <p>Every WatermelonDB table maps directly to a PostgreSQL table from Prompt 5. The <span class="inline-code">server_id</span> column on each local table references the UUID primary key on the server. The <span class="inline-code">authority_matrix</span> table from PG is not replicated locally — it's fetched on demand via the API and cached in memory via TanStack Query, since authority levels rarely change.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 5: API & SYNC
+     ════════════════════════════════════════════════════════════════ -->
+<div id="api" class="tab-panel">
+
+  <div class="section-label">Network Layer</div>
+  <div class="section-title">API Client &amp; Sync Engine</div>
+  <div class="section-desc">
+    Axios with automatic Okta token injection, exponential retry, and an offline queue that persists mutations until connectivity returns.
+  </div>
+
+  <!-- client.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F310; src/api/client.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> axios, { AxiosError, InternalAxiosRequestConfig } <span class="kw">from</span> <span class="str">'axios'</span>;
+<span class="kw">import</span> * <span class="kw">as</span> Network <span class="kw">from</span> <span class="str">'expo-network'</span>;
+<span class="kw">import</span> { useAuthStore } <span class="kw">from</span> <span class="str">'../store/authStore'</span>;
+<span class="kw">import</span> { useSyncStore } <span class="kw">from</span> <span class="str">'../store/syncStore'</span>;
+
+<span class="kw">const</span> API_BASE = process.env.API_BASE_URL ?? <span class="str">'https://lender-api.firstunitedbank.com/api'</span>;
+<span class="kw">const</span> TIMEOUT = Number(process.env.API_TIMEOUT_MS) || <span class="num">15000</span>;
+<span class="kw">const</span> MAX_RETRIES = <span class="num">3</span>;
+
+<span class="cm">// ── Create Axios Instance ──</span>
+<span class="kw">export const</span> apiClient = axios.<span class="fn">create</span>({
+  <span class="prop">baseURL</span>: API_BASE,
+  <span class="prop">timeout</span>: TIMEOUT,
+  <span class="prop">headers</span>: { <span class="str">'Content-Type'</span>: <span class="str">'application/json'</span> },
+});
+
+<span class="cm">// ── Request Interceptor: Inject Okta Bearer Token ──</span>
+apiClient.interceptors.request.<span class="fn">use</span>(
+  <span class="kw">async</span> (config: <span class="type">InternalAxiosRequestConfig</span>) => {
+    <span class="kw">const</span> { accessToken } = useAuthStore.<span class="fn">getState</span>();
+    <span class="kw">if</span> (accessToken) {
+      config.headers.Authorization = <span class="str">`Bearer <span class="op">${</span>accessToken<span class="op">}</span>`</span>;
+    }
+
+    <span class="cm">// Tag request with connectivity state for retry logic</span>
+    <span class="kw">const</span> network = <span class="kw">await</span> Network.<span class="fn">getNetworkStateAsync</span>();
+    (config <span class="kw">as any</span>).__isOnline = network.isConnected && network.isInternetReachable;
+
+    <span class="kw">return</span> config;
+  },
+  (error) => Promise.<span class="fn">reject</span>(error),
+);
+
+<span class="cm">// ── Response Interceptor: Retry + Offline Queue ──</span>
+apiClient.interceptors.response.<span class="fn">use</span>(
+  (response) => response,
+  <span class="kw">async</span> (error: <span class="type">AxiosError</span>) => {
+    <span class="kw">const</span> config = error.config <span class="kw">as any</span>;
+    <span class="kw">if</span> (!config) <span class="kw">return</span> Promise.<span class="fn">reject</span>(error);
+
+    <span class="cm">// ── Token Expired: Attempt refresh ──</span>
+    <span class="kw">if</span> (error.response?.status === <span class="num">401</span> && !config.__retryAuth) {
+      config.__retryAuth = <span class="kw">true</span>;
+      <span class="kw">try</span> {
+        <span class="kw">await</span> useAuthStore.<span class="fn">getState</span>().<span class="fn">refreshToken</span>();
+        <span class="kw">const</span> { accessToken } = useAuthStore.<span class="fn">getState</span>();
+        config.headers.Authorization = <span class="str">`Bearer <span class="op">${</span>accessToken<span class="op">}</span>`</span>;
+        <span class="kw">return</span> apiClient(config);
+      } <span class="kw">catch</span> {
+        useAuthStore.<span class="fn">getState</span>().<span class="fn">logout</span>();
+        <span class="kw">return</span> Promise.<span class="fn">reject</span>(error);
+      }
+    }
+
+    <span class="cm">// ── Network Error or 5xx: Exponential Backoff Retry ──</span>
+    <span class="kw">const</span> retryCount = config.__retryCount ?? <span class="num">0</span>;
+    <span class="kw">const</span> isRetryable =
+      !error.response || (error.response.status >= <span class="num">500</span> && error.response.status < <span class="num">600</span>);
+
+    <span class="kw">if</span> (isRetryable && retryCount < MAX_RETRIES) {
+      config.__retryCount = retryCount + <span class="num">1</span>;
+      <span class="kw">const</span> delay = Math.<span class="fn">pow</span>(<span class="num">2</span>, retryCount) * <span class="num">1000</span>;
+      <span class="kw">await new</span> Promise((r) => <span class="fn">setTimeout</span>(r, delay));
+      <span class="kw">return</span> apiClient(config);
+    }
+
+    <span class="cm">// ── Offline: Queue mutation for later ──</span>
+    <span class="kw">if</span> (!config.__isOnline && [<span class="str">'post'</span>, <span class="str">'put'</span>, <span class="str">'patch'</span>, <span class="str">'delete'</span>].includes(config.method)) {
+      useSyncStore.<span class="fn">getState</span>().<span class="fn">enqueue</span>({
+        <span class="prop">method</span>: config.method,
+        <span class="prop">url</span>: config.url,
+        <span class="prop">data</span>: config.data,
+        <span class="prop">timestamp</span>: Date.<span class="fn">now</span>(),
+      });
+      <span class="kw">return</span> { <span class="prop">data</span>: <span class="kw">null</span>, <span class="prop">__queued</span>: <span class="kw">true</span> } <span class="kw">as any</span>;
+    }
+
+    <span class="kw">return</span> Promise.<span class="fn">reject</span>(error);
+  },
+);</div>
+  </div>
+
+  <!-- SyncManager.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F504; src/sync/SyncManager.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> * <span class="kw">as</span> Network <span class="kw">from</span> <span class="str">'expo-network'</span>;
+<span class="kw">import</span> { database } <span class="kw">from</span> <span class="str">'../db/database'</span>;
+<span class="kw">import</span> { apiClient } <span class="kw">from</span> <span class="str">'../api/client'</span>;
+<span class="kw">import</span> { useSyncStore } <span class="kw">from</span> <span class="str">'../store/syncStore'</span>;
+
+<span class="kw">interface</span> <span class="type">SyncQueueItem</span> {
+  <span class="prop">id</span>: <span class="type">string</span>;
+  <span class="prop">method</span>: <span class="type">string</span>;
+  <span class="prop">url</span>: <span class="type">string</span>;
+  <span class="prop">data</span>: <span class="type">any</span>;
+  <span class="prop">timestamp</span>: <span class="type">number</span>;
+  <span class="prop">retryCount</span>: <span class="type">number</span>;
+}
+
+<span class="kw">const</span> MAX_RETRY = <span class="num">5</span>;
+<span class="kw">const</span> SYNC_INTERVAL = Number(process.env.SYNC_INTERVAL_MS) || <span class="num">30000</span>;
+
+<span class="kw">export class</span> <span class="type">SyncManager</span> {
+  <span class="kw">private</span> intervalId: ReturnType&lt;<span class="kw">typeof</span> setInterval&gt; | <span class="kw">null</span> = <span class="kw">null</span>;
+  <span class="kw">private</span> isSyncing = <span class="kw">false</span>;
+
+  <span class="cm">/** Start the periodic sync loop */</span>
+  <span class="fn">start</span>() {
+    <span class="kw">if</span> (<span class="kw">this</span>.intervalId) <span class="kw">return</span>;
+    <span class="kw">this</span>.intervalId = <span class="fn">setInterval</span>(() => <span class="kw">this</span>.<span class="fn">sync</span>(), SYNC_INTERVAL);
+    <span class="kw">this</span>.<span class="fn">sync</span>(); <span class="cm">// Run immediately on start</span>
+  }
+
+  <span class="cm">/** Stop the sync loop */</span>
+  <span class="fn">stop</span>() {
+    <span class="kw">if</span> (<span class="kw">this</span>.intervalId) {
+      <span class="fn">clearInterval</span>(<span class="kw">this</span>.intervalId);
+      <span class="kw">this</span>.intervalId = <span class="kw">null</span>;
+    }
+  }
+
+  <span class="cm">/** Execute a full sync cycle: push local changes, then pull remote */</span>
+  <span class="kw">async</span> <span class="fn">sync</span>(): Promise&lt;<span class="type">void</span>&gt; {
+    <span class="kw">if</span> (<span class="kw">this</span>.isSyncing) <span class="kw">return</span>;
+
+    <span class="kw">const</span> network = <span class="kw">await</span> Network.<span class="fn">getNetworkStateAsync</span>();
+    <span class="kw">if</span> (!network.isConnected || !network.isInternetReachable) {
+      useSyncStore.<span class="fn">getState</span>().<span class="fn">setStatus</span>(<span class="str">'offline'</span>);
+      <span class="kw">return</span>;
+    }
+
+    <span class="kw">this</span>.isSyncing = <span class="kw">true</span>;
+    useSyncStore.<span class="fn">getState</span>().<span class="fn">setStatus</span>(<span class="str">'syncing'</span>);
+
+    <span class="kw">try</span> {
+      <span class="cm">// Phase 1: Push — flush the offline queue</span>
+      <span class="kw">await</span> <span class="kw">this</span>.<span class="fn">pushLocalChanges</span>();
+
+      <span class="cm">// Phase 2: Pull — fetch changes since last sync</span>
+      <span class="kw">await</span> <span class="kw">this</span>.<span class="fn">pullRemoteChanges</span>();
+
+      useSyncStore.<span class="fn">getState</span>().<span class="fn">setStatus</span>(<span class="str">'synced'</span>);
+      useSyncStore.<span class="fn">getState</span>().<span class="fn">setLastSyncAt</span>(Date.<span class="fn">now</span>());
+    } <span class="kw">catch</span> (err) {
+      console.<span class="fn">error</span>(<span class="str">'[SyncManager] Sync failed:'</span>, err);
+      useSyncStore.<span class="fn">getState</span>().<span class="fn">setStatus</span>(<span class="str">'error'</span>);
+    } <span class="kw">finally</span> {
+      <span class="kw">this</span>.isSyncing = <span class="kw">false</span>;
+    }
+  }
+
+  <span class="cm">/** Push queued mutations to the server */</span>
+  <span class="kw">private async</span> <span class="fn">pushLocalChanges</span>(): Promise&lt;<span class="type">void</span>&gt; {
+    <span class="kw">const</span> queue = useSyncStore.<span class="fn">getState</span>().queue;
+    <span class="kw">const</span> pending = queue.<span class="fn">filter</span>((item) => item.retryCount < MAX_RETRY);
+
+    <span class="kw">for</span> (<span class="kw">const</span> item <span class="kw">of</span> pending) {
+      <span class="kw">try</span> {
+        <span class="kw">await</span> apiClient({
+          <span class="prop">method</span>: item.method,
+          <span class="prop">url</span>: item.url,
+          <span class="prop">data</span>: item.data,
+        });
+        useSyncStore.<span class="fn">getState</span>().<span class="fn">dequeue</span>(item.id);
+      } <span class="kw">catch</span> (err) {
+        useSyncStore.<span class="fn">getState</span>().<span class="fn">incrementRetry</span>(item.id);
+        console.<span class="fn">warn</span>(<span class="str">`[Sync] Failed to push <span class="op">${</span>item.id<span class="op">}</span>, retry <span class="op">${</span>item.retryCount + <span class="num">1</span><span class="op">}</span>`</span>);
+      }
+    }
+  }
+
+  <span class="cm">/** Pull changes from server since last sync timestamp */</span>
+  <span class="kw">private async</span> <span class="fn">pullRemoteChanges</span>(): Promise&lt;<span class="type">void</span>&gt; {
+    <span class="kw">const</span> lastSync = useSyncStore.<span class="fn">getState</span>().lastSyncAt;
+    <span class="kw">const</span> since = lastSync ? <span class="kw">new</span> Date(lastSync).toISOString() : <span class="kw">undefined</span>;
+
+    <span class="kw">const</span> { data } = <span class="kw">await</span> apiClient.<span class="fn">get</span>(<span class="str">'/sync/pull'</span>, {
+      <span class="prop">params</span>: { since },
+    });
+
+    <span class="kw">if</span> (!data?.changes) <span class="kw">return</span>;
+
+    <span class="kw">await</span> database.<span class="fn">write</span>(<span class="kw">async</span> () => {
+      <span class="kw">for</span> (<span class="kw">const</span> change <span class="kw">of</span> data.changes) {
+        <span class="kw">const</span> collection = database.<span class="fn">get</span>(change.table);
+        <span class="kw">switch</span> (change.operation) {
+          <span class="kw">case</span> <span class="str">'create'</span>:
+            <span class="kw">await</span> collection.<span class="fn">create</span>((record: <span class="kw">any</span>) => {
+              Object.<span class="fn">assign</span>(record, change.data);
+            });
+            <span class="kw">break</span>;
+          <span class="kw">case</span> <span class="str">'update'</span>:
+            <span class="kw">const</span> existing = <span class="kw">await</span> collection.<span class="fn">find</span>(change.localId);
+            <span class="kw">await</span> existing.<span class="fn">update</span>((r: <span class="kw">any</span>) => Object.<span class="fn">assign</span>(r, change.data));
+            <span class="kw">break</span>;
+          <span class="kw">case</span> <span class="str">'delete'</span>:
+            <span class="kw">const</span> toDelete = <span class="kw">await</span> collection.<span class="fn">find</span>(change.localId);
+            <span class="kw">await</span> toDelete.<span class="fn">markAsDeleted</span>();
+            <span class="kw">break</span>;
+        }
+      }
+    });
+  }
+}
+
+<span class="kw">export const</span> syncManager = <span class="kw">new</span> <span class="type">SyncManager</span>();</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 6: COMPONENTS
+     ════════════════════════════════════════════════════════════════ -->
+<div id="components" class="tab-panel">
+
+  <div class="section-label">Design System</div>
+  <div class="section-title">Component Implementations</div>
+  <div class="section-desc">
+    Three complete component implementations from the 15-component design system. Each uses theme tokens exclusively — no hardcoded colors, sizes, or fonts.
+  </div>
+
+  <!-- DealCard -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F0CF; src/components/DealCard.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, Pressable, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { colors, typography, spacing, radius, shadow } <span class="kw">from</span> <span class="str">'../theme'</span>;
+<span class="kw">import</span> { StatusBadge } <span class="kw">from</span> <span class="str">'./StatusBadge'</span>;
+<span class="kw">import</span> { LaneBadge } <span class="kw">from</span> <span class="str">'./LaneBadge'</span>;
+<span class="kw">import</span> { SLACountdown } <span class="kw">from</span> <span class="str">'./SLACountdown'</span>;
+<span class="kw">import</span> { formatCurrency } <span class="kw">from</span> <span class="str">'../utils/formatters'</span>;
+
+<span class="kw">type</span> <span class="type">Lane</span> = <span class="str">'fast'</span> | <span class="str">'standard'</span> | <span class="str">'complex'</span>;
+<span class="kw">type</span> <span class="type">DealStatus</span> = <span class="str">'draft'</span> | <span class="str">'submitted'</span> | <span class="str">'in_review'</span> | <span class="str">'approved'</span> | <span class="str">'declined'</span> | <span class="str">'closed'</span>;
+
+<span class="kw">interface</span> <span class="type">DealCardProps</span> {
+  <span class="prop">borrowerName</span>: <span class="type">string</span>;
+  <span class="prop">loanType</span>: <span class="type">string</span>;
+  <span class="prop">requestedAmount</span>: <span class="type">number</span>;
+  <span class="prop">lane</span>: <span class="type">Lane</span>;
+  <span class="prop">status</span>: <span class="type">DealStatus</span>;
+  <span class="prop">slaDeadline</span>?: <span class="type">Date</span>;
+  <span class="prop">communityBank</span>?: <span class="type">string</span>;
+  <span class="prop">isSynced</span>: <span class="type">boolean</span>;
+  <span class="prop">onPress</span>: () => <span class="type">void</span>;
+}
+
+<span class="kw">export const</span> <span class="fn">DealCard</span>: React.FC&lt;<span class="type">DealCardProps</span>&gt; = ({
+  borrowerName,
+  loanType,
+  requestedAmount,
+  lane,
+  status,
+  slaDeadline,
+  communityBank,
+  isSynced,
+  onPress,
+}) => {
+  <span class="kw">const</span> laneColor = colors.lane[lane];
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">Pressable</span>
+      <span class="attr">style</span>={({ pressed }) => [
+        styles.card,
+        { <span class="prop">borderLeftColor</span>: laneColor },
+        pressed && styles.cardPressed,
+      ]}
+      <span class="attr">onPress</span>={onPress}
+    &gt;
+      <span class="cm">{/* Top Row: Borrower + Status */}</span>
+      &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.topRow}&gt;
+        &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.borrowerInfo}&gt;
+          &lt;<span class="tag">Text</span> <span class="attr">style</span>={styles.borrowerName} <span class="attr">numberOfLines</span>={<span class="num">1</span>}&gt;
+            {borrowerName}
+          &lt;/<span class="tag">Text</span>&gt;
+          {communityBank && (
+            &lt;<span class="tag">Text</span> <span class="attr">style</span>={styles.communityBank}&gt;{communityBank}&lt;/<span class="tag">Text</span>&gt;
+          )}
+        &lt;/<span class="tag">View</span>&gt;
+        &lt;<span class="tag">StatusBadge</span> <span class="attr">status</span>={status} /&gt;
+      &lt;/<span class="tag">View</span>&gt;
+
+      <span class="cm">{/* Middle Row: Amount + Lane + Loan Type */}</span>
+      &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.middleRow}&gt;
+        &lt;<span class="tag">Text</span> <span class="attr">style</span>={styles.amount}&gt;
+          {<span class="fn">formatCurrency</span>(requestedAmount)}
+        &lt;/<span class="tag">Text</span>&gt;
+        &lt;<span class="tag">LaneBadge</span> <span class="attr">lane</span>={lane} /&gt;
+        &lt;<span class="tag">Text</span> <span class="attr">style</span>={styles.loanType}&gt;{loanType}&lt;/<span class="tag">Text</span>&gt;
+      &lt;/<span class="tag">View</span>&gt;
+
+      <span class="cm">{/* Bottom Row: SLA + Sync Status */}</span>
+      &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.bottomRow}&gt;
+        {slaDeadline && &lt;<span class="tag">SLACountdown</span> <span class="attr">deadline</span>={slaDeadline} <span class="attr">compact</span> /&gt;}
+        {!isSynced && (
+          &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.syncDot} /&gt;
+        )}
+      &lt;/<span class="tag">View</span>&gt;
+    &lt;/<span class="tag">Pressable</span>&gt;
+  );
+};
+
+<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({
+  <span class="prop">card</span>: {
+    <span class="prop">backgroundColor</span>: colors.background.card,
+    <span class="prop">borderRadius</span>: radius.md,
+    <span class="prop">borderLeftWidth</span>: <span class="num">4</span>,
+    <span class="prop">padding</span>: spacing.cardPadding,
+    <span class="prop">marginBottom</span>: spacing.cardGap,
+    ...shadow.sm,
+  },
+  <span class="prop">cardPressed</span>: {
+    <span class="prop">opacity</span>: <span class="num">0.92</span>,
+    <span class="prop">transform</span>: [{ <span class="prop">scale</span>: <span class="num">0.985</span> }],
+  },
+  <span class="prop">topRow</span>: {
+    <span class="prop">flexDirection</span>: <span class="str">'row'</span>,
+    <span class="prop">justifyContent</span>: <span class="str">'space-between'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'flex-start'</span>,
+    <span class="prop">marginBottom</span>: spacing[<span class="num">2</span>],
+  },
+  <span class="prop">borrowerInfo</span>: { <span class="prop">flex</span>: <span class="num">1</span>, <span class="prop">marginRight</span>: spacing[<span class="num">2</span>] },
+  <span class="prop">borrowerName</span>: {
+    ...typography.heading3,
+    <span class="prop">color</span>: colors.blue[<span class="num">900</span>],
+  },
+  <span class="prop">communityBank</span>: {
+    ...typography.caption,
+    <span class="prop">color</span>: colors.neutral[<span class="num">500</span>],
+    <span class="prop">marginTop</span>: <span class="num">2</span>,
+  },
+  <span class="prop">middleRow</span>: {
+    <span class="prop">flexDirection</span>: <span class="str">'row'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">gap</span>: spacing[<span class="num">2</span>],
+    <span class="prop">marginBottom</span>: spacing[<span class="num">3</span>],
+  },
+  <span class="prop">amount</span>: {
+    ...typography.bodyBold,
+    <span class="prop">color</span>: colors.neutral[<span class="num">900</span>],
+  },
+  <span class="prop">loanType</span>: {
+    ...typography.caption,
+    <span class="prop">color</span>: colors.neutral[<span class="num">500</span>],
+  },
+  <span class="prop">bottomRow</span>: {
+    <span class="prop">flexDirection</span>: <span class="str">'row'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">justifyContent</span>: <span class="str">'space-between'</span>,
+  },
+  <span class="prop">syncDot</span>: {
+    <span class="prop">width</span>: <span class="num">8</span>,
+    <span class="prop">height</span>: <span class="num">8</span>,
+    <span class="prop">borderRadius</span>: <span class="num">4</span>,
+    <span class="prop">backgroundColor</span>: colors.gold[<span class="num">500</span>],
+  },
+});</div>
+  </div>
+
+  <!-- StatusBadge -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3F7; src/components/StatusBadge.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { colors, typography, radius } <span class="kw">from</span> <span class="str">'../theme'</span>;
+
+<span class="kw">type</span> <span class="type">DealStatus</span> = <span class="str">'draft'</span> | <span class="str">'submitted'</span> | <span class="str">'in_review'</span> | <span class="str">'approved'</span> | <span class="str">'declined'</span> | <span class="str">'closed'</span>;
+
+<span class="kw">const</span> STATUS_CONFIG: Record&lt;<span class="type">DealStatus</span>, { label: <span class="type">string</span>; bg: <span class="type">string</span>; text: <span class="type">string</span> }&gt; = {
+  <span class="prop">draft</span>:     { <span class="prop">label</span>: <span class="str">'Draft'</span>,      <span class="prop">bg</span>: colors.neutral[<span class="num">100</span>],      <span class="prop">text</span>: colors.neutral[<span class="num">700</span>] },
+  <span class="prop">submitted</span>: { <span class="prop">label</span>: <span class="str">'Submitted'</span>,  <span class="prop">bg</span>: colors.semantic.infoBg,   <span class="prop">text</span>: colors.semantic.info },
+  <span class="prop">in_review</span>: { <span class="prop">label</span>: <span class="str">'In Review'</span>,  <span class="prop">bg</span>: colors.gold[<span class="num">100</span>],         <span class="prop">text</span>: colors.gold[<span class="num">500</span>] },
+  <span class="prop">approved</span>:  { <span class="prop">label</span>: <span class="str">'Approved'</span>,   <span class="prop">bg</span>: colors.semantic.successBg, <span class="prop">text</span>: colors.semantic.success },
+  <span class="prop">declined</span>:  { <span class="prop">label</span>: <span class="str">'Declined'</span>,   <span class="prop">bg</span>: colors.semantic.errorBg,   <span class="prop">text</span>: colors.semantic.error },
+  <span class="prop">closed</span>:    { <span class="prop">label</span>: <span class="str">'Closed'</span>,     <span class="prop">bg</span>: colors.neutral[<span class="num">50</span>],       <span class="prop">text</span>: colors.neutral[<span class="num">500</span>] },
+};
+
+<span class="kw">interface</span> <span class="type">StatusBadgeProps</span> {
+  <span class="prop">status</span>: <span class="type">DealStatus</span>;
+}
+
+<span class="kw">export const</span> <span class="fn">StatusBadge</span>: React.FC&lt;<span class="type">StatusBadgeProps</span>&gt; = ({ status }) => {
+  <span class="kw">const</span> config = STATUS_CONFIG[status];
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">View</span> <span class="attr">style</span>={[styles.badge, { <span class="prop">backgroundColor</span>: config.bg }]}&gt;
+      &lt;<span class="tag">Text</span> <span class="attr">style</span>={[styles.label, { <span class="prop">color</span>: config.text }]}&gt;
+        {config.label}
+      &lt;/<span class="tag">Text</span>&gt;
+    &lt;/<span class="tag">View</span>&gt;
+  );
+};
+
+<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({
+  <span class="prop">badge</span>: {
+    <span class="prop">paddingHorizontal</span>: <span class="num">10</span>,
+    <span class="prop">paddingVertical</span>: <span class="num">3</span>,
+    <span class="prop">borderRadius</span>: radius.full,
+  },
+  <span class="prop">label</span>: {
+    ...typography.label,
+    <span class="prop">fontSize</span>: <span class="num">10</span>,
+  },
+});</div>
+  </div>
+
+  <!-- SLACountdown -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x23F1; src/components/SLACountdown.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React, { useState, useEffect } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, StyleSheet } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { colors, typography, spacing, radius } <span class="kw">from</span> <span class="str">'../theme'</span>;
+<span class="kw">import</span> { <span class="fn">getSLAState</span>, <span class="fn">formatTimeRemaining</span> } <span class="kw">from</span> <span class="str">'../utils/sla'</span>;
+
+<span class="kw">type</span> <span class="type">SLAState</span> = <span class="str">'green'</span> | <span class="str">'amber'</span> | <span class="str">'red'</span> | <span class="str">'breached'</span>;
+
+<span class="kw">const</span> SLA_COLORS: Record&lt;<span class="type">SLAState</span>, { bg: <span class="type">string</span>; text: <span class="type">string</span>; border: <span class="type">string</span> }&gt; = {
+  <span class="prop">green</span>:    { <span class="prop">bg</span>: colors.semantic.successBg, <span class="prop">text</span>: colors.semantic.success, <span class="prop">border</span>: colors.semantic.success },
+  <span class="prop">amber</span>:    { <span class="prop">bg</span>: colors.gold[<span class="num">100</span>],          <span class="prop">text</span>: colors.gold[<span class="num">500</span>],          <span class="prop">border</span>: colors.gold[<span class="num">500</span>] },
+  <span class="prop">red</span>:      { <span class="prop">bg</span>: colors.semantic.errorBg,  <span class="prop">text</span>: colors.semantic.error,   <span class="prop">border</span>: colors.semantic.error },
+  <span class="prop">breached</span>: { <span class="prop">bg</span>: colors.primary.red,       <span class="prop">text</span>: colors.primary.white,    <span class="prop">border</span>: colors.primary.red },
+};
+
+<span class="kw">interface</span> <span class="type">SLACountdownProps</span> {
+  <span class="prop">deadline</span>: <span class="type">Date</span>;
+  <span class="prop">compact</span>?: <span class="type">boolean</span>;
+}
+
+<span class="kw">export const</span> <span class="fn">SLACountdown</span>: React.FC&lt;<span class="type">SLACountdownProps</span>&gt; = ({ deadline, compact = <span class="kw">false</span> }) => {
+  <span class="kw">const</span> [now, setNow] = <span class="fn">useState</span>(Date.<span class="fn">now</span>());
+
+  <span class="fn">useEffect</span>(() => {
+    <span class="kw">const</span> timer = <span class="fn">setInterval</span>(() => <span class="fn">setNow</span>(Date.<span class="fn">now</span>()), <span class="num">60_000</span>); <span class="cm">// Update every minute</span>
+    <span class="kw">return</span> () => <span class="fn">clearInterval</span>(timer);
+  }, []);
+
+  <span class="kw">const</span> msRemaining = deadline.<span class="fn">getTime</span>() - now;
+  <span class="kw">const</span> state = <span class="fn">getSLAState</span>(msRemaining);
+  <span class="kw">const</span> palette = SLA_COLORS[state];
+  <span class="kw">const</span> display = <span class="fn">formatTimeRemaining</span>(msRemaining);
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">View</span>
+      <span class="attr">style</span>={[
+        styles.container,
+        compact && styles.compact,
+        {
+          <span class="prop">backgroundColor</span>: palette.bg,
+          <span class="prop">borderColor</span>: palette.border,
+        },
+      ]}
+    &gt;
+      {!compact && (
+        &lt;<span class="tag">Text</span> <span class="attr">style</span>={[styles.label, { <span class="prop">color</span>: palette.text }]}&gt;SLA&lt;/<span class="tag">Text</span>&gt;
+      )}
+      &lt;<span class="tag">Text</span> <span class="attr">style</span>={[
+        compact ? styles.timeCompact : styles.time,
+        { <span class="prop">color</span>: palette.text },
+      ]}&gt;
+        {state === <span class="str">'breached'</span> ? <span class="str">'BREACHED'</span> : display}
+      &lt;/<span class="tag">Text</span>&gt;
+    &lt;/<span class="tag">View</span>&gt;
+  );
+};
+
+<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({
+  <span class="prop">container</span>: {
+    <span class="prop">flexDirection</span>: <span class="str">'row'</span>,
+    <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">gap</span>: spacing[<span class="num">1</span>],
+    <span class="prop">paddingHorizontal</span>: spacing[<span class="num">3</span>],
+    <span class="prop">paddingVertical</span>: spacing[<span class="num">1</span>],
+    <span class="prop">borderRadius</span>: radius.sm,
+    <span class="prop">borderWidth</span>: <span class="num">1</span>,
+  },
+  <span class="prop">compact</span>: {
+    <span class="prop">paddingHorizontal</span>: spacing[<span class="num">2</span>],
+    <span class="prop">paddingVertical</span>: <span class="num">2</span>,
+  },
+  <span class="prop">label</span>: {
+    ...typography.label,
+    <span class="prop">fontSize</span>: <span class="num">9</span>,
+  },
+  <span class="prop">time</span>: {
+    ...typography.bodyBold,
+    <span class="prop">fontSize</span>: <span class="num">14</span>,
+  },
+  <span class="prop">timeCompact</span>: {
+    ...typography.caption,
+    <span class="prop">fontWeight</span>: <span class="str">'700'</span>,
+  },
+});</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 7: NAVIGATION
+     ════════════════════════════════════════════════════════════════ -->
+<div id="navigation" class="tab-panel">
+
+  <div class="section-label">Routing</div>
+  <div class="section-title">Navigation Structure</div>
+  <div class="section-desc">
+    React Navigation with an auth gate at the root. Authenticated users land on bottom tabs; unauthenticated users see the Okta login flow.
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F9ED; src/app/RootNavigator.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="str">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createNativeStackNavigator } <span class="kw">from</span> <span class="str">'@react-navigation/native-stack'</span>;
+<span class="kw">import</span> { useAuthStore } <span class="kw">from</span> <span class="str">'../store/authStore'</span>;
+<span class="kw">import</span> { MainTabs } <span class="kw">from</span> <span class="str">'./MainTabs'</span>;
+<span class="kw">import</span> { LoginScreen } <span class="kw">from</span> <span class="str">'./screens/LoginScreen'</span>;
+<span class="kw">import</span> { DealDetailScreen } <span class="kw">from</span> <span class="str">'./screens/DealDetailScreen'</span>;
+<span class="kw">import</span> { NewDealScreen } <span class="kw">from</span> <span class="str">'./screens/NewDealScreen'</span>;
+<span class="kw">import</span> { CreditMemoScreen } <span class="kw">from</span> <span class="str">'./screens/CreditMemoScreen'</span>;
+<span class="kw">import</span> { DocumentsScreen } <span class="kw">from</span> <span class="str">'./screens/DocumentsScreen'</span>;
+<span class="kw">import</span> { colors, typography } <span class="kw">from</span> <span class="str">'../theme'</span>;
+
+<span class="kw">export type</span> <span class="type">RootStackParamList</span> = {
+  <span class="prop">Login</span>: <span class="type">undefined</span>;
+  <span class="prop">Main</span>: <span class="type">undefined</span>;
+  <span class="prop">DealDetail</span>: { <span class="prop">dealId</span>: <span class="type">string</span> };
+  <span class="prop">NewDeal</span>: { <span class="prop">borrowerId</span>?: <span class="type">string</span> };
+  <span class="prop">CreditMemo</span>: { <span class="prop">dealId</span>: <span class="type">string</span> };
+  <span class="prop">Documents</span>: { <span class="prop">dealId</span>: <span class="type">string</span> };
+};
+
+<span class="kw">const</span> Stack = <span class="fn">createNativeStackNavigator</span>&lt;<span class="type">RootStackParamList</span>&gt;();
+
+<span class="kw">export const</span> <span class="fn">RootNavigator</span>: React.FC = () => {
+  <span class="kw">const</span> isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">NavigationContainer</span>&gt;
+      &lt;<span class="tag">Stack.Navigator</span>
+        <span class="attr">screenOptions</span>={{
+          <span class="prop">headerStyle</span>: { <span class="prop">backgroundColor</span>: colors.primary.blue },
+          <span class="prop">headerTintColor</span>: colors.primary.white,
+          <span class="prop">headerTitleStyle</span>: {
+            <span class="prop">fontFamily</span>: typography.fontFamily,
+            <span class="prop">fontWeight</span>: <span class="str">'700'</span>,
+          },
+          <span class="prop">headerBackTitleVisible</span>: <span class="kw">false</span>,
+        }}
+      &gt;
+        {isAuthenticated ? (
+          &lt;&gt;
+            &lt;<span class="tag">Stack.Screen</span>
+              <span class="attr">name</span>=<span class="str">"Main"</span>
+              <span class="attr">component</span>={MainTabs}
+              <span class="attr">options</span>={{ <span class="prop">headerShown</span>: <span class="kw">false</span> }}
+            /&gt;
+            &lt;<span class="tag">Stack.Screen</span>
+              <span class="attr">name</span>=<span class="str">"DealDetail"</span>
+              <span class="attr">component</span>={DealDetailScreen}
+              <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Deal Detail'</span> }}
+            /&gt;
+            &lt;<span class="tag">Stack.Screen</span>
+              <span class="attr">name</span>=<span class="str">"NewDeal"</span>
+              <span class="attr">component</span>={NewDealScreen}
+              <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'New Deal'</span>, <span class="prop">presentation</span>: <span class="str">'modal'</span> }}
+            /&gt;
+            &lt;<span class="tag">Stack.Screen</span>
+              <span class="attr">name</span>=<span class="str">"CreditMemo"</span>
+              <span class="attr">component</span>={CreditMemoScreen}
+              <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Credit Memo'</span> }}
+            /&gt;
+            &lt;<span class="tag">Stack.Screen</span>
+              <span class="attr">name</span>=<span class="str">"Documents"</span>
+              <span class="attr">component</span>={DocumentsScreen}
+              <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Documents'</span> }}
+            /&gt;
+          &lt;/&gt;
+        ) : (
+          &lt;<span class="tag">Stack.Screen</span>
+            <span class="attr">name</span>=<span class="str">"Login"</span>
+            <span class="attr">component</span>={LoginScreen}
+            <span class="attr">options</span>={{ <span class="prop">headerShown</span>: <span class="kw">false</span> }}
+          /&gt;
+        )}
+      &lt;/<span class="tag">Stack.Navigator</span>&gt;
+    &lt;/<span class="tag">NavigationContainer</span>&gt;
+  );
+};</div>
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F4F1; src/app/MainTabs.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { createBottomTabNavigator } <span class="kw">from</span> <span class="str">'@react-navigation/bottom-tabs'</span>;
+<span class="kw">import</span> { PipelineScreen } <span class="kw">from</span> <span class="str">'./screens/PipelineScreen'</span>;
+<span class="kw">import</span> { ApprovalScreen } <span class="kw">from</span> <span class="str">'./screens/ApprovalScreen'</span>;
+<span class="kw">import</span> { SearchScreen } <span class="kw">from</span> <span class="str">'./screens/SearchScreen'</span>;
+<span class="kw">import</span> { SettingsScreen } <span class="kw">from</span> <span class="str">'./screens/SettingsScreen'</span>;
+<span class="kw">import</span> { colors, typography, spacing } <span class="kw">from</span> <span class="str">'../theme'</span>;
+
+<span class="kw">const</span> Tab = <span class="fn">createBottomTabNavigator</span>();
+
+<span class="kw">export const</span> <span class="fn">MainTabs</span>: React.FC = () => (
+  &lt;<span class="tag">Tab.Navigator</span>
+    <span class="attr">screenOptions</span>={{
+      <span class="prop">tabBarActiveTintColor</span>: colors.primary.blue,
+      <span class="prop">tabBarInactiveTintColor</span>: colors.neutral[<span class="num">500</span>],
+      <span class="prop">tabBarStyle</span>: {
+        <span class="prop">height</span>: spacing.tabBarHeight,
+        <span class="prop">borderTopColor</span>: colors.neutral[<span class="num">100</span>],
+        <span class="prop">backgroundColor</span>: colors.background.card,
+      },
+      <span class="prop">tabBarLabelStyle</span>: {
+        <span class="prop">fontFamily</span>: typography.fontFamily,
+        <span class="prop">fontSize</span>: <span class="num">11</span>,
+        <span class="prop">fontWeight</span>: <span class="str">'700'</span>,
+      },
+      <span class="prop">headerStyle</span>: { <span class="prop">backgroundColor</span>: colors.primary.blue },
+      <span class="prop">headerTintColor</span>: colors.primary.white,
+      <span class="prop">headerTitleStyle</span>: { <span class="prop">fontFamily</span>: typography.fontFamily, <span class="prop">fontWeight</span>: <span class="str">'700'</span> },
+    }}
+  &gt;
+    &lt;<span class="tag">Tab.Screen</span> <span class="attr">name</span>=<span class="str">"Pipeline"</span> <span class="attr">component</span>={PipelineScreen}
+      <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Pipeline'</span>, <span class="prop">tabBarLabel</span>: <span class="str">'Pipeline'</span> }} /&gt;
+    &lt;<span class="tag">Tab.Screen</span> <span class="attr">name</span>=<span class="str">"Approvals"</span> <span class="attr">component</span>={ApprovalScreen}
+      <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Approvals'</span>, <span class="prop">tabBarLabel</span>: <span class="str">'Approvals'</span> }} /&gt;
+    &lt;<span class="tag">Tab.Screen</span> <span class="attr">name</span>=<span class="str">"Search"</span> <span class="attr">component</span>={SearchScreen}
+      <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Search'</span>, <span class="prop">tabBarLabel</span>: <span class="str">'Search'</span> }} /&gt;
+    &lt;<span class="tag">Tab.Screen</span> <span class="attr">name</span>=<span class="str">"Settings"</span> <span class="attr">component</span>={SettingsScreen}
+      <span class="attr">options</span>={{ <span class="prop">title</span>: <span class="str">'Settings'</span>, <span class="prop">tabBarLabel</span>: <span class="str">'Settings'</span> }} /&gt;
+  &lt;/<span class="tag">Tab.Navigator</span>&gt;
+);</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 8: SCREENS
+     ════════════════════════════════════════════════════════════════ -->
+<div id="screens" class="tab-panel">
+
+  <div class="section-label">Feature Screens</div>
+  <div class="section-title">Pipeline Screen</div>
+  <div class="section-desc">
+    The home screen of the app — a deal pipeline showing all active deals with filtering by lane and status. Uses TanStack Query for server state and WatermelonDB for offline data.
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F4CA; src/app/screens/PipelineScreen.tsx</span>
+      <span class="lang-tag">TSX</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> React, { useCallback, useMemo } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> {
+  View, Text, FlatList, Pressable, StyleSheet, RefreshControl,
+} <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { useNavigation } <span class="kw">from</span> <span class="str">'@react-navigation/native'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { NativeStackNavigationProp } <span class="kw">from</span> <span class="str">'@react-navigation/native-stack'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="type">RootStackParamList</span> } <span class="kw">from</span> <span class="str">'../RootNavigator'</span>;
+<span class="kw">import</span> { useDeals } <span class="kw">from</span> <span class="str">'../../api/hooks/useDeals'</span>;
+<span class="kw">import</span> { useUIStore } <span class="kw">from</span> <span class="str">'../../store/uiStore'</span>;
+<span class="kw">import</span> { DealCard } <span class="kw">from</span> <span class="str">'../../components/DealCard'</span>;
+<span class="kw">import</span> { StatBox } <span class="kw">from</span> <span class="str">'../../components/StatBox'</span>;
+<span class="kw">import</span> { SyncIndicator } <span class="kw">from</span> <span class="str">'../../components/SyncIndicator'</span>;
+<span class="kw">import</span> { EmptyState } <span class="kw">from</span> <span class="str">'../../components/EmptyState'</span>;
+<span class="kw">import</span> { LoadingSkeleton } <span class="kw">from</span> <span class="str">'../../components/LoadingSkeleton'</span>;
+<span class="kw">import</span> { LaneBadge } <span class="kw">from</span> <span class="str">'../../components/LaneBadge'</span>;
+<span class="kw">import</span> { colors, typography, spacing } <span class="kw">from</span> <span class="str">'../../theme'</span>;
+<span class="kw">import</span> { formatCurrency } <span class="kw">from</span> <span class="str">'../../utils/formatters'</span>;
+<span class="kw">import</span> <span class="kw">type</span> { <span class="type">Deal</span> } <span class="kw">from</span> <span class="str">'../../api/types'</span>;
+
+<span class="kw">type</span> <span class="type">Lane</span> = <span class="str">'all'</span> | <span class="str">'fast'</span> | <span class="str">'standard'</span> | <span class="str">'complex'</span>;
+<span class="kw">const</span> LANES: <span class="type">Lane</span>[] = [<span class="str">'all'</span>, <span class="str">'fast'</span>, <span class="str">'standard'</span>, <span class="str">'complex'</span>];
+
+<span class="kw">export const</span> <span class="fn">PipelineScreen</span>: React.FC = () => {
+  <span class="kw">const</span> navigation = <span class="fn">useNavigation</span>&lt;NativeStackNavigationProp&lt;<span class="type">RootStackParamList</span>&gt;&gt;();
+  <span class="kw">const</span> { data: deals, isLoading, refetch, isRefetching } = <span class="fn">useDeals</span>();
+  <span class="kw">const</span> selectedLane = useUIStore((s) => s.pipelineLaneFilter);
+  <span class="kw">const</span> setSelectedLane = useUIStore((s) => s.setPipelineLaneFilter);
+
+  <span class="cm">// ── Filter deals by selected lane ──</span>
+  <span class="kw">const</span> filteredDeals = <span class="fn">useMemo</span>(() => {
+    <span class="kw">if</span> (!deals) <span class="kw">return</span> [];
+    <span class="kw">if</span> (selectedLane === <span class="str">'all'</span>) <span class="kw">return</span> deals;
+    <span class="kw">return</span> deals.<span class="fn">filter</span>((d) => d.lane === selectedLane);
+  }, [deals, selectedLane]);
+
+  <span class="cm">// ── Pipeline stats ──</span>
+  <span class="kw">const</span> stats = <span class="fn">useMemo</span>(() => {
+    <span class="kw">if</span> (!deals) <span class="kw">return</span> { total: <span class="num">0</span>, totalAmount: <span class="num">0</span>, pendingApproval: <span class="num">0</span> };
+    <span class="kw">return</span> {
+      <span class="prop">total</span>: deals.length,
+      <span class="prop">totalAmount</span>: deals.<span class="fn">reduce</span>((sum, d) => sum + d.requestedAmount, <span class="num">0</span>),
+      <span class="prop">pendingApproval</span>: deals.<span class="fn">filter</span>((d) => d.status === <span class="str">'submitted'</span>).length,
+    };
+  }, [deals]);
+
+  <span class="kw">const</span> <span class="fn">handleDealPress</span> = <span class="fn">useCallback</span>((dealId: <span class="type">string</span>) => {
+    navigation.<span class="fn">navigate</span>(<span class="str">'DealDetail'</span>, { dealId });
+  }, [navigation]);
+
+  <span class="kw">const</span> <span class="fn">renderDeal</span> = <span class="fn">useCallback</span>(({ item }: { item: <span class="type">Deal</span> }) => (
+    &lt;<span class="tag">DealCard</span>
+      <span class="attr">borrowerName</span>={item.borrowerName}
+      <span class="attr">loanType</span>={item.loanType}
+      <span class="attr">requestedAmount</span>={item.requestedAmount}
+      <span class="attr">lane</span>={item.lane}
+      <span class="attr">status</span>={item.status}
+      <span class="attr">slaDeadline</span>={item.slaDeadline ? <span class="kw">new</span> Date(item.slaDeadline) : <span class="kw">undefined</span>}
+      <span class="attr">communityBank</span>={item.communityBank}
+      <span class="attr">isSynced</span>={item.isSynced}
+      <span class="attr">onPress</span>={() => <span class="fn">handleDealPress</span>(item.id)}
+    /&gt;
+  ), [handleDealPress]);
+
+  <span class="kw">if</span> (isLoading) <span class="kw">return</span> &lt;<span class="tag">LoadingSkeleton</span> <span class="attr">count</span>={<span class="num">5</span>} /&gt;;
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.container}&gt;
+      &lt;<span class="tag">SyncIndicator</span> /&gt;
+
+      <span class="cm">{/* KPI Row */}</span>
+      &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.statsRow}&gt;
+        &lt;<span class="tag">StatBox</span> <span class="attr">label</span>=<span class="str">"Active Deals"</span> <span class="attr">value</span>={stats.total} /&gt;
+        &lt;<span class="tag">StatBox</span> <span class="attr">label</span>=<span class="str">"Pipeline Value"</span> <span class="attr">value</span>={<span class="fn">formatCurrency</span>(stats.totalAmount)} /&gt;
+        &lt;<span class="tag">StatBox</span> <span class="attr">label</span>=<span class="str">"Pending"</span> <span class="attr">value</span>={stats.pendingApproval} <span class="attr">accent</span> /&gt;
+      &lt;/<span class="tag">View</span>&gt;
+
+      <span class="cm">{/* Lane Filter */}</span>
+      &lt;<span class="tag">View</span> <span class="attr">style</span>={styles.filterRow}&gt;
+        {LANES.<span class="fn">map</span>((lane) => (
+          &lt;<span class="tag">Pressable</span>
+            <span class="attr">key</span>={lane}
+            <span class="attr">style</span>={[styles.filterBtn, selectedLane === lane && styles.filterBtnActive]}
+            <span class="attr">onPress</span>={() => <span class="fn">setSelectedLane</span>(lane)}
+          &gt;
+            {lane === <span class="str">'all'</span> ? (
+              &lt;<span class="tag">Text</span> <span class="attr">style</span>={[
+                styles.filterLabel,
+                selectedLane === lane && styles.filterLabelActive,
+              ]}&gt;All&lt;/<span class="tag">Text</span>&gt;
+            ) : (
+              &lt;<span class="tag">LaneBadge</span> <span class="attr">lane</span>={lane} <span class="attr">selected</span>={selectedLane === lane} /&gt;
+            )}
+          &lt;/<span class="tag">Pressable</span>&gt;
+        ))}
+      &lt;/<span class="tag">View</span>&gt;
+
+      <span class="cm">{/* Deal List */}</span>
+      &lt;<span class="tag">FlatList</span>
+        <span class="attr">data</span>={filteredDeals}
+        <span class="attr">renderItem</span>={renderDeal}
+        <span class="attr">keyExtractor</span>={(item) => item.id}
+        <span class="attr">contentContainerStyle</span>={styles.list}
+        <span class="attr">ListEmptyComponent</span>={&lt;<span class="tag">EmptyState</span> <span class="attr">message</span>=<span class="str">"No deals in this lane"</span> /&gt;}
+        <span class="attr">refreshControl</span>={
+          &lt;<span class="tag">RefreshControl</span>
+            <span class="attr">refreshing</span>={isRefetching}
+            <span class="attr">onRefresh</span>={refetch}
+            <span class="attr">tintColor</span>={colors.primary.blue}
+          /&gt;
+        }
+      /&gt;
+
+      <span class="cm">{/* FAB: New Deal */}</span>
+      &lt;<span class="tag">Pressable</span>
+        <span class="attr">style</span>={styles.fab}
+        <span class="attr">onPress</span>={() => navigation.<span class="fn">navigate</span>(<span class="str">'NewDeal'</span>, {})}
+      &gt;
+        &lt;<span class="tag">Text</span> <span class="attr">style</span>={styles.fabText}&gt;+&lt;/<span class="tag">Text</span>&gt;
+      &lt;/<span class="tag">Pressable</span>&gt;
+    &lt;/<span class="tag">View</span>&gt;
+  );
+};
+
+<span class="kw">const</span> styles = StyleSheet.<span class="fn">create</span>({
+  <span class="prop">container</span>:  { <span class="prop">flex</span>: <span class="num">1</span>, <span class="prop">backgroundColor</span>: colors.background.primary },
+  <span class="prop">statsRow</span>:   { <span class="prop">flexDirection</span>: <span class="str">'row'</span>, <span class="prop">padding</span>: spacing.screenPadding, <span class="prop">gap</span>: spacing[<span class="num">3</span>] },
+  <span class="prop">filterRow</span>:  { <span class="prop">flexDirection</span>: <span class="str">'row'</span>, <span class="prop">paddingHorizontal</span>: spacing.screenPadding, <span class="prop">gap</span>: spacing[<span class="num">2</span>], <span class="prop">marginBottom</span>: spacing[<span class="num">3</span>] },
+  <span class="prop">filterBtn</span>:  { <span class="prop">paddingHorizontal</span>: spacing[<span class="num">3</span>], <span class="prop">paddingVertical</span>: spacing[<span class="num">1</span>], <span class="prop">borderRadius</span>: <span class="num">20</span>, <span class="prop">borderWidth</span>: <span class="num">1</span>, <span class="prop">borderColor</span>: colors.neutral[<span class="num">300</span>] },
+  <span class="prop">filterBtnActive</span>: { <span class="prop">backgroundColor</span>: colors.primary.blue, <span class="prop">borderColor</span>: colors.primary.blue },
+  <span class="prop">filterLabel</span>: { ...typography.caption, <span class="prop">fontWeight</span>: <span class="str">'700'</span>, <span class="prop">color</span>: colors.neutral[<span class="num">700</span>] },
+  <span class="prop">filterLabelActive</span>: { <span class="prop">color</span>: colors.primary.white },
+  <span class="prop">list</span>:        { <span class="prop">paddingHorizontal</span>: spacing.screenPadding, <span class="prop">paddingBottom</span>: <span class="num">100</span> },
+  <span class="prop">fab</span>: {
+    <span class="prop">position</span>: <span class="str">'absolute'</span>, <span class="prop">right</span>: spacing[<span class="num">5</span>], <span class="prop">bottom</span>: spacing[<span class="num">5</span>],
+    <span class="prop">width</span>: <span class="num">56</span>, <span class="prop">height</span>: <span class="num">56</span>, <span class="prop">borderRadius</span>: <span class="num">28</span>,
+    <span class="prop">backgroundColor</span>: colors.primary.blue,
+    <span class="prop">justifyContent</span>: <span class="str">'center'</span>, <span class="prop">alignItems</span>: <span class="str">'center'</span>,
+    <span class="prop">elevation</span>: <span class="num">6</span>,
+    <span class="prop">shadowColor</span>: colors.blue[<span class="num">900</span>], <span class="prop">shadowOffset</span>: { <span class="prop">width</span>: <span class="num">0</span>, <span class="prop">height</span>: <span class="num">4</span> }, <span class="prop">shadowOpacity</span>: <span class="num">0.3</span>, <span class="prop">shadowRadius</span>: <span class="num">8</span>,
+  },
+  <span class="prop">fabText</span>: { <span class="prop">color</span>: colors.primary.white, <span class="prop">fontSize</span>: <span class="num">28</span>, <span class="prop">fontWeight</span>: <span class="str">'300'</span>, <span class="prop">marginTop</span>: <span class="num">-2</span> },
+});</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 9: AUTH & STORE
+     ════════════════════════════════════════════════════════════════ -->
+<div id="auth" class="tab-panel">
+
+  <div class="section-label">Security &amp; State</div>
+  <div class="section-title">Auth &amp; Zustand Stores</div>
+  <div class="section-desc">
+    Okta OIDC PKCE authentication with automatic token refresh, plus Zustand stores for auth state, sync state, and UI preferences.
+  </div>
+
+  <!-- authStore.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F512; src/store/authStore.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> { create } <span class="kw">from</span> <span class="str">'zustand'</span>;
+<span class="kw">import</span> { createOktaAuth } <span class="kw">from</span> <span class="str">'../auth/oktaConfig'</span>;
+
+<span class="kw">interface</span> <span class="type">UserProfile</span> {
+  <span class="prop">id</span>: <span class="type">string</span>;
+  <span class="prop">email</span>: <span class="type">string</span>;
+  <span class="prop">name</span>: <span class="type">string</span>;
+  <span class="prop">role</span>: <span class="str">'lender'</span> | <span class="str">'manager'</span> | <span class="str">'senior_manager'</span> | <span class="str">'exec'</span>;
+  <span class="prop">authorityLevel</span>: <span class="type">number</span>;       <span class="cm">// max lending authority in dollars</span>
+  <span class="prop">communityBankId</span>: <span class="type">string</span>;
+  <span class="prop">communityBankName</span>: <span class="type">string</span>;
+}
+
+<span class="kw">interface</span> <span class="type">AuthState</span> {
+  <span class="prop">isAuthenticated</span>: <span class="type">boolean</span>;
+  <span class="prop">isLoading</span>: <span class="type">boolean</span>;
+  <span class="prop">accessToken</span>: <span class="type">string</span> | <span class="kw">null</span>;
+  <span class="prop">refreshTokenValue</span>: <span class="type">string</span> | <span class="kw">null</span>;
+  <span class="prop">user</span>: <span class="type">UserProfile</span> | <span class="kw">null</span>;
+  <span class="prop">tokenExpiresAt</span>: <span class="type">number</span> | <span class="kw">null</span>;
+
+  <span class="cm">// Actions</span>
+  <span class="fn">login</span>: () => Promise&lt;<span class="type">void</span>&gt;;
+  <span class="fn">logout</span>: () => Promise&lt;<span class="type">void</span>&gt;;
+  <span class="fn">refreshToken</span>: () => Promise&lt;<span class="type">void</span>&gt;;
+  <span class="fn">setUser</span>: (user: <span class="type">UserProfile</span>) => <span class="type">void</span>;
+}
+
+<span class="kw">export const</span> useAuthStore = <span class="fn">create</span>&lt;<span class="type">AuthState</span>&gt;((set, get) => ({
+  <span class="prop">isAuthenticated</span>: <span class="kw">false</span>,
+  <span class="prop">isLoading</span>: <span class="kw">false</span>,
+  <span class="prop">accessToken</span>: <span class="kw">null</span>,
+  <span class="prop">refreshTokenValue</span>: <span class="kw">null</span>,
+  <span class="prop">user</span>: <span class="kw">null</span>,
+  <span class="prop">tokenExpiresAt</span>: <span class="kw">null</span>,
+
+  <span class="fn">login</span>: <span class="kw">async</span> () => {
+    <span class="fn">set</span>({ <span class="prop">isLoading</span>: <span class="kw">true</span> });
+    <span class="kw">try</span> {
+      <span class="kw">const</span> oktaAuth = <span class="fn">createOktaAuth</span>();
+      <span class="kw">const</span> result = <span class="kw">await</span> oktaAuth.<span class="fn">signInWithBrowser</span>();
+
+      <span class="fn">set</span>({
+        <span class="prop">isAuthenticated</span>: <span class="kw">true</span>,
+        <span class="prop">accessToken</span>: result.access_token,
+        <span class="prop">refreshTokenValue</span>: result.refresh_token,
+        <span class="prop">tokenExpiresAt</span>: Date.<span class="fn">now</span>() + (result.expires_in * <span class="num">1000</span>),
+        <span class="prop">isLoading</span>: <span class="kw">false</span>,
+      });
+
+      <span class="cm">// Fetch user profile from our API using the token</span>
+      <span class="kw">const</span> { apiClient } = <span class="kw">await</span> <span class="kw">import</span>(<span class="str">'../api/client'</span>);
+      <span class="kw">const</span> { data: profile } = <span class="kw">await</span> apiClient.<span class="fn">get</span>&lt;<span class="type">UserProfile</span>&gt;(<span class="str">'/users/me'</span>);
+      <span class="fn">set</span>({ <span class="prop">user</span>: profile });
+    } <span class="kw">catch</span> (err) {
+      <span class="fn">set</span>({ <span class="prop">isLoading</span>: <span class="kw">false</span>, <span class="prop">isAuthenticated</span>: <span class="kw">false</span> });
+      <span class="kw">throw</span> err;
+    }
+  },
+
+  <span class="fn">logout</span>: <span class="kw">async</span> () => {
+    <span class="kw">const</span> oktaAuth = <span class="fn">createOktaAuth</span>();
+    <span class="kw">await</span> oktaAuth.<span class="fn">signOut</span>();
+    <span class="fn">set</span>({
+      <span class="prop">isAuthenticated</span>: <span class="kw">false</span>,
+      <span class="prop">accessToken</span>: <span class="kw">null</span>,
+      <span class="prop">refreshTokenValue</span>: <span class="kw">null</span>,
+      <span class="prop">user</span>: <span class="kw">null</span>,
+      <span class="prop">tokenExpiresAt</span>: <span class="kw">null</span>,
+    });
+  },
+
+  <span class="fn">refreshToken</span>: <span class="kw">async</span> () => {
+    <span class="kw">const</span> oktaAuth = <span class="fn">createOktaAuth</span>();
+    <span class="kw">const</span> result = <span class="kw">await</span> oktaAuth.<span class="fn">refreshTokens</span>();
+    <span class="fn">set</span>({
+      <span class="prop">accessToken</span>: result.access_token,
+      <span class="prop">refreshTokenValue</span>: result.refresh_token,
+      <span class="prop">tokenExpiresAt</span>: Date.<span class="fn">now</span>() + (result.expires_in * <span class="num">1000</span>),
+    });
+  },
+
+  <span class="fn">setUser</span>: (user) => <span class="fn">set</span>({ <span class="prop">user</span> }),
+}));</div>
+  </div>
+
+  <!-- authority.ts -->
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3DB; src/utils/authority.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> { useAuthStore } <span class="kw">from</span> <span class="str">'../store/authStore'</span>;
+
+<span class="cm">/**
+ * FUB Lending Authority Matrix
+ * Individual lending authorities in the authority_matrix table
+ * determine whether a user can approve a deal at a given amount.
+ */</span>
+
+<span class="kw">export interface</span> <span class="type">AuthorityCheck</span> {
+  <span class="prop">canApprove</span>: <span class="type">boolean</span>;
+  <span class="prop">reason</span>?: <span class="type">string</span>;
+  <span class="prop">requiredLevel</span>?: <span class="type">number</span>;
+  <span class="prop">escalateTo</span>?: <span class="type">string</span>;     <span class="cm">// role title of the next approver</span>
+}
+
+<span class="cm">/** Check if the current user can approve a deal of the given amount */</span>
+<span class="kw">export function</span> <span class="fn">checkAuthority</span>(dealAmount: <span class="type">number</span>): <span class="type">AuthorityCheck</span> {
+  <span class="kw">const</span> user = useAuthStore.<span class="fn">getState</span>().user;
+
+  <span class="kw">if</span> (!user) {
+    <span class="kw">return</span> { <span class="prop">canApprove</span>: <span class="kw">false</span>, <span class="prop">reason</span>: <span class="str">'Not authenticated'</span> };
+  }
+
+  <span class="kw">if</span> (dealAmount <= user.authorityLevel) {
+    <span class="kw">return</span> { <span class="prop">canApprove</span>: <span class="kw">true</span> };
+  }
+
+  <span class="cm">// Determine who needs to approve based on amount thresholds</span>
+  <span class="kw">const</span> escalation = <span class="fn">getEscalationTarget</span>(dealAmount);
+
+  <span class="kw">return</span> {
+    <span class="prop">canApprove</span>: <span class="kw">false</span>,
+    <span class="prop">reason</span>: <span class="str">`Amount exceeds your authority ($<span class="op">${</span>(user.authorityLevel / <span class="num">1000</span>).<span class="fn">toFixed</span>(<span class="num">0</span>)<span class="op">}</span>K limit)`</span>,
+    <span class="prop">requiredLevel</span>: dealAmount,
+    <span class="prop">escalateTo</span>: escalation,
+  };
+}
+
+<span class="cm">/** Determine the approval chain based on deal amount */</span>
+<span class="kw">function</span> <span class="fn">getEscalationTarget</span>(amount: <span class="type">number</span>): <span class="type">string</span> {
+  <span class="kw">if</span> (amount <= <span class="num">250_000</span>)   <span class="kw">return</span> <span class="str">'Community Bank President'</span>;
+  <span class="kw">if</span> (amount <= <span class="num">1_000_000</span>) <span class="kw">return</span> <span class="str">'Regional Credit Officer'</span>;
+  <span class="kw">if</span> (amount <= <span class="num">5_000_000</span>) <span class="kw">return</span> <span class="str">'Chief Credit Officer'</span>;
+  <span class="kw">return</span> <span class="str">'Loan Committee'</span>;
+}
+
+<span class="cm">/** Get SLA hours based on the deal's complexity lane */</span>
+<span class="kw">export function</span> <span class="fn">getSLAHours</span>(lane: <span class="str">'fast'</span> | <span class="str">'standard'</span> | <span class="str">'complex'</span>): <span class="type">number</span> {
+  <span class="kw">switch</span> (lane) {
+    <span class="kw">case</span> <span class="str">'fast'</span>:     <span class="kw">return</span> <span class="num">4</span>;    <span class="cm">// 4 business hours</span>
+    <span class="kw">case</span> <span class="str">'standard'</span>: <span class="kw">return</span> <span class="num">24</span>;   <span class="cm">// 3 business days</span>
+    <span class="kw">case</span> <span class="str">'complex'</span>:  <span class="kw">return</span> <span class="num">72</span>;   <span class="cm">// 9 business days</span>
+  }
+}</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 10: DEV WORKFLOW
+     ════════════════════════════════════════════════════════════════ -->
+<div id="workflow" class="tab-panel">
+
+  <div class="section-label">Engineering Process</div>
+  <div class="section-title">Development Workflow</div>
+  <div class="section-desc">
+    Standards for branching, component development, testing, and CI/CD.
+  </div>
+
+  <div class="grid-2">
+
+    <div class="callout callout-blue" style="margin:0;">
+      <div class="callout-icon">1</div>
+      <div>
+        <h4>Branch Naming</h4>
+        <p>
+          <span class="inline-code">feature/FUB-123-deal-card-swipe</span><br>
+          <span class="inline-code">fix/FUB-456-sla-timezone-bug</span><br>
+          <span class="inline-code">chore/FUB-789-upgrade-expo-52</span><br>
+          Always prefix with the Jira ticket ID.
+        </p>
+      </div>
+    </div>
+
+    <div class="callout callout-gold" style="margin:0;">
+      <div class="callout-icon">2</div>
+      <div>
+        <h4>Component Development Pattern</h4>
+        <p>
+          1. Write the <strong>types/interface</strong> first<br>
+          2. Build the <strong>component</strong> using theme tokens<br>
+          3. Wire up the <strong>TanStack Query hook</strong><br>
+          4. Compose into the <strong>screen</strong><br>
+          5. Add <strong>tests</strong> with React Native Testing Library
+        </p>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin:0;">
+      <div class="callout-icon">3</div>
+      <div>
+        <h4>Testing Strategy</h4>
+        <p>
+          <strong>Unit:</strong> Jest for pure functions (formatters, authority checks, SLA math)<br>
+          <strong>Component:</strong> React Native Testing Library for render + interaction<br>
+          <strong>Integration:</strong> MSW (Mock Service Worker) for API hook tests<br>
+          <strong>E2E:</strong> Maestro for full flow tests on CI
+        </p>
+      </div>
+    </div>
+
+    <div class="callout callout-red" style="margin:0;">
+      <div class="callout-icon">4</div>
+      <div>
+        <h4>CI/CD Pipeline</h4>
+        <p>
+          <strong>Build:</strong> EAS Build (managed native builds)<br>
+          <strong>Submit:</strong> EAS Submit to TestFlight + Play Console<br>
+          <strong>OTA Updates:</strong> EAS Update for JS-only changes<br>
+          Profiles: <span class="inline-code">development</span>, <span class="inline-code">staging</span>, <span class="inline-code">production</span>
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-label">Testing Example</div>
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F9EA; __tests__/utils/authority.test.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> { checkAuthority, getSLAHours } <span class="kw">from</span> <span class="str">'../../src/utils/authority'</span>;
+<span class="kw">import</span> { useAuthStore } <span class="kw">from</span> <span class="str">'../../src/store/authStore'</span>;
+
+<span class="cm">// Mock a lender with $150K authority</span>
+<span class="fn">beforeEach</span>(() => {
+  useAuthStore.<span class="fn">setState</span>({
+    <span class="prop">user</span>: {
+      <span class="prop">id</span>: <span class="str">'user-1'</span>,
+      <span class="prop">email</span>: <span class="str">'lender@firstunitedbank.com'</span>,
+      <span class="prop">name</span>: <span class="str">'Test Lender'</span>,
+      <span class="prop">role</span>: <span class="str">'lender'</span>,
+      <span class="prop">authorityLevel</span>: <span class="num">150_000</span>,
+      <span class="prop">communityBankId</span>: <span class="str">'cb-001'</span>,
+      <span class="prop">communityBankName</span>: <span class="str">'Prosper Community Bank'</span>,
+    },
+  });
+});
+
+<span class="fn">describe</span>(<span class="str">'checkAuthority'</span>, () => {
+  <span class="fn">it</span>(<span class="str">'allows approval within authority limit'</span>, () => {
+    <span class="kw">const</span> result = <span class="fn">checkAuthority</span>(<span class="num">110_000</span>); <span class="cm">// Jackie Parsons cattle deal</span>
+    <span class="fn">expect</span>(result.canApprove).<span class="fn">toBe</span>(<span class="kw">true</span>);
+  });
+
+  <span class="fn">it</span>(<span class="str">'denies approval above authority limit'</span>, () => {
+    <span class="kw">const</span> result = <span class="fn">checkAuthority</span>(<span class="num">500_000</span>);
+    <span class="fn">expect</span>(result.canApprove).<span class="fn">toBe</span>(<span class="kw">false</span>);
+    <span class="fn">expect</span>(result.escalateTo).<span class="fn">toBe</span>(<span class="str">'Community Bank President'</span>);
+  });
+
+  <span class="fn">it</span>(<span class="str">'escalates large deals to loan committee'</span>, () => {
+    <span class="kw">const</span> result = <span class="fn">checkAuthority</span>(<span class="num">10_000_000</span>);
+    <span class="fn">expect</span>(result.escalateTo).<span class="fn">toBe</span>(<span class="str">'Loan Committee'</span>);
+  });
+});
+
+<span class="fn">describe</span>(<span class="str">'getSLAHours'</span>, () => {
+  <span class="fn">it</span>(<span class="str">'returns 4h for Fast Lane'</span>, () => <span class="fn">expect</span>(<span class="fn">getSLAHours</span>(<span class="str">'fast'</span>)).<span class="fn">toBe</span>(<span class="num">4</span>));
+  <span class="fn">it</span>(<span class="str">'returns 24h for Standard'</span>, () => <span class="fn">expect</span>(<span class="fn">getSLAHours</span>(<span class="str">'standard'</span>)).<span class="fn">toBe</span>(<span class="num">24</span>));
+  <span class="fn">it</span>(<span class="str">'returns 72h for Complex'</span>, () => <span class="fn">expect</span>(<span class="fn">getSLAHours</span>(<span class="str">'complex'</span>)).<span class="fn">toBe</span>(<span class="num">72</span>));
+});</div>
+  </div>
+
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB 11: DEMO MODE
+     ════════════════════════════════════════════════════════════════ -->
+<div id="demo" class="tab-panel">
+
+  <div class="section-label">Demo &amp; Testing</div>
+  <div class="section-title">Demo Mode</div>
+  <div class="section-desc">
+    A built-in demo mode that pre-populates the app with the Jackie Parsons $110K cattle deal and sample data across all three complexity lanes. Runs completely offline — no backend required.
+  </div>
+
+  <div class="callout callout-gold">
+    <div class="callout-icon">&#x2606;</div>
+    <div>
+      <h4>Canonical Demo Scenario: Jackie Parsons</h4>
+      <p>
+        Jackie Parsons, a rancher near Madill, OK, requests a $110K operating line for cattle purchasing.
+        This falls into the <strong>Fast Lane</strong> (&lt;$250K) with a 4-hour SLA.
+        The demo seeds this deal at "submitted" status so the user can walk through review, memo generation, and approval.
+      </p>
+    </div>
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3AD; src/demo/mockDeals.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="kw">import</span> <span class="kw">type</span> { <span class="type">Deal</span> } <span class="kw">from</span> <span class="str">'../api/types'</span>;
+
+<span class="cm">/**
+ * Demo deals pre-loaded when DEMO_MODE=true.
+ * Covers all three complexity lanes.
+ */</span>
+<span class="kw">export const</span> DEMO_DEALS: <span class="type">Deal</span>[] = [
+  <span class="cm">// ── FAST LANE: Jackie Parsons cattle deal ──</span>
+  {
+    <span class="prop">id</span>: <span class="str">'demo-deal-001'</span>,
+    <span class="prop">borrowerName</span>: <span class="str">'Jackie Parsons'</span>,
+    <span class="prop">borrowerId</span>: <span class="str">'demo-borrower-001'</span>,
+    <span class="prop">loanType</span>: <span class="str">'Ag Operating Line'</span>,
+    <span class="prop">requestedAmount</span>: <span class="num">110_000</span>,
+    <span class="prop">lane</span>: <span class="str">'fast'</span>,
+    <span class="prop">status</span>: <span class="str">'submitted'</span>,
+    <span class="prop">purpose</span>: <span class="str">'Cattle purchasing — spring stocker operation, 200 head'</span>,
+    <span class="prop">termMonths</span>: <span class="num">12</span>,
+    <span class="prop">proposedRate</span>: <span class="num">7.25</span>,
+    <span class="prop">communityBank</span>: <span class="str">'Madill Community Bank'</span>,
+    <span class="prop">slaDeadline</span>: <span class="kw">new</span> Date(Date.<span class="fn">now</span>() + <span class="num">3</span> * <span class="num">3600_000</span>).toISOString(), <span class="cm">// 3h remaining</span>
+    <span class="prop">isSynced</span>: <span class="kw">true</span>,
+    <span class="prop">createdAt</span>: <span class="kw">new</span> Date().toISOString(),
+  },
+
+  <span class="cm">// ── STANDARD LANE: CRE term loan ──</span>
+  {
+    <span class="prop">id</span>: <span class="str">'demo-deal-002'</span>,
+    <span class="prop">borrowerName</span>: <span class="str">'Westfield Properties LLC'</span>,
+    <span class="prop">borrowerId</span>: <span class="str">'demo-borrower-002'</span>,
+    <span class="prop">loanType</span>: <span class="str">'CRE Term'</span>,
+    <span class="prop">requestedAmount</span>: <span class="num">1_750_000</span>,
+    <span class="prop">lane</span>: <span class="str">'standard'</span>,
+    <span class="prop">status</span>: <span class="str">'in_review'</span>,
+    <span class="prop">purpose</span>: <span class="str">'Retail strip center acquisition — 12,000 SF, Plano TX'</span>,
+    <span class="prop">termMonths</span>: <span class="num">120</span>,
+    <span class="prop">proposedRate</span>: <span class="num">6.85</span>,
+    <span class="prop">communityBank</span>: <span class="str">'Plano Parkwood Community Bank'</span>,
+    <span class="prop">slaDeadline</span>: <span class="kw">new</span> Date(Date.<span class="fn">now</span>() + <span class="num">18</span> * <span class="num">3600_000</span>).toISOString(),
+    <span class="prop">isSynced</span>: <span class="kw">true</span>,
+    <span class="prop">createdAt</span>: <span class="kw">new</span> Date().toISOString(),
+  },
+
+  <span class="cm">// ── COMPLEX LANE: SBA 7(a) multi-entity ──</span>
+  {
+    <span class="prop">id</span>: <span class="str">'demo-deal-003'</span>,
+    <span class="prop">borrowerName</span>: <span class="str">'Red River Hospitality Group'</span>,
+    <span class="prop">borrowerId</span>: <span class="str">'demo-borrower-003'</span>,
+    <span class="prop">loanType</span>: <span class="str">'SBA 7(a)'</span>,
+    <span class="prop">requestedAmount</span>: <span class="num">4_200_000</span>,
+    <span class="prop">lane</span>: <span class="str">'complex'</span>,
+    <span class="prop">status</span>: <span class="str">'draft'</span>,
+    <span class="prop">purpose</span>: <span class="str">'Hotel acquisition + renovation — 85-room property, Durant OK'</span>,
+    <span class="prop">termMonths</span>: <span class="num">300</span>,
+    <span class="prop">proposedRate</span>: <span class="num">0</span>, <span class="cm">// TBD — SBA rate</span>
+    <span class="prop">communityBank</span>: <span class="str">'Durant Community Bank'</span>,
+    <span class="prop">isSynced</span>: <span class="kw">true</span>,
+    <span class="prop">createdAt</span>: <span class="kw">new</span> Date().toISOString(),
+  },
+
+  <span class="cm">// ── FAST LANE: Equipment ──</span>
+  {
+    <span class="prop">id</span>: <span class="str">'demo-deal-004'</span>,
+    <span class="prop">borrowerName</span>: <span class="str">'Martinez Trucking Inc.'</span>,
+    <span class="prop">borrowerId</span>: <span class="str">'demo-borrower-004'</span>,
+    <span class="prop">loanType</span>: <span class="str">'Equipment Finance'</span>,
+    <span class="prop">requestedAmount</span>: <span class="num">185_000</span>,
+    <span class="prop">lane</span>: <span class="str">'fast'</span>,
+    <span class="prop">status</span>: <span class="str">'approved'</span>,
+    <span class="prop">purpose</span>: <span class="str">'2026 Peterbilt 579 — long-haul freight expansion'</span>,
+    <span class="prop">termMonths</span>: <span class="num">60</span>,
+    <span class="prop">proposedRate</span>: <span class="num">7.50</span>,
+    <span class="prop">communityBank</span>: <span class="str">'Denison Community Bank'</span>,
+    <span class="prop">isSynced</span>: <span class="kw">true</span>,
+    <span class="prop">createdAt</span>: <span class="kw">new</span> Date().toISOString(),
+  },
+];</div>
+  </div>
+
+  <div class="code-section">
+    <div class="code-header">
+      <span class="filepath">&#x1F3AE; src/utils/featureFlags.ts</span>
+      <span class="lang-tag">TypeScript</span>
+    </div>
+    <div class="code-block"><span class="cm">/**
+ * Feature Flags
+ * Controls demo mode, experimental features, and gradual rollouts.
+ */</span>
+
+<span class="kw">export const</span> flags = {
+  <span class="cm">/** When true, app uses mock data and bypasses Okta auth */</span>
+  <span class="prop">DEMO_MODE</span>: process.env.DEMO_MODE === <span class="str">'true'</span>,
+
+  <span class="cm">/** When true, enables offline sync engine */</span>
+  <span class="prop">OFFLINE_SYNC</span>: process.env.ENABLE_OFFLINE_SYNC !== <span class="str">'false'</span>,
+
+  <span class="cm">/** When true, shows NLP entity extraction in deal creation */</span>
+  <span class="prop">NLP_AUTOFILL</span>: <span class="kw">true</span>,
+
+  <span class="cm">/** When true, enables credit memo auto-generation */</span>
+  <span class="prop">AUTO_MEMO</span>: <span class="kw">true</span>,
+
+  <span class="cm">/** When true, shows the collateral valuation module */</span>
+  <span class="prop">COLLATERAL_MODULE</span>: <span class="kw">true</span>,
+} <span class="kw">as const</span>;
+
+<span class="kw">export function</span> <span class="fn">isEnabled</span>(flag: <span class="kw">keyof typeof</span> flags): <span class="type">boolean</span> {
+  <span class="kw">return</span> flags[flag];
+}</div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="callout-icon">&#x2713;</div>
+    <div>
+      <h4>Running the Demo</h4>
+      <p>
+        Set <span class="inline-code">DEMO_MODE=true</span> in your <span class="inline-code">.env.local</span> or pass it as an environment variable: <span class="inline-code">DEMO_MODE=true npx expo run:ios</span>. The demo mode bypasses Okta auth (auto-login as a test lender with $250K authority), loads the mock deals above, and intercepts all API calls with local responses. The Jackie Parsons deal is set 3 hours from SLA expiry so the countdown timer is always in an interesting "amber" state.
+      </p>
+    </div>
+  </div>
+
+</div>
+
+</div><!-- end .container -->
+
+<!-- ════════════════════════════════════════════════════════════════
+     FOOTER
+     ════════════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <strong>First United Bank</strong> — Lender Build Playbook &middot; Prompt 7: Starter Codebase<br>
+  Internal Engineering Document &middot; Confidential &middot; May 2026
+</footer>
+
+<!-- ════════════════════════════════════════════════════════════════
+     TAB SWITCHING
+     ════════════════════════════════════════════════════════════════ -->
+<script>
+function showTab(tabId) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  event.currentTarget.classList.add('active');
+  window.scrollTo({ top: 200, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

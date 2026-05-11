@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUB Lender — Process Flow & Business Requirements</title>
+<style>
+  :root {
+    --green-dark: #14532d;
+    --green-mid: #166534;
+    --green-light: #dcfce7;
+    --green-accent: #22c55e;
+    --blue-dark: #1e3a5f;
+    --blue-mid: #2563eb;
+    --blue-light: #dbeafe;
+    --purple-dark: #4c1d95;
+    --purple-mid: #7c3aed;
+    --purple-light: #ede9fe;
+    --amber-dark: #78350f;
+    --amber-mid: #d97706;
+    --amber-light: #fef3c7;
+    --red-dark: #7f1d1d;
+    --red-mid: #dc2626;
+    --red-light: #fee2e2;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-500: #6b7280;
+    --gray-700: #374151;
+    --gray-900: #111827;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif;
+    background: var(--gray-50);
+    color: var(--gray-900);
+    line-height: 1.5;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--green-dark), var(--blue-dark));
+    color: white;
+    padding: 32px 40px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .header .subtitle {
+    font-size: 14px;
+    opacity: 0.8;
+    font-weight: 400;
+  }
+  .header .pills {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+  .header .pill {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 12px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.25);
+  }
+
+  /* NAV */
+  .nav {
+    display: flex;
+    gap: 0;
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    overflow-x: auto;
+  }
+  .nav button {
+    flex: 1;
+    min-width: 120px;
+    padding: 12px 16px;
+    border: none;
+    background: white;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav button:hover {
+    color: var(--gray-700);
+    background: var(--gray-50);
+  }
+  .nav button.active {
+    color: var(--green-mid);
+    border-bottom-color: var(--green-accent);
+  }
+
+  /* CONTENT */
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .phase {
+    display: none;
+  }
+  .phase.active {
+    display: block;
+  }
+
+  /* PHASE HEADER */
+  .phase-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .phase-number {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+  .phase-header-text h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-900);
+  }
+  .phase-header-text p {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  /* DUAL LANE */
+  .dual-lane {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 768px) {
+    .dual-lane { grid-template-columns: 1fr; }
+  }
+
+  .lane {
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+    background: white;
+    overflow: hidden;
+  }
+  .lane-header {
+    padding: 12px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .lane-header .icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .lane-customer .lane-header {
+    background: var(--blue-light);
+    color: var(--blue-dark);
+  }
+  .lane-customer .icon {
+    background: var(--blue-mid);
+    color: white;
+  }
+  .lane-banker .lane-header {
+    background: var(--green-light);
+    color: var(--green-dark);
+  }
+  .lane-banker .icon {
+    background: var(--green-mid);
+    color: white;
+  }
+
+  .lane-body {
+    padding: 16px;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .step:last-child { margin-bottom: 0; }
+  .step-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .lane-customer .step-dot { background: var(--blue-mid); }
+  .lane-banker .step-dot { background: var(--green-mid); }
+
+  .step-content {}
+  .step-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-900);
+  }
+  .step-desc {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  /* SYSTEM ROW */
+  .system-row {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .system-badge {
+    background: var(--purple-mid);
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .system-content {
+    flex: 1;
+  }
+  .system-title {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .system-desc {
+    font-size: 13px;
+    color: var(--gray-500);
+    margin-top: 2px;
+  }
+
+  /* REQUIREMENTS SECTION */
+  .req-section {
+    margin-top: 8px;
+  }
+  .req-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--gray-200);
+  }
+  .req-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 768px) {
+    .req-grid { grid-template-columns: 1fr; }
+  }
+
+  .req-card {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--gray-300);
+  }
+  .req-card.must { border-left-color: var(--red-mid); }
+  .req-card.should { border-left-color: var(--amber-mid); }
+  .req-card.could { border-left-color: var(--blue-mid); }
+
+  .req-card .req-id {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    letter-spacing: 0.5px;
+  }
+  .req-card .req-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-900);
+    margin-top: 4px;
+  }
+  .req-card .req-ops {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dashed var(--gray-200);
+  }
+  .req-card .req-ops strong {
+    color: var(--gray-700);
+  }
+
+  .priority-legend {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--gray-500);
+  }
+  .priority-legend span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .priority-legend .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+  }
+
+  /* LANE ROUTING */
+  .lane-routing {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+  .lane-routing-header {
+    padding: 14px 20px;
+    background: var(--amber-light);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--amber-dark);
+  }
+  .lane-routing-body {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+  @media (max-width: 768px) {
+    .lane-routing-body { grid-template-columns: 1fr; }
+  }
+  .lane-col {
+    padding: 16px;
+    border-right: 1px solid var(--gray-200);
+  }
+  .lane-col:last-child { border-right: none; }
+  .lane-col-title {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .lane-col-title .ldot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .lane-col-criteria {
+    font-size: 12px;
+    color: var(--gray-500);
+    line-height: 1.6;
+  }
+
+  /* TIME CALLOUT */
+  .time-callout {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--amber-light);
+    color: var(--amber-dark);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+
+  /* OPS DETAIL BOX */
+  .ops-detail {
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .ops-detail-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--purple-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    margin-bottom: 8px;
+  }
+  .ops-detail-list {
+    list-style: none;
+    padding: 0;
+  }
+  .ops-detail-list li {
+    font-size: 13px;
+    color: var(--gray-700);
+    padding: 4px 0;
+    display: flex;
+    gap: 8px;
+  }
+  .ops-detail-list li::before {
+    content: "▸";
+    color: var(--purple-mid);
+    flex-shrink: 0;
+  }
+
+  /* FOOTER */
+  .doc-footer {
+    text-align: center;
+    padding: 24px;
+    font-size: 11px;
+    color: var(--gray-500);
+    border-top: 1px solid var(--gray-200);
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>FUB Lender — Process Flow & Business Requirements</h1>
+  <div class="subtitle">Customer Journey × Banker Workflow — Operational Reference</div>
+  <div class="pills">
+    <span class="pill">Credit-Memo First</span>
+    <span class="pill">Continuous Flow / Async Approval</span>
+    <span class="pill">Smart Defaults from Jack Henry</span>
+    <span class="pill">3 Complexity Lanes</span>
+    <span class="pill">Mobile-First / Offline-Tolerant</span>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav" id="nav">
+  <button class="active" onclick="showPhase(0)">1. Initiate</button>
+  <button onclick="showPhase(1)">2. Build Memo</button>
+  <button onclick="showPhase(2)">3. Submit & Route</button>
+  <button onclick="showPhase(3)">4. Approve</button>
+  <button onclick="showPhase(4)">5. Book & Close</button>
+  <button onclick="showPhase(5)">6. Portfolio</button>
+</div>
+
+<div class="content">
+
+<!-- ============================================================ -->
+<!-- PHASE 1: INITIATE -->
+<!-- ============================================================ -->
+<div class="phase active" id="phase-0">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--green-mid);">1</div>
+    <div class="phase-header-text">
+      <h2>Initiate Deal</h2>
+      <p>Customer expresses need — banker opens deal in the field or at desk, system pre-fills from core</p>
+    </div>
+  </div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Expresses Financing Need</div>
+            <div class="step-desc">Contacts banker in person, by phone, or via referral. "I need to buy cattle / equipment / land / expand my shop."</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Provides Basic Info</div>
+            <div class="step-desc">Name, amount, purpose, collateral type. If existing customer, banker already has this from core.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Feels Speed & Confidence</div>
+            <div class="step-desc">No long intake form. Banker captures the story on the spot. Customer sees professionalism, not paperwork.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Open New Deal</div>
+            <div class="step-desc">Tap "New Deal" on mobile app. Search/select borrower from Jack Henry core.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">System Auto-Pulls Entity Data</div>
+            <div class="step-desc">Legal name, TIN, address, existing deposit/loan relationships, prior financial statements — all pre-filled.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Confirm Deal Parameters</div>
+            <div class="step-desc">Amount, purpose, loan type, collateral class. System classifies deal into complexity lane.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Complexity routing -->
+  <div class="lane-routing">
+    <div class="lane-routing-header">Complexity Routing — System classifies deal at initiation</div>
+    <div class="lane-routing-body">
+      <div class="lane-col">
+        <div class="lane-col-title"><span class="ldot" style="background:#22c55e;"></span> Fast Lane</div>
+        <div class="lane-col-criteria">
+          Under $250K secured<br>
+          Single borrower/guarantor<br>
+          Standard collateral (auto, ag, equipment)<br>
+          Target: <strong>&lt;15 min</strong> initiation to submit
+        </div>
+      </div>
+      <div class="lane-col">
+        <div class="lane-col-title"><span class="ldot" style="background:#2563eb;"></span> Standard</div>
+        <div class="lane-col-criteria">
+          CRE or C&I deals<br>
+          1–2 entities<br>
+          Standard financial analysis<br>
+          Full credit memo with spreads
+        </div>
+      </div>
+      <div class="lane-col">
+        <div class="lane-col-title"><span class="ldot" style="background:#dc2626;"></span> Complex</div>
+        <div class="lane-col-criteria">
+          Multi-entity / holding company<br>
+          Participation or SBA<br>
+          Construction / phased draws<br>
+          Committee-level approval required
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">System</span>
+    <div class="system-content">
+      <div class="system-title">Jack Henry Core Integration (SilverLake / Symitar)</div>
+      <div class="system-desc">Real-time lookup of customer master, deposit accounts, existing loans, prior financials, and guarantor relationships. System writes back deal-level data post-booking for single-system-of-record integrity.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>Jack Henry API call must return within 3 seconds on LTE; offline mode caches last-known entity data</li>
+      <li>Duplicate borrower detection runs on TIN + legal name fuzzy match before deal creation</li>
+      <li>Complexity lane is system-suggested but banker can override with reason code (audit-logged)</li>
+      <li>Deal ID generated at creation — all downstream artifacts reference this ID</li>
+      <li>OFAC / BSA screening triggered automatically at deal open (non-blocking; flags if hit)</li>
+    </ul>
+  </div>
+
+  <!-- Requirements -->
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 1</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card must">
+        <div class="req-id">BR-1.1 · Must</div>
+        <div class="req-text">System shall retrieve borrower entity data from Jack Henry core in real-time at deal creation</div>
+        <div class="req-ops"><strong>Ops:</strong> API SLA &lt;3s P95. Fallback to cached data if core unavailable. Alert ops if cache &gt;24h stale.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-1.2 · Must</div>
+        <div class="req-text">System shall auto-classify deals into Fast / Standard / Complex lanes based on amount, collateral type, and entity count</div>
+        <div class="req-ops"><strong>Ops:</strong> Classification rules configurable by loan administration without code deploy. Override audit log retained 7 years.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-1.3 · Must</div>
+        <div class="req-text">Banker shall be able to initiate a deal from mobile device in the field with offline tolerance</div>
+        <div class="req-ops"><strong>Ops:</strong> Offline queue syncs on reconnect. Conflict resolution: last-write-wins with merge log. Max offline window: 72h.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-1.4 · Should</div>
+        <div class="req-text">System shall run OFAC/BSA screening at deal initiation and flag hits without blocking workflow</div>
+        <div class="req-ops"><strong>Ops:</strong> BSA officer receives real-time alert on hit. False positive clearance workflow required. Screening vendor: existing FUB contract.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-1.5 · Should</div>
+        <div class="req-text">System shall detect potential duplicate borrower entries and prompt banker to link to existing entity</div>
+        <div class="req-ops"><strong>Ops:</strong> Fuzzy match on TIN + name. Dedup rate target: &lt;1% duplicate entities created.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-1.6 · Could</div>
+        <div class="req-text">System shall pre-populate guarantor and related-entity relationships from core data</div>
+        <div class="req-ops"><strong>Ops:</strong> Requires Jack Henry relationship graph API. Verify accuracy with 50-deal sample before production.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 2: BUILD CREDIT MEMO -->
+<!-- ============================================================ -->
+<div class="phase" id="phase-1">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--blue-mid);">2</div>
+    <div class="phase-header-text">
+      <h2>Build Credit Memo</h2>
+      <p>Banker writes the credit story — system extracts structured data. Not form-first.</p>
+    </div>
+  </div>
+
+  <div class="time-callout">⏱ Fast Lane target: &lt;15 minutes from deal open to submit</div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Tells Their Story</div>
+            <div class="step-desc">Customer explains the deal narrative: what they're buying, why, how it fits their operation. Banker captures it naturally.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Provides Documents</div>
+            <div class="step-desc">Hands over tax returns, financials, appraisals — or banker photographs them on the spot. No portal login required at this stage.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Confirms Key Terms</div>
+            <div class="step-desc">Banker reviews proposed rate, term, and structure. Customer agrees or negotiates. No surprises later.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Write Credit Narrative</div>
+            <div class="step-desc">Free-text credit story. System parses purpose, strengths, weaknesses, mitigants into structured fields. Banker reviews/corrects.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Capture Docs & Collateral</div>
+            <div class="step-desc">Photo/scan documents. Enter collateral descriptions and values. Attach or enter financial data. All async — nothing blocks forward progress.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Set Terms & Pricing</div>
+            <div class="step-desc">Rate, term, amortization, fees. System suggests based on product type and risk tier. Banker adjusts.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Financial Spreads (Standard / Complex)</div>
+            <div class="step-desc">Enter or import financial statements. System calculates DSCR, leverage, liquidity. Trend analysis auto-generated.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">System</span>
+    <div class="system-content">
+      <div class="system-title">Progressive Disclosure Engine</div>
+      <div class="system-desc">Shows only lane-relevant fields. Fast Lane sees 8–10 fields. Standard sees full credit memo template. Complex adds participation, construction draw, and SBA-specific sections. System validates inline and flags missing required items with non-blocking indicators.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>Credit narrative NLP extraction is advisory — banker must confirm every parsed field before submit</li>
+      <li>Document attachments stored in encrypted blob storage; virus scan on upload; max 25MB per file, 200MB per deal</li>
+      <li>Financial spread calculations must match FUB's existing spreading methodology (validated against current Excel templates)</li>
+      <li>Auto-save every 30 seconds. Incomplete deals persist indefinitely in "Draft" status with 90-day stale alert</li>
+      <li>All field changes audit-logged with timestamp, user, old value, new value</li>
+      <li>Pricing engine floor/ceiling guardrails set by treasury; exceptions require approval tier escalation</li>
+    </ul>
+  </div>
+
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 2</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card must">
+        <div class="req-id">BR-2.1 · Must</div>
+        <div class="req-text">System shall support narrative-first credit memo entry where banker writes the credit story and system extracts structured data</div>
+        <div class="req-ops"><strong>Ops:</strong> NLP extraction accuracy target: &gt;85% on field mapping. Banker confirmation required before submit. Model retraining quarterly.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-2.2 · Must</div>
+        <div class="req-text">System shall display only lane-relevant fields (progressive disclosure) based on deal complexity classification</div>
+        <div class="req-ops"><strong>Ops:</strong> Field rules configurable by loan admin. Changes require QA review of all three lane templates before deploy.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-2.3 · Must</div>
+        <div class="req-text">Banker shall capture documents via camera, upload, or scan with OCR extraction</div>
+        <div class="req-ops"><strong>Ops:</strong> OCR for tax returns, financial statements. Extraction results must be human-reviewed. Retention per FUB document policy (7yr min).</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-2.4 · Must</div>
+        <div class="req-text">System shall calculate DSCR, leverage ratios, and liquidity from entered/imported financials</div>
+        <div class="req-ops"><strong>Ops:</strong> Calculations must match existing FUB spreading methodology. Parallel run against Excel templates for first 100 deals.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-2.5 · Should</div>
+        <div class="req-text">System shall suggest pricing (rate, fees) based on product type, risk tier, and current rate environment</div>
+        <div class="req-ops"><strong>Ops:</strong> Pricing model updated by treasury weekly. Floor/ceiling overrides logged and routed to treasury review.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-2.6 · Should</div>
+        <div class="req-text">System shall auto-save deal state and support resume from any device with conflict resolution</div>
+        <div class="req-ops"><strong>Ops:</strong> Save interval: 30s. Offline conflict resolution: last-write-wins with full diff log. 90-day stale draft alert to manager.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-2.7 · Could</div>
+        <div class="req-text">System shall generate trend analysis charts from multi-year financial data</div>
+        <div class="req-ops"><strong>Ops:</strong> Requires 3+ years of financials. Charts embedded in credit memo PDF export.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 3: SUBMIT & ROUTE -->
+<!-- ============================================================ -->
+<div class="phase" id="phase-2">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--amber-mid);">3</div>
+    <div class="phase-header-text">
+      <h2>Submit & Route</h2>
+      <p>Completeness validated — deal routed to the right approver automatically</p>
+    </div>
+  </div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Told "We're Moving Forward"</div>
+            <div class="step-desc">Banker communicates that the deal is submitted for approval. Customer has clarity on next steps and expected timeline.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">No Waiting in Limbo</div>
+            <div class="step-desc">Unlike current process, customer doesn't wait days wondering what's happening. Banker has real-time status to share proactively.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Pre-Submit Completeness Check</div>
+            <div class="step-desc">System validates all required fields for the lane. Missing items shown as checklist — must-haves block submit, nice-to-haves are flagged.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Submit for Approval</div>
+            <div class="step-desc">One-tap submit. Deal locked for editing (lender can unlock with reason). Timestamp and snapshot captured.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Track Status in Real Time</div>
+            <div class="step-desc">Deal card shows: Submitted → In Review → Approved/Declined/Conditions. Push notification on decision.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">System</span>
+    <div class="system-content">
+      <div class="system-title">Approval Authority Routing Engine</div>
+      <div class="system-desc">Maps deal amount, type, and risk characteristics to the approval authority matrix. Routes to individual approver (below committee threshold) or loan committee queue. Supports sequential and parallel approval chains. Escalation timer if no action within SLA window.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>Approval authority matrix maintained by Chief Credit Officer; updated at minimum annually</li>
+      <li>Routing rules: individual authority thresholds by officer, committee thresholds by deal type</li>
+      <li>SLA clock starts at submit. Default SLA: Fast Lane 4h, Standard 24h, Complex 72h (business hours)</li>
+      <li>Auto-escalation: if primary approver doesn't act within 50% of SLA, secondary approver notified</li>
+      <li>Deal snapshot at submit is immutable — any changes require unlock + re-submit + new snapshot</li>
+      <li>Notification channels: push notification (primary), email (secondary), SMS (escalation only)</li>
+    </ul>
+  </div>
+
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 3</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card must">
+        <div class="req-id">BR-3.1 · Must</div>
+        <div class="req-text">System shall validate deal completeness against lane-specific required fields before allowing submit</div>
+        <div class="req-ops"><strong>Ops:</strong> Validation rules version-controlled. Changes require credit policy sign-off. Must-have vs. nice-to-have distinction per field.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-3.2 · Must</div>
+        <div class="req-text">System shall route submitted deals to the correct approver based on the approval authority matrix</div>
+        <div class="req-ops"><strong>Ops:</strong> Matrix maintained in admin UI by CCO. Supports individual authority limits, committee thresholds, and delegation during PTO.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-3.3 · Must</div>
+        <div class="req-text">System shall create an immutable snapshot of the credit memo at time of submission</div>
+        <div class="req-ops"><strong>Ops:</strong> Snapshot stored as versioned PDF + structured data. Retention: life of loan + 7 years. Tamper-evident hash.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-3.4 · Should</div>
+        <div class="req-text">System shall enforce SLA timers with auto-escalation if approver does not act within threshold</div>
+        <div class="req-ops"><strong>Ops:</strong> SLA windows configurable per lane. Escalation chain: primary approver → backup → CCO. Weekly SLA compliance report.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-3.5 · Should</div>
+        <div class="req-text">Banker shall see real-time deal status with push notifications on state changes</div>
+        <div class="req-ops"><strong>Ops:</strong> Push via FCM (Android) / APNs (iOS). Email fallback if push undeliverable. Status visible on deal card and portfolio dashboard.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 4: APPROVE -->
+<!-- ============================================================ -->
+<div class="phase" id="phase-3">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--purple-mid);">4</div>
+    <div class="phase-header-text">
+      <h2>Approve</h2>
+      <p>Async review — approver acts from their own queue without blocking the lender's other work</p>
+    </div>
+  </div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Informed Promptly on Decision</div>
+            <div class="step-desc">Banker calls customer with approval/conditions. No more "I'll check on it" — banker has the answer in real time.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Conditions Are Clear</div>
+            <div class="step-desc">If conditional approval, customer gets a plain-language list of what's needed (appraisal, insurance, additional docs).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Not Blocked — Works Other Deals</div>
+            <div class="step-desc">Lender continues building other deals while this one is in approval. No idle waiting.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Receives Decision Notification</div>
+            <div class="step-desc">Push notification with approve/conditional/decline + comments. Can view full approver notes immediately.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Address Conditions (if any)</div>
+            <div class="step-desc">Conditions appear as a checklist on the deal. Banker fulfills and checks off. Re-submit not needed for conditions — just documentation.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">Approver</span>
+    <div class="system-content">
+      <div class="system-title">Approver Queue & Decision Workflow</div>
+      <div class="system-desc">Approver sees prioritized queue (oldest / highest-amount first). Full credit memo with risk summary, financial analysis, and prior relationship context. Three-button decision: Approve / Conditional Approve / Decline. All require written comments. Decision is audit-logged and immutable.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>Approver comments become part of permanent credit file — visible to examiners</li>
+      <li>Conditional approval generates a machine-readable condition list with due dates and responsible parties</li>
+      <li>Decline requires mandatory "decline reason" from enumerated list + free-text explanation</li>
+      <li>Committee approvals require quorum; system tracks votes and records dissents</li>
+      <li>Concentration limit checks run automatically before approval: borrower, industry, geography, collateral type</li>
+      <li>All approval actions produce an audit record: who, when, what, from which device/location</li>
+    </ul>
+  </div>
+
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 4</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card must">
+        <div class="req-id">BR-4.1 · Must</div>
+        <div class="req-text">Approver shall have a prioritized queue showing pending deals with risk summary and key metrics</div>
+        <div class="req-ops"><strong>Ops:</strong> Queue sort: SLA urgency → amount → submission date. Mobile-optimized view for approvers on the go.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-4.2 · Must</div>
+        <div class="req-text">System shall support Approve, Conditional Approve, and Decline decisions with mandatory comments</div>
+        <div class="req-ops"><strong>Ops:</strong> Decision record is immutable and exam-ready. Conditional items generate trackable checklist with due dates.</div>
+      </div>
+      <div class="req-card must">
+        <div class="req-id">BR-4.3 · Must</div>
+        <div class="req-text">All approval decisions shall be audit-logged with user, timestamp, device, and full decision rationale</div>
+        <div class="req-ops"><strong>Ops:</strong> Retention: life of loan + 7 years. Export-ready for examiner requests. SOX-compliant tamper evidence.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-4.4 · Should</div>
+        <div class="req-text">System shall run concentration limit checks against portfolio thresholds before approval is recorded</div>
+        <div class="req-ops"><strong>Ops:</strong> Concentration limits: borrower, industry (NAICS), geography, collateral type. Thresholds set by ALCO. Breach = CCO escalation.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-4.5 · Could</div>
+        <div class="req-text">System shall support committee voting workflow with quorum tracking and dissent recording</div>
+        <div class="req-ops"><strong>Ops:</strong> Quorum rules configurable. Dissent opinions recorded and retained. Committee minutes auto-generated from vote + comments.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 5: BOOK & CLOSE -->
+<!-- ============================================================ -->
+<div class="phase" id="phase-4">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--red-mid);">5</div>
+    <div class="phase-header-text">
+      <h2>Book & Close</h2>
+      <p>Approved deal moves to loan ops for documentation, booking, and funding</p>
+    </div>
+  </div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Receives Commitment Letter</div>
+            <div class="step-desc">Clear terms, conditions, and timeline. Customer signs (wet or e-sig) and returns.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Provides Remaining Documents</div>
+            <div class="step-desc">Insurance, title work, environmental reports, appraisals. Banker tracks and nudges proactively.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Closing & Funding</div>
+            <div class="step-desc">Signs loan documents. Funds disbursed to their account or to closing agent. Deal is done.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Generate Commitment Letter</div>
+            <div class="step-desc">System generates from approved deal terms. Banker reviews, adjusts language if needed, sends to customer.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Condition Tracking & Doc Checklist</div>
+            <div class="step-desc">Outstanding conditions and required documents shown as actionable checklist. Status visible to banker, loan ops, and approver.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Handoff to LOS / Loan Ops</div>
+            <div class="step-desc">Approved deal data pushed to loan origination system (nCino or target platform). Loan ops takes over doc prep and booking.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">System</span>
+    <div class="system-content">
+      <div class="system-title">LOS Integration & Document Generation</div>
+      <div class="system-desc">Structured deal data pushed to LOS via API. Commitment letter, doc checklist, and closing package generated from templates. Dual-entry eliminated — data entered once in FUB Lender flows through to booking without re-keying.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>LOS integration is the primary v1/v2 dependency — MVP may use PDF export + manual entry as interim</li>
+      <li>Commitment letter templates maintained by legal; versioned and approved before production use</li>
+      <li>Condition fulfillment requires loan ops sign-off — banker cannot self-clear conditions</li>
+      <li>Funding authorization requires dual control (banker + loan ops) for amounts above threshold</li>
+      <li>Booking confirmation writes loan number back to FUB Lender deal record for lifecycle tracking</li>
+      <li>Exception tracking: any deal not closed within 90 days of approval triggers management review</li>
+    </ul>
+  </div>
+
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 5</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card must">
+        <div class="req-id">BR-5.1 · Must</div>
+        <div class="req-text">System shall generate a printable/exportable credit memo PDF from approved deal data</div>
+        <div class="req-ops"><strong>Ops:</strong> PDF template approved by credit admin. Includes all fields, financials, conditions, and approval chain. Examiner-ready format.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-5.2 · Should</div>
+        <div class="req-text">System shall generate commitment letter from approved terms using legal-approved templates</div>
+        <div class="req-ops"><strong>Ops:</strong> Templates version-controlled by legal. Custom language fields clearly marked. E-signature integration (v1).</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-5.3 · Should</div>
+        <div class="req-text">System shall push approved deal data to LOS via API, eliminating re-keying</div>
+        <div class="req-ops"><strong>Ops:</strong> API mapping document required per LOS. Data validation before push. Rollback if LOS rejects. MVP interim: PDF + manual entry.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-5.4 · Should</div>
+        <div class="req-text">System shall track outstanding conditions and required documents with status and due dates</div>
+        <div class="req-ops"><strong>Ops:</strong> Conditions require loan ops sign-off. Auto-reminder at 7 days, 3 days, and 1 day before due date. Overdue escalation to manager.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-5.5 · Could</div>
+        <div class="req-text">System shall support e-signature workflow for commitment letters and closing documents</div>
+        <div class="req-ops"><strong>Ops:</strong> Integration with DocuSign or equivalent. Wet-signature fallback always available. Signature audit trail retained.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PHASE 6: PORTFOLIO -->
+<!-- ============================================================ -->
+<div class="phase" id="phase-5">
+  <div class="phase-header">
+    <div class="phase-number" style="background:var(--gray-700);">6</div>
+    <div class="phase-header-text">
+      <h2>Portfolio Management</h2>
+      <p>Post-close lifecycle — banker maintains relationship, system monitors health</p>
+    </div>
+  </div>
+
+  <div class="dual-lane">
+    <div class="lane lane-customer">
+      <div class="lane-header"><span class="icon">C</span> Customer Experience</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Proactive Relationship</div>
+            <div class="step-desc">Banker reaches out before maturity, before covenant deadlines — not after. Customer feels managed, not forgotten.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Renewal Is Seamless</div>
+            <div class="step-desc">When loan matures, banker already has updated financials and a pre-built renewal memo. Fast turnaround, minimal paperwork.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Cross-Sell Opportunities</div>
+            <div class="step-desc">Banker sees the full relationship — deposits, loans, treasury. Can identify and propose additional products naturally.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="lane lane-banker">
+      <div class="lane-header"><span class="icon">B</span> Banker Workflow</div>
+      <div class="lane-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Portfolio Dashboard</div>
+            <div class="step-desc">All active deals in one view. Sortable by maturity, risk rating, past-due status, covenant dates. Color-coded alerts.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Renewal & Review Pipeline</div>
+            <div class="step-desc">System surfaces upcoming maturities 90/60/30 days out. Pre-populates renewal memo from original deal + updated financials.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Exception & Covenant Monitoring</div>
+            <div class="step-desc">System tracks documentation exceptions, covenant compliance, and risk rating changes. Alerts on breaches or approaching thresholds.</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <div class="step-title">Relationship Summary</div>
+            <div class="step-desc">Full borrower view: all loans, deposits, services, contact history. One screen before any customer call.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="system-row">
+    <span class="system-badge">System</span>
+    <div class="system-content">
+      <div class="system-title">Portfolio Intelligence & Monitoring</div>
+      <div class="system-desc">Pulls loan performance data from core. Calculates portfolio-level metrics: weighted average risk rating, concentration percentages, maturity distribution, past-due trends. Feeds management reporting and board-level dashboards.</div>
+    </div>
+  </div>
+
+  <div class="ops-detail">
+    <div class="ops-detail-title">Operations Detail</div>
+    <ul class="ops-detail-list">
+      <li>Maturity alerts: 90-day (informational), 60-day (action required), 30-day (escalation if no renewal started)</li>
+      <li>Covenant tracking requires structured covenant entry at deal creation — not free-text</li>
+      <li>Risk rating migration tracked quarterly; downgrades trigger credit review workflow</li>
+      <li>Portfolio data refreshed daily from core via batch sync (real-time for payment/past-due status)</li>
+      <li>Management reports: portfolio concentration, past-due trend, new production, and pipeline — auto-generated monthly</li>
+      <li>Examiner reporting: criticized/classified loan list, ALLL analysis inputs, CRA data — exportable on demand</li>
+    </ul>
+  </div>
+
+  <div class="req-section">
+    <div class="req-section-title">Business Requirements — Phase 6</div>
+    <div class="priority-legend">
+      <span><span class="dot" style="background:var(--red-mid);"></span> Must Have (MVP)</span>
+      <span><span class="dot" style="background:var(--amber-mid);"></span> Should Have (v1)</span>
+      <span><span class="dot" style="background:var(--blue-mid);"></span> Could Have (v2)</span>
+    </div>
+    <div class="req-grid">
+      <div class="req-card should">
+        <div class="req-id">BR-6.1 · Should</div>
+        <div class="req-text">Banker shall have a portfolio dashboard showing all active deals with risk, maturity, and past-due indicators</div>
+        <div class="req-ops"><strong>Ops:</strong> Data from core via daily batch + real-time past-due feed. Dashboard loads &lt;3s. Mobile-optimized.</div>
+      </div>
+      <div class="req-card should">
+        <div class="req-id">BR-6.2 · Should</div>
+        <div class="req-text">System shall surface upcoming maturities at 90/60/30 days and pre-populate renewal credit memos</div>
+        <div class="req-ops"><strong>Ops:</strong> Renewal memo pulls from original deal + most recent financials. Banker reviews and updates narrative. Same approval workflow applies.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-6.3 · Could</div>
+        <div class="req-text">System shall track covenant compliance with automated breach detection and alerting</div>
+        <div class="req-ops"><strong>Ops:</strong> Requires structured covenant entry. Financial covenants auto-checked against spread data. Non-financial covenants require manual attestation.</div>
+      </div>
+      <div class="req-card could">
+        <div class="req-id">BR-6.4 · Could</div>
+        <div class="req-text">System shall generate management and examiner reports from portfolio data</div>
+        <div class="req-ops"><strong>Ops:</strong> Report templates approved by CFO/CCO. ALLL inputs, concentration reports, CRA data. Exportable as PDF/Excel.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<div class="doc-footer">
+  FUB Lender Process Flow & Business Requirements — v1.0 — May 2026<br>
+  First United Bank · Technology & Innovation
+</div>
+
+<script>
+function showPhase(index) {
+  document.querySelectorAll('.phase').forEach((p, i) => {
+    p.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.nav button').forEach((b, i) => {
+    b.classList.toggle('active', i === index);
+  });
+}
+</script>
+</body>
+</html>
