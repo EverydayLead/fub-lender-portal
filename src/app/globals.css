@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+@theme {
+  --font-lato: "Lato", sans-serif;
+  --color-fub-blue: #002D72;
+  --color-fub-red: #DA291C;
+  --color-fub-bg: #FAF9F5;
+  --color-fub-gold: #C4972A;
+}
+
+body {
+  font-family: "Lato", sans-serif;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
