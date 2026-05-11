@@ -6,7 +6,7 @@ const prompts = [
   { num: "5", title: "Backend Schema & Security", desc: "PostgreSQL 9 tables, API contracts, authority enforcement, 10-threat STRIDE model, 6 n8n workflows", status: "complete" },
   { num: "6", title: "Design System", desc: "Color palette, Lato typography, 15 component specs, dark mode, phone frame demo", status: "complete" },
   { num: "7", title: "Starter Codebase", desc: "File tree, package.json, theme tokens, WatermelonDB schema, 3 components, demo mode", status: "complete" },
-] as const;
+];
 
 const artifacts = [
   {
